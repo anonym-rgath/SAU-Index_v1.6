@@ -1,0 +1,281 @@
+import React, { useState, useEffect } from 'react';
+import { api } from '../lib/api';
+import { Button } from '../components/ui/button';
+import { Card } from '../components/ui/card';
+import { PiggyBank, Smile, Plus, Trophy, Calendar, Scan } from 'lucide-react';
+import { toast } from 'sonner';
+import AddFineDialog from '../components/AddFineDialog';
+import ScanDemoDialog from '../components/ScanDemoDialog';
+import { formatCurrency, formatDate } from '../lib/utils';
+
+const Dashboard = () => {
+  const [year, setYear] = useState(new Date().getFullYear());
+  const [years, setYears] = useState([]);
+  const [statistics, setStatistics] = useState(null);
+  const [recentFines, setRecentFines] = useState([]);
+  const [members, setMembers] = useState([]);
+  const [addDialogOpen, setAddDialogOpen] = useState(false);
+  const [scanDialogOpen, setScanDialogOpen] = useState(false);
+  const [selectedMemberId, setSelectedMemberId] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    loadData();
+  }, [year]);
+
+  const loadData = async () => {
+    setLoading(true);
+    try {
+      const [statsRes, finesRes, membersRes, yearsRes] = await Promise.all([
+        api.statistics.getByYear(year),
+        api.fines.getAll(year),
+        api.members.getAll(),
+        api.years.getAll(),
+      ]);
+      
+      setStatistics(statsRes.data);
+      setRecentFines(finesRes.data.slice(0, 6));
+      setMembers(membersRes.data);
+      setYears(yearsRes.data.years || [year]);
+    } catch (error) {
+      toast.error('Fehler beim Laden der Daten');
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleFineAdded = () => {
+    setAddDialogOpen(false);
+    loadData();
+    toast.success('Strafe erfolgreich eingetragen');
+  };
+
+  const handleScanComplete = (memberId) => {
+    setScanDialogOpen(false);
+    setSelectedMemberId(memberId);
+    setAddDialogOpen(true);
+  };
+
+  const getMemberName = (memberId) => {
+    return members.find(m => m.id === memberId)?.name || 'Unbekannt';
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-stone-500">Laden...</div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-stone-50 pb-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
+          <div>
+            <h1 className="text-4xl md:text-5xl font-bold text-stone-900 tracking-tight mb-2">
+              Dashboard
+            </h1>
+            <p className="text-stone-500 leading-relaxed">
+              Ranking und Strafen im Überblick
+            </p>
+          </div>
+          
+          <div className="flex flex-wrap gap-3">
+            <div className="flex items-center gap-2 bg-white border border-stone-200 rounded-full px-4 h-11">
+              <Calendar className="w-4 h-4 text-stone-400" />
+              <select
+                data-testid="year-selector"
+                value={year}
+                onChange={(e) => setYear(Number(e.target.value))}
+                className="bg-transparent border-none outline-none text-stone-700 font-medium cursor-pointer"
+              >
+                {years.map(y => (
+                  <option key={y} value={y}>{y}</option>
+                ))}
+              </select>
+            </div>
+            
+            <Button
+              data-testid="scan-demo-button"
+              onClick={() => setScanDialogOpen(true)}
+              className="h-11 px-6 rounded-full bg-white border border-stone-200 text-stone-700 hover:bg-stone-50 transition-colors"
+            >
+              <Scan className="w-4 h-4 mr-2" />
+              NFC/QR Scan
+            </Button>
+            
+            <Button
+              data-testid="add-fine-button"
+              onClick={() => {
+                setSelectedMemberId(null);
+                setAddDialogOpen(true);
+              }}
+              className="h-11 px-8 rounded-full bg-orange-500 text-white font-bold tracking-wide hover:bg-orange-600 hover:shadow-orange-500/30 transition-all uppercase text-sm shadow-lg"
+            >
+              <Plus className="w-5 h-5 mr-2" />
+              Strafe
+            </Button>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
+          <div className="col-span-12 md:col-span-8 grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <Card className="bg-gradient-to-br from-pink-50 to-white border-pink-100 rounded-2xl shadow-sm hover:shadow-md transition-shadow duration-200 p-6">
+              <div className="flex items-start justify-between mb-4">
+                <div>
+                  <p className="text-sm text-stone-400 uppercase tracking-widest font-bold mb-1">
+                    Sau
+                  </p>
+                  <p className="text-xs text-stone-500">Höchster Betrag</p>
+                </div>
+                <div className="bg-pink-100 p-3 rounded-xl">
+                  <PiggyBank className="w-6 h-6 text-pink-500" />
+                </div>
+              </div>
+              <div data-testid="sau-value">
+                {statistics?.sau ? (
+                  <>
+                    <p className="text-3xl font-bold text-stone-900 mb-1">
+                      {formatCurrency(statistics.sau.total)}
+                    </p>
+                    <p className="text-stone-600">{statistics.sau.member_name}</p>
+                  </>
+                ) : (
+                  <p className="text-stone-400">Keine Daten</p>
+                )}
+              </div>
+            </Card>
+
+            <Card className="bg-gradient-to-br from-stone-50 to-white border-stone-200 rounded-2xl shadow-sm hover:shadow-md transition-shadow duration-200 p-6">
+              <div className="flex items-start justify-between mb-4">
+                <div>
+                  <p className="text-sm text-stone-400 uppercase tracking-widest font-bold mb-1">
+                    Lämmchen
+                  </p>
+                  <p className="text-xs text-stone-500">Zweithöchster Betrag</p>
+                </div>
+                <div className="bg-stone-100 p-3 rounded-xl">
+                  <Smile className="w-6 h-6 text-stone-400" />
+                </div>
+              </div>
+              <div data-testid="laemmchen-value">
+                {statistics?.laemmchen ? (
+                  <>
+                    <p className="text-3xl font-bold text-stone-900 mb-1">
+                      {formatCurrency(statistics.laemmchen.total)}
+                    </p>
+                    <p className="text-stone-600">{statistics.laemmchen.member_name}</p>
+                  </>
+                ) : (
+                  <p className="text-stone-400">Keine Daten</p>
+                )}
+              </div>
+            </Card>
+
+            <Card className="col-span-full bg-white rounded-2xl border border-stone-200 shadow-sm p-6">
+              <div className="flex items-center gap-3 mb-4">
+                <Trophy className="w-5 h-5 text-emerald-700" />
+                <h2 className="text-2xl font-semibold text-stone-900 tracking-tight">
+                  Ranking {year}
+                </h2>
+              </div>
+              
+              <div className="space-y-2" data-testid="ranking-list">
+                {statistics?.ranking && statistics.ranking.length > 0 ? (
+                  statistics.ranking.map((entry) => (
+                    <div
+                      key={entry.member_id}
+                      className="flex items-center justify-between p-4 rounded-xl border border-stone-200 bg-stone-50 hover:-translate-y-1 transition-transform duration-300"
+                      data-testid={`ranking-entry-${entry.rank}`}
+                    >
+                      <div className="flex items-center gap-4">
+                        <div className="flex items-center justify-center w-10 h-10 rounded-full bg-emerald-100 text-emerald-700 font-bold text-sm">
+                          #{entry.rank}
+                        </div>
+                        <div>
+                          <p className="font-semibold text-stone-900">{entry.member_name}</p>
+                          <p className="text-sm text-stone-500">
+                            Summe: {formatCurrency(entry.total)}
+                          </p>
+                        </div>
+                      </div>
+                      <Button
+                        data-testid={`add-fine-for-member-${entry.member_id}`}
+                        onClick={() => {
+                          setSelectedMemberId(entry.member_id);
+                          setAddDialogOpen(true);
+                        }}
+                        className="h-9 px-4 rounded-full bg-white border border-stone-200 text-stone-700 hover:bg-stone-50 transition-colors text-sm"
+                      >
+                        + Strafe
+                      </Button>
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-center text-stone-400 py-8">
+                    Noch keine Strafen für {year}
+                  </p>
+                )}
+              </div>
+            </Card>
+          </div>
+
+          <aside className="col-span-12 md:col-span-4">
+            <Card className="bg-white rounded-2xl border border-stone-200 shadow-sm p-6 sticky top-6">
+              <h2 className="text-2xl font-semibold text-stone-900 tracking-tight mb-4">
+                Letzte Strafen
+              </h2>
+              
+              <div className="space-y-2" data-testid="recent-fines-list">
+                {recentFines.length > 0 ? (
+                  recentFines.map((fine) => (
+                    <div
+                      key={fine.id}
+                      className="p-3 rounded-xl border border-stone-200 bg-stone-50"
+                    >
+                      <div className="flex items-start justify-between mb-1">
+                        <p className="font-medium text-stone-900">
+                          {getMemberName(fine.member_id)}
+                        </p>
+                        <span className="text-emerald-700 font-bold">
+                          {formatCurrency(fine.amount)}
+                        </span>
+                      </div>
+                      <p className="text-xs text-stone-500">
+                        {fine.fine_type_label}
+                      </p>
+                      <p className="text-xs text-stone-400 mt-1">
+                        {formatDate(fine.date)}
+                      </p>
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-center text-stone-400 py-8">
+                    Noch keine Strafen
+                  </p>
+                )}
+              </div>
+            </Card>
+          </aside>
+        </div>
+      </div>
+
+      <AddFineDialog
+        open={addDialogOpen}
+        onOpenChange={setAddDialogOpen}
+        onSuccess={handleFineAdded}
+        preselectedMemberId={selectedMemberId}
+      />
+      
+      <ScanDemoDialog
+        open={scanDialogOpen}
+        onOpenChange={setScanDialogOpen}
+        onScanComplete={handleScanComplete}
+      />
+    </div>
+  );
+};
+
+export default Dashboard;
