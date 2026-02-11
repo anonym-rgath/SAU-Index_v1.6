@@ -39,6 +39,9 @@ const EditFineDialog = ({ open, onOpenChange, fine, onSuccess }) => {
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>Strafe bearbeiten</DialogTitle>
+          <DialogDescription>
+            Betrag und Notiz der Strafe anpassen
+          </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit}>
           <div className="space-y-4 py-4">
