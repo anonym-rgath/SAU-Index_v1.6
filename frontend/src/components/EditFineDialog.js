@@ -68,7 +68,7 @@ const EditFineDialog = ({ open, onOpenChange, fine, onSuccess }) => {
                 value={formData.notes}
                 onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
                 placeholder="Zusätzliche Informationen"
-                className="rounded-xl border-stone-200 bg-stone-50 focus:bg-white focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all"
+                className="rounded-xl border-stone-200 bg-stone-50 focus:bg-white focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all text-base"
               />
             </div>
           </div>
