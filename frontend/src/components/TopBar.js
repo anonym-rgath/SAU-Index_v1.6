@@ -69,7 +69,7 @@ const TopBar = () => {
       {drawerOpen && (
         <div
           data-testid="drawer-overlay"
-          className="fixed inset-0 bg-black/40 z-50 animate-in fade-in duration-200"
+          className="fixed inset-0 bg-black/40 z-40 animate-in fade-in duration-200"
           onClick={() => setDrawerOpen(false)}
         />
       )}
