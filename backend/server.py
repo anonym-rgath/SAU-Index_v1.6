@@ -1,4 +1,5 @@
-from fastapi import FastAPI, APIRouter
+from fastapi import FastAPI, APIRouter, HTTPException, Depends, status
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
@@ -6,67 +7,308 @@ import os
 import logging
 from pathlib import Path
 from pydantic import BaseModel, Field, ConfigDict
-from typing import List
+from typing import List, Optional
 import uuid
-from datetime import datetime, timezone
-
+from datetime import datetime, timezone, timedelta
+import jwt
+from passlib.context import CryptContext
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
 
-# MongoDB connection
 mongo_url = os.environ['MONGO_URL']
 client = AsyncIOMotorClient(mongo_url)
 db = client[os.environ['DB_NAME']]
 
-# Create the main app without a prefix
 app = FastAPI()
-
-# Create a router with the /api prefix
 api_router = APIRouter(prefix="/api")
 
+JWT_SECRET = os.environ.get('JWT_SECRET', 'schuetzenzug-secret-key-change-in-production')
+JWT_ALGORITHM = 'HS256'
+JWT_EXPIRATION_HOURS = 24
 
-# Define Models
-class StatusCheck(BaseModel):
-    model_config = ConfigDict(extra="ignore")  # Ignore MongoDB's _id field
-    
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+security = HTTPBearer()
+
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
+
+# Models
+class LoginRequest(BaseModel):
+    password: str
+
+class LoginResponse(BaseModel):
+    token: str
+    message: str
+
+class Member(BaseModel):
+    model_config = ConfigDict(extra="ignore")
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
-    client_name: str
-    timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    name: str
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
-class StatusCheckCreate(BaseModel):
-    client_name: str
+class MemberCreate(BaseModel):
+    name: str
 
-# Add your routes to the router instead of directly to app
-@api_router.get("/")
-async def root():
-    return {"message": "Hello World"}
+class FineType(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    label: str
+    amount: Optional[float] = None
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
-@api_router.post("/status", response_model=StatusCheck)
-async def create_status_check(input: StatusCheckCreate):
-    status_dict = input.model_dump()
-    status_obj = StatusCheck(**status_dict)
+class FineTypeCreate(BaseModel):
+    label: str
+    amount: Optional[float] = None
+
+class Fine(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    member_id: str
+    fine_type_id: str
+    fine_type_label: str
+    amount: float
+    year: int
+    date: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    notes: Optional[str] = None
+
+class FineCreate(BaseModel):
+    member_id: str
+    fine_type_id: str
+    amount: float
+    notes: Optional[str] = None
+
+class FineUpdate(BaseModel):
+    amount: Optional[float] = None
+    notes: Optional[str] = None
+
+class RankingEntry(BaseModel):
+    member_id: str
+    member_name: str
+    total: float
+    rank: int
+
+class Statistics(BaseModel):
+    year: int
+    total_fines: int
+    total_amount: float
+    sau: Optional[RankingEntry] = None
+    laemmchen: Optional[RankingEntry] = None
+    ranking: List[RankingEntry]
+
+def verify_token(credentials: HTTPAuthorizationCredentials = Depends(security)):
+    try:
+        payload = jwt.decode(credentials.credentials, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+        return payload
+    except jwt.ExpiredSignatureError:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token expired")
+    except jwt.InvalidTokenError:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token")
+
+@api_router.post("/auth/login", response_model=LoginResponse)
+async def login(request: LoginRequest):
+    admin_password = os.environ.get('ADMIN_PASSWORD', 'admin123')
     
-    # Convert to dict and serialize datetime to ISO string for MongoDB
-    doc = status_obj.model_dump()
-    doc['timestamp'] = doc['timestamp'].isoformat()
-    
-    _ = await db.status_checks.insert_one(doc)
-    return status_obj
+    if request.password == admin_password:
+        token = jwt.encode(
+            {
+                'exp': datetime.now(timezone.utc) + timedelta(hours=JWT_EXPIRATION_HOURS),
+                'iat': datetime.now(timezone.utc),
+                'sub': 'admin'
+            },
+            JWT_SECRET,
+            algorithm=JWT_ALGORITHM
+        )
+        return LoginResponse(token=token, message="Login erfolgreich")
+    else:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Falsches Passwort")
 
-@api_router.get("/status", response_model=List[StatusCheck])
-async def get_status_checks():
-    # Exclude MongoDB's _id field from the query results
-    status_checks = await db.status_checks.find({}, {"_id": 0}).to_list(1000)
-    
-    # Convert ISO string timestamps back to datetime objects
-    for check in status_checks:
-        if isinstance(check['timestamp'], str):
-            check['timestamp'] = datetime.fromisoformat(check['timestamp'])
-    
-    return status_checks
+@api_router.get("/members", response_model=List[Member])
+async def get_members(auth=Depends(verify_token)):
+    members = await db.members.find({}, {"_id": 0}).to_list(1000)
+    for member in members:
+        if isinstance(member.get('created_at'), str):
+            member['created_at'] = datetime.fromisoformat(member['created_at'])
+    return members
 
-# Include the router in the main app
+@api_router.post("/members", response_model=Member)
+async def create_member(input: MemberCreate, auth=Depends(verify_token)):
+    member = Member(**input.model_dump())
+    doc = member.model_dump()
+    doc['created_at'] = doc['created_at'].isoformat()
+    await db.members.insert_one(doc)
+    return member
+
+@api_router.put("/members/{member_id}", response_model=Member)
+async def update_member(member_id: str, input: MemberCreate, auth=Depends(verify_token)):
+    result = await db.members.find_one({"id": member_id}, {"_id": 0})
+    if not result:
+        raise HTTPException(status_code=404, detail="Mitglied nicht gefunden")
+    
+    await db.members.update_one({"id": member_id}, {"$set": {"name": input.name}})
+    updated = await db.members.find_one({"id": member_id}, {"_id": 0})
+    
+    if isinstance(updated.get('created_at'), str):
+        updated['created_at'] = datetime.fromisoformat(updated['created_at'])
+    
+    return Member(**updated)
+
+@api_router.delete("/members/{member_id}")
+async def delete_member(member_id: str, auth=Depends(verify_token)):
+    result = await db.members.delete_one({"id": member_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Mitglied nicht gefunden")
+    await db.fines.delete_many({"member_id": member_id})
+    return {"message": "Mitglied gelöscht"}
+
+@api_router.get("/fine-types", response_model=List[FineType])
+async def get_fine_types(auth=Depends(verify_token)):
+    fine_types = await db.fine_types.find({}, {"_id": 0}).to_list(1000)
+    for ft in fine_types:
+        if isinstance(ft.get('created_at'), str):
+            ft['created_at'] = datetime.fromisoformat(ft['created_at'])
+    return fine_types
+
+@api_router.post("/fine-types", response_model=FineType)
+async def create_fine_type(input: FineTypeCreate, auth=Depends(verify_token)):
+    fine_type = FineType(**input.model_dump())
+    doc = fine_type.model_dump()
+    doc['created_at'] = doc['created_at'].isoformat()
+    await db.fine_types.insert_one(doc)
+    return fine_type
+
+@api_router.put("/fine-types/{fine_type_id}", response_model=FineType)
+async def update_fine_type(fine_type_id: str, input: FineTypeCreate, auth=Depends(verify_token)):
+    result = await db.fine_types.find_one({"id": fine_type_id}, {"_id": 0})
+    if not result:
+        raise HTTPException(status_code=404, detail="Strafenart nicht gefunden")
+    
+    await db.fine_types.update_one({"id": fine_type_id}, {"$set": input.model_dump()})
+    updated = await db.fine_types.find_one({"id": fine_type_id}, {"_id": 0})
+    
+    if isinstance(updated.get('created_at'), str):
+        updated['created_at'] = datetime.fromisoformat(updated['created_at'])
+    
+    return FineType(**updated)
+
+@api_router.delete("/fine-types/{fine_type_id}")
+async def delete_fine_type(fine_type_id: str, auth=Depends(verify_token)):
+    result = await db.fine_types.delete_one({"id": fine_type_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Strafenart nicht gefunden")
+    return {"message": "Strafenart gelöscht"}
+
+@api_router.get("/fines", response_model=List[Fine])
+async def get_fines(year: Optional[int] = None, auth=Depends(verify_token)):
+    query = {}
+    if year:
+        query["year"] = year
+    
+    fines = await db.fines.find(query, {"_id": 0}).sort("date", -1).to_list(1000)
+    for fine in fines:
+        if isinstance(fine.get('date'), str):
+            fine['date'] = datetime.fromisoformat(fine['date'])
+    return fines
+
+@api_router.post("/fines", response_model=Fine)
+async def create_fine(input: FineCreate, auth=Depends(verify_token)):
+    fine_type = await db.fine_types.find_one({"id": input.fine_type_id}, {"_id": 0})
+    if not fine_type:
+        raise HTTPException(status_code=404, detail="Strafenart nicht gefunden")
+    
+    member = await db.members.find_one({"id": input.member_id}, {"_id": 0})
+    if not member:
+        raise HTTPException(status_code=404, detail="Mitglied nicht gefunden")
+    
+    fine_data = input.model_dump()
+    fine_data['fine_type_label'] = fine_type['label']
+    fine_data['year'] = datetime.now(timezone.utc).year
+    
+    fine = Fine(**fine_data)
+    doc = fine.model_dump()
+    doc['date'] = doc['date'].isoformat()
+    await db.fines.insert_one(doc)
+    return fine
+
+@api_router.put("/fines/{fine_id}", response_model=Fine)
+async def update_fine(fine_id: str, input: FineUpdate, auth=Depends(verify_token)):
+    result = await db.fines.find_one({"id": fine_id}, {"_id": 0})
+    if not result:
+        raise HTTPException(status_code=404, detail="Strafe nicht gefunden")
+    
+    update_data = {k: v for k, v in input.model_dump().items() if v is not None}
+    if update_data:
+        await db.fines.update_one({"id": fine_id}, {"$set": update_data})
+    
+    updated = await db.fines.find_one({"id": fine_id}, {"_id": 0})
+    if isinstance(updated.get('date'), str):
+        updated['date'] = datetime.fromisoformat(updated['date'])
+    
+    return Fine(**updated)
+
+@api_router.delete("/fines/{fine_id}")
+async def delete_fine(fine_id: str, auth=Depends(verify_token)):
+    result = await db.fines.delete_one({"id": fine_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Strafe nicht gefunden")
+    return {"message": "Strafe gelöscht"}
+
+@api_router.get("/statistics/{year}", response_model=Statistics)
+async def get_statistics(year: int, auth=Depends(verify_token)):
+    fines = await db.fines.find({"year": year}, {"_id": 0}).to_list(10000)
+    members = await db.members.find({}, {"_id": 0}).to_list(1000)
+    
+    member_map = {m['id']: m['name'] for m in members}
+    totals = {}
+    
+    for fine in fines:
+        member_id = fine['member_id']
+        if member_id not in totals:
+            totals[member_id] = 0
+        totals[member_id] += fine['amount']
+    
+    ranking = []
+    for member_id, total in totals.items():
+        ranking.append(RankingEntry(
+            member_id=member_id,
+            member_name=member_map.get(member_id, "Unbekannt"),
+            total=total,
+            rank=0
+        ))
+    
+    ranking.sort(key=lambda x: x.total, reverse=True)
+    for idx, entry in enumerate(ranking):
+        entry.rank = idx + 1
+    
+    sau = ranking[0] if len(ranking) > 0 else None
+    laemmchen = ranking[1] if len(ranking) > 1 else None
+    
+    return Statistics(
+        year=year,
+        total_fines=len(fines),
+        total_amount=sum(f['amount'] for f in fines),
+        sau=sau,
+        laemmchen=laemmchen,
+        ranking=ranking
+    )
+
+@api_router.get("/years")
+async def get_years(auth=Depends(verify_token)):
+    pipeline = [
+        {"$group": {"_id": "$year"}},
+        {"$sort": {"_id": -1}}
+    ]
+    result = await db.fines.aggregate(pipeline).to_list(100)
+    years = [r['_id'] for r in result if r['_id']]
+    
+    if not years:
+        years = [datetime.now(timezone.utc).year]
+    
+    return {"years": years}
+
 app.include_router(api_router)
 
 app.add_middleware(
@@ -76,13 +318,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-# Configure logging
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-)
-logger = logging.getLogger(__name__)
 
 @app.on_event("shutdown")
 async def shutdown_db_client():
