@@ -128,10 +128,10 @@ const Members = () => {
           </Button>
         </div>
 
-        <Card className="bg-white rounded-2xl border border-stone-200 shadow-sm p-6">
-          <div className="flex items-center gap-3 mb-6">
+        <Card className="bg-white rounded-2xl border border-stone-200 shadow-sm p-4">
+          <div className="flex items-center gap-3 mb-4">
             <Users className="w-5 h-5 text-emerald-700" />
-            <h2 className="text-2xl font-semibold text-stone-900 tracking-tight">
+            <h2 className="text-xl font-bold text-stone-900 tracking-tight">
               Alle Mitglieder
             </h2>
           </div>
@@ -141,25 +141,25 @@ const Members = () => {
               members.map((member) => (
                 <div
                   key={member.id}
-                  className="flex items-center justify-between p-4 rounded-xl border border-stone-200 bg-stone-50 hover:-translate-y-1 transition-transform duration-300"
+                  className="flex items-center justify-between p-4 rounded-xl border border-stone-100 bg-stone-50 active:bg-stone-100 transition-colors min-h-[72px]"
                   data-testid={`member-item-${member.id}`}
                 >
-                  <div>
-                    <p className="font-semibold text-stone-900">{member.name}</p>
-                    <p className="text-sm text-stone-500">ID: {member.id}</p>
+                  <div className="min-w-0 flex-1">
+                    <p className="font-bold text-stone-900 truncate">{member.name}</p>
+                    <p className="text-xs text-stone-500 truncate">ID: {member.id.slice(0, 8)}...</p>
                   </div>
-                  <div className="flex gap-2">
+                  <div className="flex gap-2 flex-shrink-0 ml-2">
                     <Button
                       data-testid={`edit-member-${member.id}`}
                       onClick={() => openEditDialog(member)}
-                      className="h-9 w-9 p-0 rounded-full bg-white border border-stone-200 text-stone-700 hover:bg-stone-50 transition-colors"
+                      className="h-10 w-10 p-0 rounded-full bg-white border border-stone-200 text-stone-700 hover:bg-stone-50 transition-colors"
                     >
                       <Pencil className="w-4 h-4" />
                     </Button>
                     <Button
                       data-testid={`delete-member-${member.id}`}
                       onClick={() => openDeleteDialog(member)}
-                      className="h-9 w-9 p-0 rounded-full bg-red-50 border border-red-200 text-red-600 hover:bg-red-100 transition-colors"
+                      className="h-10 w-10 p-0 rounded-full bg-red-50 border border-red-200 text-red-600 hover:bg-red-100 transition-colors"
                     >
                       <Trash2 className="w-4 h-4" />
                     </Button>
