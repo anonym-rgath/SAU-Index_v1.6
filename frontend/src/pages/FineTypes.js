@@ -115,31 +115,32 @@ const FineTypes = () => {
   }
 
   return (
-    <div className="min-h-screen bg-stone-50 pb-12">
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="flex items-center justify-between mb-8">
+    <div className="min-h-screen bg-stone-50">
+      <div className="max-w-2xl mx-auto px-4 py-6">
+        <div className="flex items-center justify-between mb-6">
           <div>
-            <h1 className="text-4xl md:text-5xl font-bold text-stone-900 tracking-tight mb-2">
+            <h1 className="text-3xl md:text-4xl font-bold text-stone-900 tracking-tight">
               Strafenarten
             </h1>
-            <p className="text-stone-500 leading-relaxed">
-              Strafenkatalog verwalten
+            <p className="text-sm text-stone-500 mt-1">
+              Strafenkatalog
             </p>
           </div>
           <Button
             data-testid="add-finetype-button"
             onClick={openAddDialog}
-            className="h-11 px-8 rounded-full bg-emerald-700 text-white font-medium hover:bg-emerald-800 transition-transform active:scale-95 shadow-lg shadow-emerald-700/20"
+            className="h-11 px-6 rounded-full bg-emerald-700 text-white font-medium hover:bg-emerald-800 transition-transform active:scale-95 shadow-lg shadow-emerald-700/20"
           >
             <Plus className="w-5 h-5 mr-2" />
-            Strafenart
+            <span className="hidden sm:inline">Strafenart</span>
+            <span className="sm:hidden">Neu</span>
           </Button>
         </div>
 
-        <Card className="bg-white rounded-2xl border border-stone-200 shadow-sm p-6">
-          <div className="flex items-center gap-3 mb-6">
+        <Card className="bg-white rounded-2xl border border-stone-200 shadow-sm p-4">
+          <div className="flex items-center gap-3 mb-4">
             <Tag className="w-5 h-5 text-emerald-700" />
-            <h2 className="text-2xl font-semibold text-stone-900 tracking-tight">
+            <h2 className="text-xl font-bold text-stone-900 tracking-tight">
               Alle Strafenarten
             </h2>
           </div>
@@ -149,27 +150,27 @@ const FineTypes = () => {
               fineTypes.map((fineType) => (
                 <div
                   key={fineType.id}
-                  className="flex items-center justify-between p-4 rounded-xl border border-stone-200 bg-stone-50 hover:-translate-y-1 transition-transform duration-300"
+                  className="flex items-center justify-between p-4 rounded-xl border border-stone-100 bg-stone-50 active:bg-stone-100 transition-colors min-h-[72px]"
                   data-testid={`finetype-item-${fineType.id}`}
                 >
-                  <div>
-                    <p className="font-semibold text-stone-900">{fineType.label}</p>
+                  <div className="min-w-0 flex-1">
+                    <p className="font-bold text-stone-900 truncate">{fineType.label}</p>
                     <p className="text-sm text-stone-500">
-                      Betrag: {fineType.amount !== null ? formatCurrency(fineType.amount) : 'Variabel'}
+                      {fineType.amount !== null ? formatCurrency(fineType.amount) : 'Variabel'}
                     </p>
                   </div>
-                  <div className="flex gap-2">
+                  <div className="flex gap-2 flex-shrink-0 ml-2">
                     <Button
                       data-testid={`edit-finetype-${fineType.id}`}
                       onClick={() => openEditDialog(fineType)}
-                      className="h-9 w-9 p-0 rounded-full bg-white border border-stone-200 text-stone-700 hover:bg-stone-50 transition-colors"
+                      className="h-10 w-10 p-0 rounded-full bg-white border border-stone-200 text-stone-700 hover:bg-stone-50 transition-colors"
                     >
                       <Pencil className="w-4 h-4" />
                     </Button>
                     <Button
                       data-testid={`delete-finetype-${fineType.id}`}
                       onClick={() => openDeleteDialog(fineType)}
-                      className="h-9 w-9 p-0 rounded-full bg-red-50 border border-red-200 text-red-600 hover:bg-red-100 transition-colors"
+                      className="h-10 w-10 p-0 rounded-full bg-red-50 border border-red-200 text-red-600 hover:bg-red-100 transition-colors"
                     >
                       <Trash2 className="w-4 h-4" />
                     </Button>
