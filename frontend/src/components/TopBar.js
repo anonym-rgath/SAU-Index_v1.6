@@ -78,7 +78,7 @@ const TopBar = () => {
       <div
         data-testid="navigation-drawer"
         className={cn(
-          "fixed top-0 left-0 h-full w-72 bg-white z-50 shadow-2xl transform transition-transform duration-300 ease-out",
+          "fixed top-0 left-0 h-full w-64 sm:w-72 bg-white z-50 shadow-2xl transform transition-transform duration-300 ease-out",
           drawerOpen ? "translate-x-0" : "-translate-x-full"
         )}
       >
