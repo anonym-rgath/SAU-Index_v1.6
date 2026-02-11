@@ -70,54 +70,55 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-stone-50 pb-12">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
+    <div className="min-h-screen bg-stone-50">
+      <div className="max-w-2xl mx-auto px-4 py-6">
+        <div className="flex items-center justify-between mb-6">
           <div>
-            <h1 className="text-4xl md:text-5xl font-bold text-stone-900 tracking-tight mb-2">
+            <h1 className="text-3xl md:text-4xl font-bold text-stone-900 tracking-tight">
               Dashboard
             </h1>
-            <p className="text-stone-500 leading-relaxed">
-              Ranking und Strafen im Überblick
+            <p className="text-sm text-stone-500 mt-1">
+              Ranking & Strafen
             </p>
           </div>
           
-          <div className="flex flex-wrap gap-3">
-            <div className="flex items-center gap-2 bg-white border border-stone-200 rounded-full px-4 h-11">
-              <Calendar className="w-4 h-4 text-stone-400" />
-              <select
-                data-testid="year-selector"
-                value={year}
-                onChange={(e) => setYear(Number(e.target.value))}
-                className="bg-transparent border-none outline-none text-stone-700 font-medium cursor-pointer"
-              >
-                {years.map(y => (
-                  <option key={y} value={y}>{y}</option>
-                ))}
-              </select>
-            </div>
-            
-            <Button
-              data-testid="scan-demo-button"
-              onClick={() => setScanDialogOpen(true)}
-              className="h-11 px-6 rounded-full bg-white border border-stone-200 text-stone-700 hover:bg-stone-50 transition-colors"
+          <div className="flex items-center gap-2 bg-white border border-stone-200 rounded-full px-3 h-10 shadow-sm">
+            <Calendar className="w-4 h-4 text-stone-400" />
+            <select
+              data-testid="year-selector"
+              value={year}
+              onChange={(e) => setYear(Number(e.target.value))}
+              className="bg-transparent border-none outline-none text-stone-700 font-medium cursor-pointer text-base"
             >
-              <Scan className="w-4 h-4 mr-2" />
-              NFC/QR Scan
-            </Button>
-            
-            <Button
-              data-testid="add-fine-button"
-              onClick={() => {
-                setSelectedMemberId(null);
-                setAddDialogOpen(true);
-              }}
-              className="h-11 px-8 rounded-full bg-orange-500 text-white font-bold tracking-wide hover:bg-orange-600 hover:shadow-orange-500/30 transition-all uppercase text-sm shadow-lg"
-            >
-              <Plus className="w-5 h-5 mr-2" />
-              Strafe
-            </Button>
+              {years.map(y => (
+                <option key={y} value={y}>{y}</option>
+              ))}
+            </select>
           </div>
+        </div>
+        
+        {/* Desktop-only buttons */}
+        <div className="hidden md:flex gap-3 mb-6">
+          <Button
+            data-testid="scan-demo-button"
+            onClick={() => setScanDialogOpen(true)}
+            className="h-11 px-6 rounded-full bg-white border border-stone-200 text-stone-700 hover:bg-stone-50 transition-colors"
+          >
+            <Scan className="w-4 h-4 mr-2" />
+            NFC/QR Scan
+          </Button>
+          
+          <Button
+            data-testid="add-fine-button-desktop"
+            onClick={() => {
+              setSelectedMemberId(null);
+              setAddDialogOpen(true);
+            }}
+            className="h-11 px-8 rounded-full bg-orange-500 text-white font-bold tracking-wide hover:bg-orange-600 hover:shadow-orange-500/30 transition-all uppercase text-sm shadow-lg"
+          >
+            <Plus className="w-5 h-5 mr-2" />
+            Strafe
+          </Button>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
