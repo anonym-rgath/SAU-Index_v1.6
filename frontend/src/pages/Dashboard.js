@@ -258,23 +258,23 @@ const Dashboard = () => {
               </div>
             </Card>
 
-          {/* Floating Action Button (Mobile Only) */}
+          {/* Floating Action Button */}
           <button
             data-testid="add-fine-fab"
             onClick={() => {
               setSelectedMemberId(null);
               setAddDialogOpen(true);
             }}
-            className="md:hidden fixed bottom-20 right-4 z-40 w-14 h-14 rounded-full bg-emerald-700 text-white shadow-xl flex items-center justify-center hover:scale-105 active:scale-95 transition-transform"
+            className="fixed bottom-6 right-4 z-40 w-14 h-14 rounded-full bg-emerald-700 text-white shadow-xl flex items-center justify-center hover:scale-105 active:scale-95 transition-transform"
           >
             <Plus className="w-6 h-6" />
           </button>
 
-          {/* Scan FAB (Mobile Only) */}
+          {/* Scan FAB */}
           <button
             data-testid="scan-fab"
             onClick={() => setScanDialogOpen(true)}
-            className="md:hidden fixed bottom-20 right-20 z-40 w-12 h-12 rounded-full bg-white border-2 border-stone-200 text-stone-700 shadow-lg flex items-center justify-center hover:scale-105 active:scale-95 transition-transform"
+            className="fixed bottom-6 right-20 z-40 w-12 h-12 rounded-full bg-white border-2 border-stone-200 text-stone-700 shadow-lg flex items-center justify-center hover:scale-105 active:scale-95 transition-transform"
           >
             <Scan className="w-5 h-5" />
           </button>
