@@ -1,6 +1,5 @@
 import React from 'react';
 import { Outlet } from 'react-router-dom';
-import BottomNav from './BottomNav';
 import TopBar from './TopBar';
 
 const Layout = () => {
@@ -8,11 +7,9 @@ const Layout = () => {
     <div className="min-h-screen bg-stone-50 flex flex-col">
       <TopBar />
       
-      <main className="flex-1 pb-20 md:pb-8">
+      <main className="flex-1">
         <Outlet />
       </main>
-      
-      <BottomNav />
     </div>
   );
 };
