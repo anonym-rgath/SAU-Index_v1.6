@@ -32,7 +32,7 @@ const Members = () => {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [editingMember, setEditingMember] = useState(null);
   const [deletingMember, setDeletingMember] = useState(null);
-  const [formData, setFormData] = useState({ name: '' });
+  const [formData, setFormData] = useState({ name: '', nfc_id: '' });
 
   useEffect(() => {
     loadMembers();
