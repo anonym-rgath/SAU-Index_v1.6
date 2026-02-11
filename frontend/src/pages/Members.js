@@ -195,10 +195,21 @@ const Members = () => {
                   data-testid="member-name-input"
                   id="name"
                   value={formData.name}
-                  onChange={(e) => setFormData({ name: e.target.value })}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   placeholder="Mitgliedsname"
                   className="h-12 rounded-xl border-stone-200 bg-stone-50 focus:bg-white focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all text-base"
                   required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="nfc_id">NFC ID (optional)</Label>
+                <Input
+                  data-testid="member-nfc-input"
+                  id="nfc_id"
+                  value={formData.nfc_id}
+                  onChange={(e) => setFormData({ ...formData, nfc_id: e.target.value })}
+                  placeholder="z.B. A1B2C3D4"
+                  className="h-12 rounded-xl border-stone-200 bg-stone-50 focus:bg-white focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all text-base"
                 />
               </div>
             </div>
