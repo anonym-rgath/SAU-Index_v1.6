@@ -1,0 +1,122 @@
+{
+  "brand_identity": {
+    "name": "Schützenzug Manager",
+    "tone": "Modern Camaraderie",
+    "description": "A light, playful, yet efficient management tool for a modern shooting club. It blends the tradition of the 'Schützenverein' with the cleanliness of a modern SaaS.",
+    "emotional_archetype": "Organic & Earthy (The Modern Clubhouse)",
+    "design_principles": [
+      "Fusion: Traditional Green mixed with High-Tech Orange",
+      "Clarity: Data (Fines) must be instant to read",
+      "Playfulness: Ranking is a game, not a spreadsheet"
+    ]
+  },
+  "typography": {
+    "font_family_heading": "Outfit, sans-serif",
+    "font_family_body": "Manrope, sans-serif",
+    "scale": {
+      "h1": "text-4xl md:text-5xl font-bold tracking-tight",
+      "h2": "text-3xl font-semibold tracking-tight",
+      "h3": "text-2xl font-medium",
+      "body": "text-base leading-relaxed text-stone-600",
+      "caption": "text-sm text-stone-400 uppercase tracking-widest font-bold"
+    }
+  },
+  "colors": {
+    "background": {
+      "default": "bg-stone-50",
+      "paper": "bg-white",
+      "subtle": "bg-stone-100"
+    },
+    "text": {
+      "primary": "text-stone-900",
+      "secondary": "text-stone-500",
+      "muted": "text-stone-400"
+    },
+    "brand": {
+      "primary": "bg-emerald-700 hover:bg-emerald-800 text-white",
+      "secondary": "bg-emerald-100 text-emerald-900",
+      "accent": "bg-orange-500 hover:bg-orange-600 text-white",
+      "accent_subtle": "bg-orange-50 text-orange-700"
+    },
+    "semantic": {
+      "success": "text-emerald-600",
+      "error": "text-red-600",
+      "warning": "text-amber-500",
+      "info": "text-blue-500"
+    },
+    "border": {
+      "default": "border-stone-200",
+      "active": "border-emerald-500"
+    }
+  },
+  "layout_strategy": {
+    "container": "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8",
+    "spacing": {
+      "section_gap": "gap-8",
+      "card_padding": "p-6",
+      "grid_gap": "gap-6"
+    },
+    "grid_system": {
+      "dashboard": "grid grid-cols-1 md:grid-cols-12 gap-6",
+      "kpi_section": "col-span-12 md:col-span-8 grid grid-cols-1 sm:grid-cols-2 gap-6",
+      "leaderboard": "col-span-12 md:col-span-4 row-span-2 h-full"
+    }
+  },
+  "components": {
+    "cards": {
+      "style": "bg-white rounded-2xl border border-stone-200 shadow-sm hover:shadow-md transition-shadow duration-200",
+      "kpi_sau": "bg-gradient-to-br from-pink-50 to-white border-pink-100",
+      "kpi_laemmchen": "bg-gradient-to-br from-stone-50 to-white border-stone-200"
+    },
+    "buttons": {
+      "primary": "h-11 px-8 rounded-full bg-emerald-700 text-white font-medium hover:bg-emerald-800 transition-transform active:scale-95 shadow-lg shadow-emerald-700/20",
+      "secondary": "h-11 px-6 rounded-full bg-white border border-stone-200 text-stone-700 hover:bg-stone-50 transition-colors",
+      "accent": "h-11 px-8 rounded-full bg-orange-500 text-white font-bold tracking-wide hover:bg-orange-600 hover:shadow-orange-500/30 transition-all uppercase text-sm"
+    },
+    "inputs": {
+      "style": "h-12 rounded-xl border-stone-200 bg-stone-50 focus:bg-white focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all font-medium text-stone-900"
+    }
+  },
+  "visual_enhancers": {
+    "textures": {
+      "login_bg": "https://images.unsplash.com/photo-1761829918692-af78306f22c0?crop=entropy&cs=srgb&fm=jpg&q=85",
+      "overlay": "bg-emerald-900/40 backdrop-blur-sm"
+    },
+    "icons": {
+      "library": "lucide-react",
+      "style": "stroke-[1.5px]"
+    },
+    "motion": {
+      "page_transition": "animate-in fade-in slide-in-from-bottom-4 duration-500",
+      "card_hover": "hover:-translate-y-1 transition-transform duration-300",
+      "list_item": "animate-in slide-in-from-left-2 duration-300 fill-mode-backwards"
+    }
+  },
+  "images": {
+    "login_background": {
+      "url": "https://images.unsplash.com/photo-1761829918692-af78306f22c0?crop=entropy&cs=srgb&fm=jpg&q=85",
+      "alt": "Modern Forest Abstract",
+      "usage": "Full screen background for login page with overlay"
+    },
+    "kpi_icons": {
+      "sau": {
+        "description": "Use a Lucide Icon 'PiggyBank' or similar, styled in Pink",
+        "color": "text-pink-500"
+      },
+      "laemmchen": {
+        "description": "Use a Lucide Icon 'Smile' or 'Star', styled in Stone/White",
+        "color": "text-stone-400"
+      }
+    }
+  },
+  "universal_guidelines": [
+    "Do not use generic gradients. Use flat, clean colors or subtle textures.",
+    "Use 'Outfit' font for all headings. Import it from Google Fonts.",
+    "Use 'Manrope' font for all body text. Import it from Google Fonts.",
+    "All cards must have 'rounded-2xl' or 'rounded-3xl'. No sharp corners.",
+    "The 'Add Fine' button must be the most prominent element on the Dashboard (Orange).",
+    "Use 'Sonner' for all notifications.",
+    "Ensure high contrast for accessibility, even with the light theme."
+  ],
+  "instructions_to_main_agent": "1. Install fonts: `npm install @fontsource/outfit @fontsource/manrope`. 2. Update `tailwind.config.js` to include these fonts and the custom color palette. 3. Build the Dashboard using the 'Bento' layout strategy defined above. 4. Implement the 'Sau' and 'Lämmchen' logic in the Statistics page. 5. Use the provided Unsplash image for the Login page background."
+}
