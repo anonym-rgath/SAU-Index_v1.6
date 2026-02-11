@@ -57,6 +57,9 @@ const ScanDemoDialog = ({ open, onOpenChange, onScanComplete }) => {
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>NFC/QR Scan (Demo)</DialogTitle>
+          <DialogDescription>
+            Simulierter Scan eines Mitglieds
+          </DialogDescription>
         </DialogHeader>
         <div className="py-8 text-center">
           {scannedMember ? (
