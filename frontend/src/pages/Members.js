@@ -106,24 +106,25 @@ const Members = () => {
   }
 
   return (
-    <div className="min-h-screen bg-stone-50 pb-12">
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="flex items-center justify-between mb-8">
+    <div className="min-h-screen bg-stone-50">
+      <div className="max-w-2xl mx-auto px-4 py-6">
+        <div className="flex items-center justify-between mb-6">
           <div>
-            <h1 className="text-4xl md:text-5xl font-bold text-stone-900 tracking-tight mb-2">
+            <h1 className="text-3xl md:text-4xl font-bold text-stone-900 tracking-tight">
               Mitglieder
             </h1>
-            <p className="text-stone-500 leading-relaxed">
-              Vereinsmitglieder verwalten
+            <p className="text-sm text-stone-500 mt-1">
+              Vereinsmitglieder
             </p>
           </div>
           <Button
             data-testid="add-member-button"
             onClick={openAddDialog}
-            className="h-11 px-8 rounded-full bg-emerald-700 text-white font-medium hover:bg-emerald-800 transition-transform active:scale-95 shadow-lg shadow-emerald-700/20"
+            className="h-11 px-6 rounded-full bg-emerald-700 text-white font-medium hover:bg-emerald-800 transition-transform active:scale-95 shadow-lg shadow-emerald-700/20"
           >
             <Plus className="w-5 h-5 mr-2" />
-            Mitglied
+            <span className="hidden sm:inline">Mitglied</span>
+            <span className="sm:hidden">Neu</span>
           </Button>
         </div>
 
