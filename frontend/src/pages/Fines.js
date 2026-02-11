@@ -87,24 +87,24 @@ const Fines = () => {
   }
 
   return (
-    <div className="min-h-screen bg-stone-50 pb-12">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
+    <div className="min-h-screen bg-stone-50">
+      <div className="max-w-2xl mx-auto px-4 py-6">
+        <div className="flex items-center justify-between mb-6">
           <div>
-            <h1 className="text-4xl md:text-5xl font-bold text-stone-900 tracking-tight mb-2">
+            <h1 className="text-3xl md:text-4xl font-bold text-stone-900 tracking-tight">
               Strafen
             </h1>
-            <p className="text-stone-500 leading-relaxed">
-              Alle Strafeinträge verwalten
+            <p className="text-sm text-stone-500 mt-1">
+              Alle Strafeinträge
             </p>
           </div>
           
-          <div className="flex items-center gap-2 bg-white border border-stone-200 rounded-full px-4 h-11">
+          <div className="flex items-center gap-2 bg-white border border-stone-200 rounded-full px-3 h-10 shadow-sm">
             <select
               data-testid="fines-year-selector"
               value={year}
               onChange={(e) => setYear(Number(e.target.value))}
-              className="bg-transparent border-none outline-none text-stone-700 font-medium cursor-pointer"
+              className="bg-transparent border-none outline-none text-stone-700 font-medium cursor-pointer text-base"
             >
               {years.map(y => (
                 <option key={y} value={y}>{y}</option>
@@ -113,10 +113,10 @@ const Fines = () => {
           </div>
         </div>
 
-        <Card className="bg-white rounded-2xl border border-stone-200 shadow-sm p-6">
-          <div className="flex items-center gap-3 mb-6">
+        <Card className="bg-white rounded-2xl border border-stone-200 shadow-sm p-4">
+          <div className="flex items-center gap-3 mb-4">
             <Receipt className="w-5 h-5 text-emerald-700" />
-            <h2 className="text-2xl font-semibold text-stone-900 tracking-tight">
+            <h2 className="text-xl font-bold text-stone-900 tracking-tight">
               Alle Strafen {year}
             </h2>
           </div>
@@ -126,42 +126,40 @@ const Fines = () => {
               fines.map((fine) => (
                 <div
                   key={fine.id}
-                  className="flex items-center justify-between p-4 rounded-xl border border-stone-200 bg-stone-50 hover:-translate-y-1 transition-transform duration-300"
+                  className="flex items-start justify-between p-4 rounded-xl border border-stone-100 bg-stone-50 active:bg-stone-100 transition-colors"
                   data-testid={`fine-item-${fine.id}`}
                 >
-                  <div className="flex-1">
-                    <div className="flex items-center gap-3 mb-1">
-                      <p className="font-semibold text-stone-900">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-1">
+                      <p className="font-bold text-stone-900 truncate">
                         {getMemberName(fine.member_id)}
                       </p>
-                      <span className="text-emerald-700 font-bold">
+                      <span className="text-emerald-700 font-bold whitespace-nowrap">
                         {formatCurrency(fine.amount)}
                       </span>
                     </div>
-                    <p className="text-sm text-stone-600">{fine.fine_type_label}</p>
-                    <div className="flex items-center gap-4 mt-1">
-                      <p className="text-xs text-stone-400">
-                        {formatDate(fine.date)}
+                    <p className="text-sm text-stone-600 truncate">{fine.fine_type_label}</p>
+                    <p className="text-xs text-stone-400 mt-1">
+                      {formatDate(fine.date)}
+                    </p>
+                    {fine.notes && (
+                      <p className="text-xs text-stone-500 mt-1 line-clamp-2">
+                        Notiz: {fine.notes}
                       </p>
-                      {fine.notes && (
-                        <p className="text-xs text-stone-500">
-                          Notiz: {fine.notes}
-                        </p>
-                      )}
-                    </div>
+                    )}
                   </div>
-                  <div className="flex gap-2">
+                  <div className="flex gap-2 flex-shrink-0 ml-2">
                     <Button
                       data-testid={`edit-fine-${fine.id}`}
                       onClick={() => openEditDialog(fine)}
-                      className="h-9 w-9 p-0 rounded-full bg-white border border-stone-200 text-stone-700 hover:bg-stone-50 transition-colors"
+                      className="h-10 w-10 p-0 rounded-full bg-white border border-stone-200 text-stone-700 hover:bg-stone-50 transition-colors"
                     >
                       <Pencil className="w-4 h-4" />
                     </Button>
                     <Button
                       data-testid={`delete-fine-${fine.id}`}
                       onClick={() => openDeleteDialog(fine)}
-                      className="h-9 w-9 p-0 rounded-full bg-red-50 border border-red-200 text-red-600 hover:bg-red-100 transition-colors"
+                      className="h-10 w-10 p-0 rounded-full bg-red-50 border border-red-200 text-red-600 hover:bg-red-100 transition-colors"
                     >
                       <Trash2 className="w-4 h-4" />
                     </Button>
