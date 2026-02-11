@@ -52,17 +52,6 @@ const TopBar = () => {
             </div>
           </div>
         </div>
-        
-        <Button
-          data-testid="topbar-logout-button"
-          onClick={handleLogout}
-          variant="ghost"
-          size="sm"
-          className="h-9 px-3 text-stone-600 hover:text-stone-900 hover:bg-stone-100 rounded-full"
-        >
-          <LogOut className="w-4 h-4 mr-2" />
-          <span className="hidden sm:inline">Abmelden</span>
-        </Button>
       </header>
 
       {/* Drawer Overlay */}
