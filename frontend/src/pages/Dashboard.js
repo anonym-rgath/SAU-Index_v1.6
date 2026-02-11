@@ -257,7 +257,6 @@ const Dashboard = () => {
                 )}
               </div>
             </Card>
-          </div>
 
           {/* Floating Action Button (Mobile Only) */}
           <button
@@ -279,7 +278,6 @@ const Dashboard = () => {
           >
             <Scan className="w-5 h-5" />
           </button>
-        </div>
       </div>
 
       <AddFineDialog
