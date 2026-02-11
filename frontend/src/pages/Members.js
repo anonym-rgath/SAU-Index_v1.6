@@ -180,6 +180,9 @@ const Members = () => {
             <DialogTitle>
               {editingMember ? 'Mitglied bearbeiten' : 'Neues Mitglied'}
             </DialogTitle>
+            <DialogDescription>
+              {editingMember ? 'Name des Mitglieds ändern' : 'Neues Mitglied hinzufügen'}
+            </DialogDescription>
           </DialogHeader>
           <form onSubmit={handleSubmit}>
             <div className="space-y-4 py-4">
