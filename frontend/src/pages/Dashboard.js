@@ -121,59 +121,59 @@ const Dashboard = () => {
           </Button>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
-          <div className="col-span-12 md:col-span-8 grid grid-cols-1 sm:grid-cols-2 gap-6">
-            <Card className="bg-gradient-to-br from-pink-50 to-white border-pink-100 rounded-2xl shadow-sm hover:shadow-md transition-shadow duration-200 p-6">
-              <div className="flex items-start justify-between mb-4">
-                <div>
-                  <p className="text-sm text-stone-400 uppercase tracking-widest font-bold mb-1">
-                    Sau
+        <div className="grid grid-cols-2 gap-4 mb-6">
+          <Card className="bg-gradient-to-br from-pink-50 to-white border-pink-100 rounded-2xl shadow-sm p-4">
+            <div className="flex items-start justify-between mb-3">
+              <div>
+                <p className="text-xs text-stone-400 uppercase tracking-wider font-bold mb-0.5">
+                  Sau
+                </p>
+                <p className="text-xs text-stone-500">Höchster</p>
+              </div>
+              <div className="bg-pink-100 p-2 rounded-lg">
+                <PiggyBank className="w-5 h-5 text-pink-500" />
+              </div>
+            </div>
+            <div data-testid="sau-value">
+              {statistics?.sau ? (
+                <>
+                  <p className="text-2xl font-bold text-stone-900 mb-0.5">
+                    {formatCurrency(statistics.sau.total)}
                   </p>
-                  <p className="text-xs text-stone-500">Höchster Betrag</p>
-                </div>
-                <div className="bg-pink-100 p-3 rounded-xl">
-                  <PiggyBank className="w-6 h-6 text-pink-500" />
-                </div>
-              </div>
-              <div data-testid="sau-value">
-                {statistics?.sau ? (
-                  <>
-                    <p className="text-3xl font-bold text-stone-900 mb-1">
-                      {formatCurrency(statistics.sau.total)}
-                    </p>
-                    <p className="text-stone-600">{statistics.sau.member_name}</p>
-                  </>
-                ) : (
-                  <p className="text-stone-400">Keine Daten</p>
-                )}
-              </div>
-            </Card>
+                  <p className="text-sm text-stone-600 truncate">{statistics.sau.member_name}</p>
+                </>
+              ) : (
+                <p className="text-stone-400 text-sm">Keine Daten</p>
+              )}
+            </div>
+          </Card>
 
-            <Card className="bg-gradient-to-br from-stone-50 to-white border-stone-200 rounded-2xl shadow-sm hover:shadow-md transition-shadow duration-200 p-6">
-              <div className="flex items-start justify-between mb-4">
-                <div>
-                  <p className="text-sm text-stone-400 uppercase tracking-widest font-bold mb-1">
-                    Lämmchen
+          <Card className="bg-gradient-to-br from-stone-50 to-white border-stone-200 rounded-2xl shadow-sm p-4">
+            <div className="flex items-start justify-between mb-3">
+              <div>
+                <p className="text-xs text-stone-400 uppercase tracking-wider font-bold mb-0.5">
+                  Lämmchen
+                </p>
+                <p className="text-xs text-stone-500">Zweithöchster</p>
+              </div>
+              <div className="bg-stone-100 p-2 rounded-lg">
+                <Smile className="w-5 h-5 text-stone-400" />
+              </div>
+            </div>
+            <div data-testid="laemmchen-value">
+              {statistics?.laemmchen ? (
+                <>
+                  <p className="text-2xl font-bold text-stone-900 mb-0.5">
+                    {formatCurrency(statistics.laemmchen.total)}
                   </p>
-                  <p className="text-xs text-stone-500">Zweithöchster Betrag</p>
-                </div>
-                <div className="bg-stone-100 p-3 rounded-xl">
-                  <Smile className="w-6 h-6 text-stone-400" />
-                </div>
-              </div>
-              <div data-testid="laemmchen-value">
-                {statistics?.laemmchen ? (
-                  <>
-                    <p className="text-3xl font-bold text-stone-900 mb-1">
-                      {formatCurrency(statistics.laemmchen.total)}
-                    </p>
-                    <p className="text-stone-600">{statistics.laemmchen.member_name}</p>
-                  </>
-                ) : (
-                  <p className="text-stone-400">Keine Daten</p>
-                )}
-              </div>
-            </Card>
+                  <p className="text-sm text-stone-600 truncate">{statistics.laemmchen.member_name}</p>
+                </>
+              ) : (
+                <p className="text-stone-400 text-sm">Keine Daten</p>
+              )}
+            </div>
+          </Card>
+        </div>
 
             <Card className="col-span-full bg-white rounded-2xl border border-stone-200 shadow-sm p-6">
               <div className="flex items-center gap-3 mb-4">
