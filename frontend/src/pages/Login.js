@@ -40,10 +40,10 @@ const Login = () => {
           </div>
           
           <h1 className="text-4xl font-bold text-center mb-2 text-stone-900 tracking-tight">
-            Schützenzug Manager
+            Rheinzelmänner
           </h1>
           <p className="text-center text-stone-500 mb-8">
-            Strafen & Ranking Verwaltung
+            Verwaltung
           </p>
 
           <form onSubmit={handleSubmit} className="space-y-6">

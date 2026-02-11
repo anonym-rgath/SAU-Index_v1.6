@@ -47,8 +47,7 @@ const TopBar = () => {
               <Target className="w-5 h-5 text-emerald-700" />
             </div>
             <div>
-              <h2 className="font-bold text-base text-stone-900 leading-none">Schützenzug</h2>
-              <p className="text-xs text-stone-500 leading-none">Manager</p>
+              <h2 className="font-bold text-base text-stone-900 leading-none">Rheinzelmänner</h2>
             </div>
           </div>
         </div>
@@ -79,8 +78,7 @@ const TopBar = () => {
                 <Target className="w-6 h-6 text-emerald-700" />
               </div>
               <div>
-                <h2 className="font-bold text-lg text-stone-900">Schützenzug</h2>
-                <p className="text-xs text-stone-500">Manager</p>
+                <h2 className="font-bold text-lg text-stone-900">Rheinzelmänner</h2>
               </div>
             </div>
             <Button
