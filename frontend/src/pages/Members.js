@@ -195,7 +195,7 @@ const Members = () => {
                   value={formData.name}
                   onChange={(e) => setFormData({ name: e.target.value })}
                   placeholder="Mitgliedsname"
-                  className="h-12 rounded-xl border-stone-200 bg-stone-50 focus:bg-white focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all"
+                  className="h-12 rounded-xl border-stone-200 bg-stone-50 focus:bg-white focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all text-base"
                   required
                 />
               </div>
