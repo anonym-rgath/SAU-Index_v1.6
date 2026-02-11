@@ -1,122 +1,89 @@
 {
-  "brand_identity": {
-    "name": "Schützenzug Manager",
-    "tone": "Modern Camaraderie",
-    "description": "A light, playful, yet efficient management tool for a modern shooting club. It blends the tradition of the 'Schützenverein' with the cleanliness of a modern SaaS.",
-    "emotional_archetype": "Organic & Earthy (The Modern Clubhouse)",
-    "design_principles": [
-      "Fusion: Traditional Green mixed with High-Tech Orange",
-      "Clarity: Data (Fines) must be instant to read",
-      "Playfulness: Ranking is a game, not a spreadsheet"
-    ]
-  },
-  "typography": {
-    "font_family_heading": "Outfit, sans-serif",
-    "font_family_body": "Manrope, sans-serif",
-    "scale": {
-      "h1": "text-4xl md:text-5xl font-bold tracking-tight",
-      "h2": "text-3xl font-semibold tracking-tight",
-      "h3": "text-2xl font-medium",
-      "body": "text-base leading-relaxed text-stone-600",
-      "caption": "text-sm text-stone-400 uppercase tracking-widest font-bold"
-    }
-  },
-  "colors": {
-    "background": {
-      "default": "bg-stone-50",
-      "paper": "bg-white",
-      "subtle": "bg-stone-100"
+  "design_system": {
+    "typography": {
+      "font_family": {
+        "heading": "Outfit, sans-serif",
+        "body": "Manrope, sans-serif"
+      },
+      "scale": {
+        "h1": "text-3xl md:text-4xl font-bold tracking-tight text-stone-900",
+        "h2": "text-xl md:text-2xl font-bold tracking-tight text-stone-800",
+        "body": "text-base leading-relaxed text-stone-600",
+        "caption": "text-sm text-stone-500"
+      }
     },
-    "text": {
-      "primary": "text-stone-900",
-      "secondary": "text-stone-500",
-      "muted": "text-stone-400"
+    "colors": {
+      "primary": "emerald-700",
+      "primary_foreground": "white",
+      "background": "stone-50",
+      "surface": "white",
+      "border": "stone-200",
+      "accent": "orange-500",
+      "text": {
+        "main": "stone-900",
+        "muted": "stone-500"
+      }
     },
-    "brand": {
-      "primary": "bg-emerald-700 hover:bg-emerald-800 text-white",
-      "secondary": "bg-emerald-100 text-emerald-900",
-      "accent": "bg-orange-500 hover:bg-orange-600 text-white",
-      "accent_subtle": "bg-orange-50 text-orange-700"
+    "spacing": {
+      "container_padding": "px-4 py-6 md:px-6 md:py-8",
+      "bottom_nav_height": "h-16 md:h-0",
+      "touch_target": "min-h-[48px]"
     },
-    "semantic": {
-      "success": "text-emerald-600",
-      "error": "text-red-600",
-      "warning": "text-amber-500",
-      "info": "text-blue-500"
+    "border_radius": {
+      "card": "rounded-2xl",
+      "button": "rounded-full",
+      "input": "rounded-xl"
     },
-    "border": {
-      "default": "border-stone-200",
-      "active": "border-emerald-500"
+    "shadows": {
+      "card": "shadow-sm hover:shadow-md transition-shadow duration-200",
+      "floating": "shadow-lg shadow-emerald-700/20 hover:shadow-emerald-700/30"
     }
   },
   "layout_strategy": {
-    "container": "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8",
-    "spacing": {
-      "section_gap": "gap-8",
-      "card_padding": "p-6",
-      "grid_gap": "gap-6"
-    },
-    "grid_system": {
-      "dashboard": "grid grid-cols-1 md:grid-cols-12 gap-6",
-      "kpi_section": "col-span-12 md:col-span-8 grid grid-cols-1 sm:grid-cols-2 gap-6",
-      "leaderboard": "col-span-12 md:col-span-4 row-span-2 h-full"
+    "type": "mobile_first",
+    "navigation": "bottom_nav",
+    "structure": {
+      "mobile": "Fixed Bottom Navigation (z-50) + Scrollable Content Area (pb-24)",
+      "desktop": "Centered Container max-w-2xl mx-auto (App-like view) or Responsive Grid (if needed)"
     }
   },
   "components": {
-    "cards": {
-      "style": "bg-white rounded-2xl border border-stone-200 shadow-sm hover:shadow-md transition-shadow duration-200",
-      "kpi_sau": "bg-gradient-to-br from-pink-50 to-white border-pink-100",
-      "kpi_laemmchen": "bg-gradient-to-br from-stone-50 to-white border-stone-200"
+    "Layout": {
+      "path": "/app/frontend/src/components/Layout.js",
+      "instructions": "Replace the Sidebar 'aside' with a fixed 'BottomNav' component. Add a 'TopBar' (sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-stone-100 h-14 flex items-center justify-between px-4) for the Logo and Logout button. Ensure the main content area has bottom padding (pb-24) to prevent content being hidden behind the nav."
     },
+    "BottomNav": {
+      "path": "/app/frontend/src/components/BottomNav.js",
+      "instructions": "Create this new component. Use a fixed container at the bottom (fixed bottom-0 left-0 right-0 h-16 bg-white border-t border-stone-200 flex justify-around items-center z-50 safe-area-pb). Display 4 icons: Dashboard (LayoutDashboard), Fines (Receipt), Members (Users), FineTypes (Tag). Active state: text-emerald-700 font-medium. Inactive: text-stone-400."
+    },
+    "Dashboard": {
+      "path": "/app/frontend/src/pages/Dashboard.js",
+      "instructions": "Redesign for mobile. 1. 'Sau' and 'Lämmchen' cards: Stack vertically on mobile or use 'grid-cols-2 gap-4'. 2. Ranking List: Make rows taller (py-4), emphasize Rank # with a bg-emerald-100 circle. 3. Add a Floating Action Button (FAB) (fixed bottom-20 right-4 z-40) for 'Add Fine' (+ Icon) to make it instantly accessible without scrolling to top."
+    },
+    "AddFineDialog": {
+      "path": "/app/frontend/src/components/AddFineDialog.js",
+      "instructions": "Modify styling to act as a Bottom Sheet on mobile. Change DialogContent classes to: 'fixed bottom-0 left-0 right-0 w-full translate-y-0 rounded-t-2xl rounded-b-none border-t border-stone-200 sm:rounded-xl sm:bottom-auto sm:translate-y-[-50%] sm:max-w-md'. Add slide-up animation (data-[state=open]:slide-in-from-bottom)."
+    },
+    "FloatingActionButton": {
+        "instructions": "Add a FAB component or element on the Dashboard for primary actions (Add Fine). Style: w-14 h-14 rounded-full bg-emerald-700 text-white shadow-xl flex items-center justify-center fixed bottom-20 right-4 z-40 hover:scale-105 transition-transform."
+    }
+  },
+  "ui_patterns": {
+    "cards": "bg-white border border-stone-200 rounded-2xl p-4 shadow-sm",
+    "inputs": "h-12 bg-stone-50 border-stone-200 focus:bg-white focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 rounded-xl transition-all",
     "buttons": {
-      "primary": "h-11 px-8 rounded-full bg-emerald-700 text-white font-medium hover:bg-emerald-800 transition-transform active:scale-95 shadow-lg shadow-emerald-700/20",
-      "secondary": "h-11 px-6 rounded-full bg-white border border-stone-200 text-stone-700 hover:bg-stone-50 transition-colors",
-      "accent": "h-11 px-8 rounded-full bg-orange-500 text-white font-bold tracking-wide hover:bg-orange-600 hover:shadow-orange-500/30 transition-all uppercase text-sm"
+      "primary": "h-12 px-6 bg-emerald-700 hover:bg-emerald-800 text-white rounded-full font-bold shadow-lg shadow-emerald-900/10 active:scale-95 transition-all text-base",
+      "secondary": "h-12 px-6 bg-white border border-stone-200 text-stone-700 hover:bg-stone-50 rounded-full font-medium active:scale-95 transition-all text-base"
     },
-    "inputs": {
-      "style": "h-12 rounded-xl border-stone-200 bg-stone-50 focus:bg-white focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all font-medium text-stone-900"
-    }
-  },
-  "visual_enhancers": {
-    "textures": {
-      "login_bg": "https://images.unsplash.com/photo-1761829918692-af78306f22c0?crop=entropy&cs=srgb&fm=jpg&q=85",
-      "overlay": "bg-emerald-900/40 backdrop-blur-sm"
-    },
-    "icons": {
-      "library": "lucide-react",
-      "style": "stroke-[1.5px]"
-    },
-    "motion": {
-      "page_transition": "animate-in fade-in slide-in-from-bottom-4 duration-500",
-      "card_hover": "hover:-translate-y-1 transition-transform duration-300",
-      "list_item": "animate-in slide-in-from-left-2 duration-300 fill-mode-backwards"
-    }
-  },
-  "images": {
-    "login_background": {
-      "url": "https://images.unsplash.com/photo-1761829918692-af78306f22c0?crop=entropy&cs=srgb&fm=jpg&q=85",
-      "alt": "Modern Forest Abstract",
-      "usage": "Full screen background for login page with overlay"
-    },
-    "kpi_icons": {
-      "sau": {
-        "description": "Use a Lucide Icon 'PiggyBank' or similar, styled in Pink",
-        "color": "text-pink-500"
-      },
-      "laemmchen": {
-        "description": "Use a Lucide Icon 'Smile' or 'Star', styled in Stone/White",
-        "color": "text-stone-400"
-      }
-    }
+    "lists": "space-y-3. Items: rounded-xl bg-white border border-stone-100 p-4 flex items-center justify-between active:bg-stone-50 transition-colors"
   },
   "universal_guidelines": [
-    "Do not use generic gradients. Use flat, clean colors or subtle textures.",
-    "Use 'Outfit' font for all headings. Import it from Google Fonts.",
-    "Use 'Manrope' font for all body text. Import it from Google Fonts.",
-    "All cards must have 'rounded-2xl' or 'rounded-3xl'. No sharp corners.",
-    "The 'Add Fine' button must be the most prominent element on the Dashboard (Orange).",
-    "Use 'Sonner' for all notifications.",
-    "Ensure high contrast for accessibility, even with the light theme."
+    "Do not use dark gradients. Use light, airy backgrounds (stone-50).",
+    "Ensure all touch targets are at least 48px x 48px (Apple Guidelines).",
+    "Use 'sonner' for all notifications.",
+    "Animations: Use 'framer-motion' if available, otherwise CSS transitions (duration-200 ease-out).",
+    "Input fields MUST have 'text-base' (16px) font size to prevent iOS zoom on focus.",
+    "Data-testids are mandatory for all interactive elements (buttons, inputs, list items)."
   ],
-  "instructions_to_main_agent": "1. Install fonts: `npm install @fontsource/outfit @fontsource/manrope`. 2. Update `tailwind.config.js` to include these fonts and the custom color palette. 3. Build the Dashboard using the 'Bento' layout strategy defined above. 4. Implement the 'Sau' and 'Lämmchen' logic in the Statistics page. 5. Use the provided Unsplash image for the Login page background."
+  "image_urls": []
 }
