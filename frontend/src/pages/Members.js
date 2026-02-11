@@ -146,7 +146,9 @@ const Members = () => {
                 >
                   <div className="min-w-0 flex-1">
                     <p className="font-bold text-stone-900 truncate">{member.name}</p>
-                    <p className="text-xs text-stone-500 truncate">ID: {member.id.slice(0, 8)}...</p>
+                    <p className="text-xs text-stone-500 truncate">
+                      {member.nfc_id ? `NFC: ${member.nfc_id}` : 'Keine NFC ID'}
+                    </p>
                   </div>
                   <div className="flex gap-2 flex-shrink-0 ml-2">
                     <Button
