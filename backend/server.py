@@ -150,7 +150,11 @@ async def update_member(member_id: str, input: MemberCreate, auth=Depends(verify
     if not result:
         raise HTTPException(status_code=404, detail="Mitglied nicht gefunden")
     
-    await db.members.update_one({"id": member_id}, {"$set": {"name": input.name}})
+    update_data = {"name": input.name}
+    if input.nfc_id is not None:
+        update_data["nfc_id"] = input.nfc_id
+    
+    await db.members.update_one({"id": member_id}, {"$set": update_data})
     updated = await db.members.find_one({"id": member_id}, {"_id": 0})
     
     if isinstance(updated.get('created_at'), str):
