@@ -89,6 +89,9 @@ const AddFineDialog = ({ open, onOpenChange, onSuccess, preselectedMemberId = nu
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>Strafe eintragen</DialogTitle>
+          <DialogDescription>
+            Erfassen Sie eine neue Strafe für ein Mitglied
+          </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit}>
           <div className="space-y-4 py-4">
