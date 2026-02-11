@@ -188,30 +188,18 @@ const Dashboard = () => {
                   statistics.ranking.map((entry) => (
                     <div
                       key={entry.member_id}
-                      className="flex items-center justify-between p-4 rounded-xl border border-stone-100 bg-stone-50 active:bg-stone-100 transition-colors min-h-[72px]"
+                      className="flex items-center gap-3 p-4 rounded-xl border border-stone-100 bg-stone-50 active:bg-stone-100 transition-colors min-h-[72px]"
                       data-testid={`ranking-entry-${entry.rank}`}
                     >
-                      <div className="flex items-center gap-3 flex-1 min-w-0">
-                        <div className="flex items-center justify-center w-10 h-10 rounded-full bg-emerald-100 text-emerald-700 font-bold text-sm flex-shrink-0">
-                          #{entry.rank}
-                        </div>
-                        <div className="min-w-0 flex-1">
-                          <p className="font-bold text-stone-900 truncate">{entry.member_name}</p>
-                          <p className="text-sm text-stone-500">
-                            {formatCurrency(entry.total)}
-                          </p>
-                        </div>
+                      <div className="flex items-center justify-center w-10 h-10 rounded-full bg-emerald-100 text-emerald-700 font-bold text-sm flex-shrink-0">
+                        #{entry.rank}
                       </div>
-                      <Button
-                        data-testid={`add-fine-for-member-${entry.member_id}`}
-                        onClick={() => {
-                          setSelectedMemberId(entry.member_id);
-                          setAddDialogOpen(true);
-                        }}
-                        className="h-10 px-4 rounded-full bg-white border border-stone-200 text-stone-700 hover:bg-stone-50 transition-colors text-sm flex-shrink-0 ml-2"
-                      >
-                        + Strafe
-                      </Button>
+                      <div className="min-w-0 flex-1">
+                        <p className="font-bold text-stone-900 truncate">{entry.member_name}</p>
+                        <p className="text-sm text-stone-500">
+                          {formatCurrency(entry.total)}
+                        </p>
+                      </div>
                     </div>
                   ))
                 ) : (
