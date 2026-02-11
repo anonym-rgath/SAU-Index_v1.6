@@ -175,10 +175,10 @@ const Dashboard = () => {
           </Card>
         </div>
 
-            <Card className="col-span-full bg-white rounded-2xl border border-stone-200 shadow-sm p-6">
+            <Card className="bg-white rounded-2xl border border-stone-200 shadow-sm p-4 mb-6">
               <div className="flex items-center gap-3 mb-4">
                 <Trophy className="w-5 h-5 text-emerald-700" />
-                <h2 className="text-2xl font-semibold text-stone-900 tracking-tight">
+                <h2 className="text-xl font-bold text-stone-900 tracking-tight">
                   Ranking {year}
                 </h2>
               </div>
@@ -188,17 +188,17 @@ const Dashboard = () => {
                   statistics.ranking.map((entry) => (
                     <div
                       key={entry.member_id}
-                      className="flex items-center justify-between p-4 rounded-xl border border-stone-200 bg-stone-50 hover:-translate-y-1 transition-transform duration-300"
+                      className="flex items-center justify-between p-4 rounded-xl border border-stone-100 bg-stone-50 active:bg-stone-100 transition-colors min-h-[72px]"
                       data-testid={`ranking-entry-${entry.rank}`}
                     >
-                      <div className="flex items-center gap-4">
-                        <div className="flex items-center justify-center w-10 h-10 rounded-full bg-emerald-100 text-emerald-700 font-bold text-sm">
+                      <div className="flex items-center gap-3 flex-1 min-w-0">
+                        <div className="flex items-center justify-center w-10 h-10 rounded-full bg-emerald-100 text-emerald-700 font-bold text-sm flex-shrink-0">
                           #{entry.rank}
                         </div>
-                        <div>
-                          <p className="font-semibold text-stone-900">{entry.member_name}</p>
+                        <div className="min-w-0 flex-1">
+                          <p className="font-bold text-stone-900 truncate">{entry.member_name}</p>
                           <p className="text-sm text-stone-500">
-                            Summe: {formatCurrency(entry.total)}
+                            {formatCurrency(entry.total)}
                           </p>
                         </div>
                       </div>
@@ -208,7 +208,7 @@ const Dashboard = () => {
                           setSelectedMemberId(entry.member_id);
                           setAddDialogOpen(true);
                         }}
-                        className="h-9 px-4 rounded-full bg-white border border-stone-200 text-stone-700 hover:bg-stone-50 transition-colors text-sm"
+                        className="h-10 px-4 rounded-full bg-white border border-stone-200 text-stone-700 hover:bg-stone-50 transition-colors text-sm flex-shrink-0 ml-2"
                       >
                         + Strafe
                       </Button>
@@ -221,11 +221,9 @@ const Dashboard = () => {
                 )}
               </div>
             </Card>
-          </div>
 
-          <aside className="col-span-12 md:col-span-4">
-            <Card className="bg-white rounded-2xl border border-stone-200 shadow-sm p-6 sticky top-6">
-              <h2 className="text-2xl font-semibold text-stone-900 tracking-tight mb-4">
+            <Card className="bg-white rounded-2xl border border-stone-200 shadow-sm p-4">
+              <h2 className="text-xl font-bold text-stone-900 tracking-tight mb-4">
                 Letzte Strafen
               </h2>
               
@@ -234,10 +232,10 @@ const Dashboard = () => {
                   recentFines.map((fine) => (
                     <div
                       key={fine.id}
-                      className="p-3 rounded-xl border border-stone-200 bg-stone-50"
+                      className="p-3 rounded-xl border border-stone-100 bg-stone-50"
                     >
                       <div className="flex items-start justify-between mb-1">
-                        <p className="font-medium text-stone-900">
+                        <p className="font-semibold text-stone-900">
                           {getMemberName(fine.member_id)}
                         </p>
                         <span className="text-emerald-700 font-bold">
@@ -259,7 +257,28 @@ const Dashboard = () => {
                 )}
               </div>
             </Card>
-          </aside>
+          </div>
+
+          {/* Floating Action Button (Mobile Only) */}
+          <button
+            data-testid="add-fine-fab"
+            onClick={() => {
+              setSelectedMemberId(null);
+              setAddDialogOpen(true);
+            }}
+            className="md:hidden fixed bottom-20 right-4 z-40 w-14 h-14 rounded-full bg-emerald-700 text-white shadow-xl flex items-center justify-center hover:scale-105 active:scale-95 transition-transform"
+          >
+            <Plus className="w-6 h-6" />
+          </button>
+
+          {/* Scan FAB (Mobile Only) */}
+          <button
+            data-testid="scan-fab"
+            onClick={() => setScanDialogOpen(true)}
+            className="md:hidden fixed bottom-20 right-20 z-40 w-12 h-12 rounded-full bg-white border-2 border-stone-200 text-stone-700 shadow-lg flex items-center justify-center hover:scale-105 active:scale-95 transition-transform"
+          >
+            <Scan className="w-5 h-5" />
+          </button>
         </div>
       </div>
 
