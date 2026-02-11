@@ -191,6 +191,9 @@ const FineTypes = () => {
             <DialogTitle>
               {editingFineType ? 'Strafenart bearbeiten' : 'Neue Strafenart'}
             </DialogTitle>
+            <DialogDescription>
+              {editingFineType ? 'Strafenart anpassen' : 'Neue Strafenart erstellen'}
+            </DialogDescription>
           </DialogHeader>
           <form onSubmit={handleSubmit}>
             <div className="space-y-4 py-4">
