@@ -13,10 +13,9 @@ curl -fsSL https://get.docker.com -o get-docker.sh
 sudo sh get-docker.sh
 sudo usermod -aG docker $USER
 # Neu einloggen oder: newgrp docker
-
-# Docker Compose installieren
-sudo apt install docker-compose -y
 ```
+
+Docker Compose V2 ist in Docker bereits integriert (`docker compose` statt `docker-compose`).
 
 ---
 
