@@ -21,7 +21,7 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 
-const COLORS = ['#10b981', '#f97316', '#ec4899', '#6366f1', '#eab308', '#06b6d4'];
+const COLORS = ['#3e875f', '#f97316', '#ec4899', '#6366f1', '#eab308', '#06b6d4'];
 
 const Statistics = () => {
   const { isVorstand } = useAuth();
@@ -253,7 +253,7 @@ const Statistics = () => {
                     borderRadius: '12px'
                   }}
                 />
-                <Bar dataKey="total" fill="#10b981" radius={[8, 8, 0, 0]} />
+                <Bar dataKey="total" fill="#3e875f" radius={[8, 8, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </Card>
