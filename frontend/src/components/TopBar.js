@@ -68,6 +68,47 @@ const TopBar = () => {
             </div>
           </div>
         </div>
+        
+        {/* Benutzer-Dropdown */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              data-testid="user-menu-button"
+              variant="ghost"
+              className="h-9 px-3 text-stone-600 hover:text-stone-900 hover:bg-stone-100 rounded-lg flex items-center gap-2"
+            >
+              <User className="w-4 h-4" />
+              <span className="text-sm font-medium hidden sm:inline">{user?.username}</span>
+              <ChevronDown className="w-4 h-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-48">
+            <div className="px-2 py-1.5 text-sm font-medium text-stone-900 sm:hidden">
+              {user?.username}
+            </div>
+            <div className="px-2 py-1 text-xs text-stone-500 capitalize">
+              {user?.role}
+            </div>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              data-testid="change-password-menu-item"
+              onClick={() => setPasswordDialogOpen(true)}
+              className="cursor-pointer"
+            >
+              <Key className="w-4 h-4 mr-2" />
+              Passwort ändern
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              data-testid="logout-menu-item"
+              onClick={handleLogout}
+              className="cursor-pointer text-red-600 focus:text-red-600"
+            >
+              <LogOut className="w-4 h-4 mr-2" />
+              Abmelden
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </header>
 
       {/* Drawer Overlay */}
