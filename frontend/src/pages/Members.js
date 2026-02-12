@@ -4,7 +4,7 @@ import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
-import { Users, Plus, Pencil, Trash2 } from 'lucide-react';
+import { Users, Plus, Pencil, Trash2, QrCode } from 'lucide-react';
 import { toast } from 'sonner';
 import {
   Select,
@@ -32,6 +32,7 @@ import {
   AlertDialogTitle,
 } from '../components/ui/alert-dialog';
 import { useAuth } from '../contexts/AuthContext';
+import QRCodeDialog from '../components/QRCodeDialog';
 
 const Members = () => {
   const { isAdmin } = useAuth();
@@ -39,6 +40,8 @@ const Members = () => {
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [qrDialogOpen, setQrDialogOpen] = useState(false);
+  const [qrMember, setQrMember] = useState(null);
   const [editingMember, setEditingMember] = useState(null);
   const [deletingMember, setDeletingMember] = useState(null);
   const [formData, setFormData] = useState({ name: '', nfc_id: '', status: 'aktiv' });
@@ -105,6 +108,11 @@ const Members = () => {
   const openDeleteDialog = (member) => {
     setDeletingMember(member);
     setDeleteDialogOpen(true);
+  };
+
+  const openQRDialog = (member) => {
+    setQrMember(member);
+    setQrDialogOpen(true);
   };
 
   const getSortedMembers = () => {
