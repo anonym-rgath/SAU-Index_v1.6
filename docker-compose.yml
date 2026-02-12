@@ -21,6 +21,8 @@ services:
       dockerfile: Dockerfile
     container_name: rheinzel-backend
     restart: unless-stopped
+    ports:
+      - "8001:8001"
     environment:
       - MONGO_URL=mongodb://mongodb:27017
       - DB_NAME=rheinzelmaenner
@@ -35,26 +37,13 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
+      args:
+        - REACT_APP_BACKEND_URL=${REACT_APP_BACKEND_URL:-http://localhost:8001}
     container_name: rheinzel-frontend
     restart: unless-stopped
-    depends_on:
-      - backend
-    networks:
-      - rheinzel-network
-
-  # Nginx Reverse Proxy mit HTTPS
-  nginx:
-    image: nginx:alpine
-    container_name: rheinzel-nginx
-    restart: unless-stopped
     ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
-      - ./nginx/certs:/etc/nginx/certs:ro
+      - "3000:80"
     depends_on:
-      - frontend
       - backend
     networks:
       - rheinzel-network
