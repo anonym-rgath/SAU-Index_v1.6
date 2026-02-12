@@ -65,17 +65,26 @@ def seed_fines(members, fine_types):
     import random
     from datetime import timedelta
     
-    fines = []
-    current_year = datetime.now(timezone.utc).year
+    def get_fiscal_year(date):
+        """Berechnet Geschäftsjahr (01.08. - 31.07.)"""
+        year = date.year
+        month = date.month
+        if month < 8:  # Vor August -> vorheriges GJ
+            return f"{year-1}/{year}"
+        else:  # Ab August -> aktuelles GJ
+            return f"{year}/{year+1}"
     
-    # Create fines for current year
+    fines = []
+    current_date = datetime.now(timezone.utc)
+    
+    # Create fines for current fiscal year
     for i in range(15):
         member = random.choice(members)
         fine_type = random.choice(fine_types)
         
-        # Random date in current year
+        # Random date in last 90 days
         days_ago = random.randint(1, 90)
-        date = datetime.now(timezone.utc) - timedelta(days=days_ago)
+        date = current_date - timedelta(days=days_ago)
         
         amount = fine_type['amount'] if fine_type['amount'] is not None else random.uniform(1, 10)
         
@@ -85,19 +94,20 @@ def seed_fines(members, fine_types):
             "fine_type_id": fine_type['id'],
             "fine_type_label": fine_type['label'],
             "amount": round(amount, 2),
-            "year": current_year,
+            "fiscal_year": get_fiscal_year(date),
             "date": date.isoformat(),
             "notes": None
         }
         fines.append(fine)
     
-    # Create some fines for last year
+    # Create some fines for previous fiscal year
     for i in range(8):
         member = random.choice(members)
         fine_type = random.choice(fine_types)
         
+        # Date in previous fiscal year (365-450 days ago)
         days_ago = random.randint(365, 450)
-        date = datetime.now(timezone.utc) - timedelta(days=days_ago)
+        date = current_date - timedelta(days=days_ago)
         
         amount = fine_type['amount'] if fine_type['amount'] is not None else random.uniform(1, 10)
         
@@ -107,7 +117,7 @@ def seed_fines(members, fine_types):
             "fine_type_id": fine_type['id'],
             "fine_type_label": fine_type['label'],
             "amount": round(amount, 2),
-            "year": current_year - 1,
+            "fiscal_year": get_fiscal_year(date),
             "date": date.isoformat(),
             "notes": None
         }
