@@ -107,6 +107,35 @@ const Members = () => {
     setDeleteDialogOpen(true);
   };
 
+  const getSortedMembers = () => {
+    const sorted = [...members];
+    
+    switch (sortBy) {
+      case 'name-asc':
+        return sorted.sort((a, b) => a.name.localeCompare(b.name));
+      case 'name-desc':
+        return sorted.sort((a, b) => b.name.localeCompare(a.name));
+      case 'status-aktiv':
+        return sorted.sort((a, b) => {
+          if (a.status === 'aktiv' && b.status !== 'aktiv') return -1;
+          if (a.status !== 'aktiv' && b.status === 'aktiv') return 1;
+          return a.name.localeCompare(b.name);
+        });
+      case 'status-passiv':
+        return sorted.sort((a, b) => {
+          if (a.status === 'passiv' && b.status !== 'passiv') return -1;
+          if (a.status !== 'passiv' && b.status === 'passiv') return 1;
+          return a.name.localeCompare(b.name);
+        });
+      case 'date-newest':
+        return sorted.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+      case 'date-oldest':
+        return sorted.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+      default:
+        return sorted;
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
