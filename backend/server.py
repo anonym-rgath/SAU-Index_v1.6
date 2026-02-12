@@ -223,7 +223,7 @@ async def get_fine_types(auth=Depends(verify_token)):
     return fine_types
 
 @api_router.post("/fine-types", response_model=FineType)
-async def create_fine_type(input: FineTypeCreate, auth=Depends(verify_token)):
+async def create_fine_type(input: FineTypeCreate, auth=Depends(require_admin)):
     fine_type = FineType(**input.model_dump())
     doc = fine_type.model_dump()
     doc['created_at'] = doc['created_at'].isoformat()
@@ -231,8 +231,8 @@ async def create_fine_type(input: FineTypeCreate, auth=Depends(verify_token)):
     return fine_type
 
 @api_router.put("/fine-types/{fine_type_id}", response_model=FineType)
-async def update_fine_type(fine_type_id: str, input: FineTypeCreate, auth=Depends(verify_token)):
-    result = await db.fine_types.find_one({"id": fine_type_id}, {"_id": 0})
+async def update_fine_type(fine_type_id: str, input: FineTypeCreate, auth=Depends(require_admin)):
+    result = await db.fine_types.find_one({" id": fine_type_id}, {"_id": 0})
     if not result:
         raise HTTPException(status_code=404, detail="Strafenart nicht gefunden")
     
@@ -245,7 +245,7 @@ async def update_fine_type(fine_type_id: str, input: FineTypeCreate, auth=Depend
     return FineType(**updated)
 
 @api_router.delete("/fine-types/{fine_type_id}")
-async def delete_fine_type(fine_type_id: str, auth=Depends(verify_token)):
+async def delete_fine_type(fine_type_id: str, auth=Depends(require_admin)):
     result = await db.fine_types.delete_one({"id": fine_type_id})
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Strafenart nicht gefunden")
