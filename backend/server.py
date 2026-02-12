@@ -281,10 +281,10 @@ async def delete_fine_type(fine_type_id: str, auth=Depends(require_admin)):
     return {"message": "Strafenart gelöscht"}
 
 @api_router.get("/fines", response_model=List[Fine])
-async def get_fines(year: Optional[int] = None, auth=Depends(verify_token)):
+async def get_fines(fiscal_year: Optional[str] = None, auth=Depends(verify_token)):
     query = {}
-    if year:
-        query["year"] = year
+    if fiscal_year:
+        query["fiscal_year"] = fiscal_year
     
     fines = await db.fines.find(query, {"_id": 0}).sort("date", -1).to_list(1000)
     for fine in fines:
@@ -304,7 +304,13 @@ async def create_fine(input: FineCreate, auth=Depends(require_admin)):
     
     fine_data = input.model_dump()
     fine_data['fine_type_label'] = fine_type['label']
-    fine_data['year'] = datetime.now(timezone.utc).year
+    
+    # Berechne das Geschäftsjahr basierend auf dem Datum
+    fine_date = fine_data.get('date', datetime.now(timezone.utc))
+    if isinstance(fine_date, datetime):
+        fine_data['fiscal_year'] = get_fiscal_year(fine_date)
+    else:
+        fine_data['fiscal_year'] = get_current_fiscal_year()
     
     fine = Fine(**fine_data)
     doc = fine.model_dump()
