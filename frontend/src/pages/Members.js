@@ -156,17 +156,38 @@ const Members = () => {
               Vereinsmitglieder
             </p>
           </div>
-          {isAdmin && (
-            <Button
-              data-testid="add-member-button"
-              onClick={openAddDialog}
-              className="h-11 px-6 rounded-full bg-emerald-700 text-white font-medium hover:bg-emerald-800 transition-transform active:scale-95 shadow-lg shadow-emerald-700/20"
-            >
-              <Plus className="w-5 h-5 mr-2" />
-              <span className="hidden sm:inline">Mitglied</span>
-              <span className="sm:hidden">Neu</span>
-            </Button>
-          )}
+          <div className="flex items-center gap-2">
+            {isAdmin && (
+              <Button
+                data-testid="add-member-button"
+                onClick={openAddDialog}
+                className="h-11 px-6 rounded-full bg-emerald-700 text-white font-medium hover:bg-emerald-800 transition-transform active:scale-95 shadow-lg shadow-emerald-700/20"
+              >
+                <Plus className="w-5 h-5 mr-2" />
+                <span className="hidden sm:inline">Mitglied</span>
+                <span className="sm:hidden">Neu</span>
+              </Button>
+            )}
+          </div>
+        </div>
+
+        <div className="mb-4">
+          <Select
+            value={sortBy}
+            onValueChange={setSortBy}
+          >
+            <SelectTrigger data-testid="sort-members-select" className="h-11 rounded-xl max-w-xs">
+              <SelectValue placeholder="Sortieren nach..." />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="name-asc">Name (A-Z)</SelectItem>
+              <SelectItem value="name-desc">Name (Z-A)</SelectItem>
+              <SelectItem value="status-aktiv">Status: Aktiv zuerst</SelectItem>
+              <SelectItem value="status-passiv">Status: Passiv zuerst</SelectItem>
+              <SelectItem value="date-newest">Neueste zuerst</SelectItem>
+              <SelectItem value="date-oldest">Älteste zuerst</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
 
         <Card className="bg-white rounded-2xl border border-stone-200 shadow-sm p-4">
