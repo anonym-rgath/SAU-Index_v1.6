@@ -193,6 +193,12 @@ const TopBar = () => {
           </div>
         </div>
       </div>
+
+      {/* Passwort ändern Dialog */}
+      <ChangePasswordDialog
+        open={passwordDialogOpen}
+        onOpenChange={setPasswordDialogOpen}
+      />
     </>
   );
 };
