@@ -250,6 +250,7 @@ const Fines = () => {
         open={addDialogOpen}
         onOpenChange={setAddDialogOpen}
         preselectedMemberId={null}
+        showDateField={true}
         onSuccess={() => {
           setAddDialogOpen(false);
           loadData();
