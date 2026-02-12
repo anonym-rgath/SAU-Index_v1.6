@@ -3,6 +3,9 @@ import axios from 'axios';
 const API_URL = process.env.REACT_APP_BACKEND_URL + '/api';
 
 export const api = {
+  auth: {
+    changePassword: (data) => axios.put(`${API_URL}/auth/change-password`, data),
+  },
   members: {
     getAll: () => axios.get(`${API_URL}/members`),
     create: (data) => axios.post(`${API_URL}/members`, data),
