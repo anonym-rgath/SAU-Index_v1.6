@@ -90,26 +90,26 @@ Klicke auf "Erweitert" → "Weiter zu [IP] (unsicher)" um fortzufahren.
 
 ```bash
 # Container stoppen:
-docker-compose down
+docker compose down
 
 # Container neustarten:
-docker-compose restart
+docker compose restart
 
 # Logs anzeigen:
-docker-compose logs -f
-docker-compose logs -f nginx
-docker-compose logs -f backend
+docker compose logs -f
+docker compose logs -f nginx
+docker compose logs -f backend
 
 # Status prüfen:
-docker-compose ps
+docker compose ps
 
 # Datenbank-Backup:
 docker exec rheinzel-mongodb mongodump --out /backup
 docker cp rheinzel-mongodb:/backup ./backup
 
 # Alles löschen und neu bauen:
-docker-compose down -v
-docker-compose up -d --build
+docker compose down -v
+docker compose up -d --build
 ```
 
 ---
