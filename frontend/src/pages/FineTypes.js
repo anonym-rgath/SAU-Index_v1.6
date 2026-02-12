@@ -28,7 +28,7 @@ import { formatCurrency } from '../lib/utils';
 import { useAuth } from '../contexts/AuthContext';
 
 const FineTypes = () => {
-  const { isAdmin } = useAuth();
+  const { canManageFineTypes } = useAuth();
   const [fineTypes, setFineTypes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);

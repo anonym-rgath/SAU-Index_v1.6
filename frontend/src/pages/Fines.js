@@ -19,7 +19,7 @@ import { formatCurrency, formatDate } from '../lib/utils';
 import { useAuth } from '../contexts/AuthContext';
 
 const Fines = () => {
-  const { isAdmin } = useAuth();
+  const { canManageFines } = useAuth();
   const [fiscalYear, setFiscalYear] = useState('');
   const [fiscalYears, setFiscalYears] = useState([]);
   const [fines, setFines] = useState([]);
