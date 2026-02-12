@@ -87,12 +87,16 @@ Entwicklung einer Full-Stack-Webanwendung für einen "Schützenzug" (später umb
 - `/app/frontend/src/pages/Dashboard.js` - Dashboard mit Ranking
 - `/app/frontend/src/pages/Statistics.js` - Statistik-Seite
 - `/app/frontend/src/pages/Members.js` - Mitgliederverwaltung
+- `/app/frontend/src/pages/Fines.js` - Strafenübersicht
+- `/app/frontend/src/components/AddFineDialog.js` - Dialog zur Strafenerfassung
 - `/app/frontend/src/hooks/useAuth.js` - Auth-Hook
+- `/app/frontend/src/contexts/AuthContext.js` - Auth Context mit Rollenlogik
 
 ## API Endpoints
-- `POST /api/auth/login` - Anmeldung
+- `POST /api/auth/login` - Anmeldung (Rate Limited: 5/min)
 - `GET /api/fiscal-years` - Geschäftsjahre
-- `GET /api/statistics` - Statistiken
+- `GET /api/statistics?fiscal_year=YYYY/YYYY` - Statistiken
 - `/api/members` - Mitglieder CRUD
-- `/api/fines` - Strafen CRUD
+- `/api/fines` - Strafen CRUD (POST akzeptiert optionales `date` für rückwirkende Einträge)
 - `/api/fine-types` - Strafarten CRUD
+- `/api/audit-logs` - Audit-Logs (nur Admin)
