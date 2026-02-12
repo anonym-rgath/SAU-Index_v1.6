@@ -7,6 +7,13 @@ import { Label } from '../components/ui/label';
 import { Users, Plus, Pencil, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '../components/ui/select';
+import {
   Dialog,
   DialogContent,
   DialogHeader,
@@ -24,15 +31,17 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '../components/ui/alert-dialog';
+import { useAuth } from '../contexts/AuthContext';
 
 const Members = () => {
+  const { isAdmin } = useAuth();
   const [members, setMembers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [editingMember, setEditingMember] = useState(null);
   const [deletingMember, setDeletingMember] = useState(null);
-  const [formData, setFormData] = useState({ name: '', nfc_id: '' });
+  const [formData, setFormData] = useState({ name: '', nfc_id: '', status: 'aktiv' });
 
   useEffect(() => {
     loadMembers();
