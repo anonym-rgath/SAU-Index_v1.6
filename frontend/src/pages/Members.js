@@ -225,9 +225,6 @@ const Members = () => {
                         {member.status === 'aktiv' ? 'Aktiv' : 'Passiv'}
                       </span>
                     </div>
-                    <p className="text-xs text-stone-500 truncate">
-                      {member.status === 'aktiv' ? 'Aktives Mitglied' : 'Passives Mitglied'}
-                    </p>
                   </div>
                   {isAdmin && (
                     <div className="flex gap-2 flex-shrink-0 ml-2">
