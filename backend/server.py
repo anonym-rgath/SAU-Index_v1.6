@@ -511,6 +511,20 @@ async def get_fiscal_years(auth=Depends(verify_token)):
     
     return {"fiscal_years": fiscal_years}
 
+# Audit Log Endpoint (nur Admin)
+@api_router.get("/audit-logs")
+async def get_audit_logs(
+    limit: int = 100,
+    action: Optional[str] = None,
+    auth=Depends(require_admin)
+):
+    query = {}
+    if action:
+        query["action"] = action
+    
+    logs = await db.audit_logs.find(query, {"_id": 0}).sort("timestamp", -1).limit(limit).to_list(limit)
+    return {"logs": logs, "total": len(logs)}
+
 app.include_router(api_router)
 
 app.add_middleware(
