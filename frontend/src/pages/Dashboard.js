@@ -9,8 +9,8 @@ import ScanDemoDialog from '../components/ScanDemoDialog';
 import { formatCurrency, formatDate } from '../lib/utils';
 
 const Dashboard = () => {
-  const [year, setYear] = useState(new Date().getFullYear());
-  const [years, setYears] = useState([]);
+  const [fiscalYear, setFiscalYear] = useState('');
+  const [fiscalYears, setFiscalYears] = useState([]);
   const [statistics, setStatistics] = useState(null);
   const [recentFines, setRecentFines] = useState([]);
   const [members, setMembers] = useState([]);
@@ -20,23 +20,41 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    loadData();
-  }, [year]);
+    loadInitialData();
+  }, []);
+
+  useEffect(() => {
+    if (fiscalYear) {
+      loadData();
+    }
+  }, [fiscalYear]);
+
+  const loadInitialData = async () => {
+    try {
+      const yearsRes = await api.fiscalYears.getAll();
+      const years = yearsRes.data.fiscal_years || [];
+      setFiscalYears(years);
+      if (years.length > 0) {
+        setFiscalYear(years[0]); // Aktuellstes Geschäftsjahr
+      }
+    } catch (error) {
+      toast.error('Fehler beim Laden der Geschäftsjahre');
+      console.error(error);
+    }
+  };
 
   const loadData = async () => {
     setLoading(true);
     try {
-      const [statsRes, finesRes, membersRes, yearsRes] = await Promise.all([
-        api.statistics.getByYear(year),
-        api.fines.getAll(year),
+      const [statsRes, finesRes, membersRes] = await Promise.all([
+        api.statistics.getByFiscalYear(fiscalYear),
+        api.fines.getAll(fiscalYear),
         api.members.getAll(),
-        api.years.getAll(),
       ]);
       
       setStatistics(statsRes.data);
       setRecentFines(finesRes.data.slice(0, 6));
       setMembers(membersRes.data);
-      setYears(yearsRes.data.years || [year]);
     } catch (error) {
       toast.error('Fehler beim Laden der Daten');
       console.error(error);
