@@ -137,23 +137,40 @@ def verify_token(credentials: HTTPAuthorizationCredentials = Depends(security)):
     except jwt.InvalidTokenError:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token")
 
+def require_admin(payload: dict = Depends(verify_token)):
+    if payload.get('role') != 'admin':
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Admin-Berechtigung erforderlich")
+    return payload
+
 @api_router.post("/auth/login", response_model=LoginResponse)
 async def login(request: LoginRequest):
-    admin_password = os.environ.get('ADMIN_PASSWORD', 'admin123')
+    # Find user by username
+    user_doc = await db.users.find_one({"username": request.username}, {"_id": 0})
     
-    if request.password == admin_password:
-        token = jwt.encode(
-            {
-                'exp': datetime.now(timezone.utc) + timedelta(hours=JWT_EXPIRATION_HOURS),
-                'iat': datetime.now(timezone.utc),
-                'sub': 'admin'
-            },
-            JWT_SECRET,
-            algorithm=JWT_ALGORITHM
-        )
-        return LoginResponse(token=token, message="Login erfolgreich")
-    else:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Falsches Passwort")
+    if not user_doc:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Benutzername oder Passwort falsch")
+    
+    # Verify password
+    if not pwd_context.verify(request.password, user_doc['password_hash']):
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Benutzername oder Passwort falsch")
+    
+    token = jwt.encode(
+        {
+            'exp': datetime.now(timezone.utc) + timedelta(hours=JWT_EXPIRATION_HOURS),
+            'iat': datetime.now(timezone.utc),
+            'sub': user_doc['id'],
+            'username': user_doc['username'],
+            'role': user_doc['role']
+        },
+        JWT_SECRET,
+        algorithm=JWT_ALGORITHM
+    )
+    return LoginResponse(
+        token=token, 
+        message="Login erfolgreich",
+        role=user_doc['role'],
+        username=user_doc['username']
+    )
 
 @api_router.get("/members", response_model=List[Member])
 async def get_members(auth=Depends(verify_token)):
