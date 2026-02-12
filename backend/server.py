@@ -103,13 +103,11 @@ class Member(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     name: str
     status: MemberStatus = MemberStatus.aktiv
-    nfc_id: Optional[str] = None
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 class MemberCreate(BaseModel):
     name: str
     status: MemberStatus = MemberStatus.aktiv
-    nfc_id: Optional[str] = None
 
 class FineType(BaseModel):
     model_config = ConfigDict(extra="ignore")
