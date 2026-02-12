@@ -434,6 +434,43 @@ async def delete_user(request: Request, user_id: str, auth=Depends(require_admin
     
     return {"message": "Benutzer gelöscht"}
 
+class ResetPasswordRequest(BaseModel):
+    new_password: str
+
+@api_router.put("/users/{user_id}/reset-password")
+async def reset_user_password(request: Request, user_id: str, data: ResetPasswordRequest, auth=Depends(require_admin)):
+    """Passwort eines Benutzers zurücksetzen (nur Admin)"""
+    ip_address = get_remote_address(request)
+    
+    # Benutzer finden
+    user = await db.users.find_one({"id": user_id}, {"_id": 0})
+    if not user:
+        raise HTTPException(status_code=404, detail="Benutzer nicht gefunden")
+    
+    # Passwort validieren
+    if len(data.new_password) < 6:
+        raise HTTPException(status_code=400, detail="Passwort muss mindestens 6 Zeichen lang sein")
+    
+    # Neues Passwort setzen
+    new_password_hash = pwd_context.hash(data.new_password)
+    await db.users.update_one(
+        {"id": user_id},
+        {"$set": {"password_hash": new_password_hash}}
+    )
+    
+    # Audit Log
+    await log_audit(
+        action=AuditAction.UPDATE,
+        resource_type="user",
+        resource_id=user_id,
+        user_id=auth.get('sub'),
+        username=auth.get('username'),
+        details=f"Passwort zurückgesetzt für: {user.get('username')}",
+        ip_address=ip_address
+    )
+    
+    return {"message": "Passwort erfolgreich zurückgesetzt"}
+
 # ============== Mitglieder ==============
 
 @api_router.get("/members", response_model=List[Member])
