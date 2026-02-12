@@ -21,7 +21,7 @@ const TopBar = () => {
     { path: '/fines', icon: Receipt, label: 'Strafen' },
     { path: '/members', icon: Users, label: 'Mitglieder' },
     { path: '/fine-types', icon: Tag, label: 'Strafenarten' },
-    { path: '/statistics', icon: Target, label: 'Statistiken' },
+    { path: '/statistics', icon: BarChart3, label: 'Statistiken' },
   ];
 
   const handleNavClick = (path) => {
