@@ -118,28 +118,30 @@ const Dashboard = () => {
         </div>
         
         {/* Desktop-only buttons */}
-        <div className="hidden md:flex gap-3 mb-6">
-          <Button
-            data-testid="scan-demo-button"
-            onClick={() => setScanDialogOpen(true)}
-            className="h-11 px-6 rounded-full bg-white border border-stone-200 text-stone-700 hover:bg-stone-50 transition-colors"
-          >
-            <QrCode className="w-4 h-4 mr-2" />
-            QR Scan
-          </Button>
-          
-          <Button
-            data-testid="add-fine-button-desktop"
-            onClick={() => {
-              setSelectedMemberId(null);
-              setAddDialogOpen(true);
-            }}
-            className="h-11 px-8 rounded-full bg-orange-500 text-white font-bold tracking-wide hover:bg-orange-600 hover:shadow-orange-500/30 transition-all uppercase text-sm shadow-lg"
-          >
-            <Plus className="w-5 h-5 mr-2" />
-            Strafe
-          </Button>
-        </div>
+        {canManageFines && (
+          <div className="hidden md:flex gap-3 mb-6">
+            <Button
+              data-testid="scan-demo-button"
+              onClick={() => setScanDialogOpen(true)}
+              className="h-11 px-6 rounded-full bg-white border border-stone-200 text-stone-700 hover:bg-stone-50 transition-colors"
+            >
+              <QrCode className="w-4 h-4 mr-2" />
+              QR Scan
+            </Button>
+            
+            <Button
+              data-testid="add-fine-button-desktop"
+              onClick={() => {
+                setSelectedMemberId(null);
+                setAddDialogOpen(true);
+              }}
+              className="h-11 px-8 rounded-full bg-orange-500 text-white font-bold tracking-wide hover:bg-orange-600 hover:shadow-orange-500/30 transition-all uppercase text-sm shadow-lg"
+            >
+              <Plus className="w-5 h-5 mr-2" />
+              Strafe
+            </Button>
+          </div>
+        )}
 
         <div className="grid grid-cols-2 gap-4 mb-6">
           <Card className="bg-gradient-to-br from-pink-50 to-white border-pink-100 rounded-2xl shadow-sm p-4">
