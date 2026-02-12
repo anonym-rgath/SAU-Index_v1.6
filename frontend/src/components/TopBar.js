@@ -6,7 +6,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { cn } from '../lib/utils';
 
 const TopBar = () => {
-  const { logout } = useAuth();
+  const { logout, isVorstand } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -16,13 +16,18 @@ const TopBar = () => {
     navigate('/login');
   };
 
-  const navItems = [
-    { path: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
+  // Vorstand sieht nur Mitglieder und Statistiken
+  const allNavItems = [
+    { path: '/dashboard', icon: LayoutDashboard, label: 'Dashboard', hideForVorstand: true },
     { path: '/members', icon: Users, label: 'Mitglieder' },
     { path: '/statistics', icon: BarChart3, label: 'Statistiken' },
-    { path: '/fines', icon: Receipt, label: 'Strafen' },
-    { path: '/fine-types', icon: Tag, label: 'Strafenarten' },
+    { path: '/fines', icon: Receipt, label: 'Strafen', hideForVorstand: true },
+    { path: '/fine-types', icon: Tag, label: 'Strafenarten', hideForVorstand: true },
   ];
+  
+  const navItems = isVorstand 
+    ? allNavItems.filter(item => !item.hideForVorstand)
+    : allNavItems;
 
   const handleNavClick = (path) => {
     navigate(path);
