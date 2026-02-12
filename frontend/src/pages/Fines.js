@@ -245,6 +245,17 @@ const Fines = () => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      <AddFineDialog
+        open={addDialogOpen}
+        onOpenChange={setAddDialogOpen}
+        preselectedMemberId={null}
+        onSuccess={() => {
+          setAddDialogOpen(false);
+          loadData();
+          toast.success('Strafe hinzugefügt');
+        }}
+      />
     </div>
   );
 };
