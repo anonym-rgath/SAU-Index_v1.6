@@ -7,7 +7,7 @@ import { cn } from '../lib/utils';
 import ChangePasswordDialog from './ChangePasswordDialog';
 
 const TopBar = () => {
-  const { logout, isVorstand, user } = useAuth();
+  const { logout, isVorstand, isAdmin, user } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const [drawerOpen, setDrawerOpen] = useState(false);
