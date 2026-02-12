@@ -363,6 +363,7 @@ const Members = () => {
                   <SelectContent>
                     <SelectItem value="aktiv">Aktiv</SelectItem>
                     <SelectItem value="passiv">Passiv</SelectItem>
+                    <SelectItem value="archiviert">Archiviert (Ausgetreten)</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
