@@ -152,7 +152,7 @@ docker-compose logs backend
 
 ### MongoDB Verbindungsfehler:
 - Warte 30 Sekunden nach Start
-- Prüfe: `docker-compose ps` - alle Container "Up"?
+- Prüfe: `docker compose ps` - alle Container "Up"?
 
 ### Zu wenig Speicher:
 - Raspberry Pi 4 mit min. 2GB RAM empfohlen
