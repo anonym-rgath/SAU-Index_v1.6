@@ -140,7 +140,7 @@ const TopBar = () => {
                 <User className="w-5 h-5 text-emerald-700" />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="font-semibold text-stone-900 truncate" data-testid="drawer-username">
+                <p className="font-semibold text-stone-900 truncate capitalize" data-testid="drawer-username">
                   {user?.username}
                 </p>
                 <p className="text-xs text-stone-500 capitalize">
