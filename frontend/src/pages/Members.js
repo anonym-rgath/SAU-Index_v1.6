@@ -224,6 +224,21 @@ const Members = () => {
                 />
               </div>
               <div className="space-y-2">
+                <Label htmlFor="status">Status</Label>
+                <Select
+                  value={formData.status}
+                  onValueChange={(value) => setFormData({ ...formData, status: value })}
+                >
+                  <SelectTrigger data-testid="member-status-select" className="h-12 rounded-xl">
+                    <SelectValue placeholder="Status wählen" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="aktiv">Aktiv</SelectItem>
+                    <SelectItem value="passiv">Passiv</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
                 <Label htmlFor="nfc_id">NFC ID (optional)</Label>
                 <Input
                   data-testid="member-nfc-input"
