@@ -16,7 +16,7 @@ Entwicklung einer Full-Stack-Webanwendung für einen "Schützenzug" (später umb
 - Statistik-Seite mit Diagrammen und KPIs
 
 ## Tech Stack
-- **Frontend**: React, Tailwind CSS, Shadcn/UI, lucide-react, recharts
+- **Frontend**: React, Tailwind CSS, Shadcn/UI, lucide-react, recharts, html5-qrcode, qrcode.react
 - **Backend**: Python FastAPI
 - **Database**: MongoDB
 - **Auth**: JWT
@@ -34,6 +34,10 @@ Entwicklung einer Full-Stack-Webanwendung für einen "Schützenzug" (später umb
 - [x] Icon-Änderung: Wallet für "Lämmchen" auf Dashboard
 - [x] Icon-Änderung: Coins für "Gesamt" auf Statistik-Seite
 - [x] Menü-Reihenfolge angepasst: Dashboard → Mitglieder → Statistiken → Strafen → Strafenarten
+- [x] Test-Benutzer Hinweis von Login-Seite entfernt
+- [x] Lämmchen-Logik korrigiert: Zeigt jetzt niedrigsten Betrag (statt zweithöchsten)
+- [x] QR-Code Scanner implementiert (Kamera-basiert, mit manuellem Fallback)
+- [x] QR-Code Generator für Mitglieder (Download als PNG)
 
 ### Previous Sessions
 - [x] Vollständige Full-Stack-Anwendung aufgebaut
@@ -50,7 +54,6 @@ Entwicklung einer Full-Stack-Webanwendung für einen "Schützenzug" (später umb
 ## Backlog
 
 ### P1 - Future Tasks
-- [ ] NFC/QR-Scan Integration (echte Funktionalität statt Demo)
 - [ ] Daten-Export (CSV/PDF) - vom Benutzer vorerst zurückgestellt
 
 ### P2 - Potential Improvements
