@@ -7,6 +7,7 @@ Ein modernes Verwaltungssystem für die Rheinzelmänner zur Erfassung und Verwal
 ### Authentifizierung & Sicherheit
 - JWT-Token basierte Session-Verwaltung
 - Passwörter mit bcrypt gehasht
+- **Passwort-Änderung** für angemeldete Benutzer (über Benutzermenü)
 - Rate Limiting (max. 5 Login-Versuche/Minute)
 - Audit-Logging aller Aktionen
 - Rollenbasierte Zugriffskontrolle
