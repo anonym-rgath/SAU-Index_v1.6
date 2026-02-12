@@ -4,7 +4,7 @@ import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
-import { Users, Plus, Trash2, Shield, UserCog, Eye } from 'lucide-react';
+import { Users, Plus, Trash2, Shield, UserCog, Eye, KeyRound } from 'lucide-react';
 import { toast } from 'sonner';
 import {
   Dialog,
@@ -37,7 +37,10 @@ const UserManagement = () => {
   const [loading, setLoading] = useState(true);
   const [addDialogOpen, setAddDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [resetPasswordDialogOpen, setResetPasswordDialogOpen] = useState(false);
   const [deletingUser, setDeletingUser] = useState(null);
+  const [resetPasswordUser, setResetPasswordUser] = useState(null);
+  const [newPassword, setNewPassword] = useState('');
   const [formData, setFormData] = useState({
     username: '',
     password: '',
