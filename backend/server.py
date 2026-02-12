@@ -37,6 +37,35 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+# Fiscal year configuration
+FISCAL_YEAR_START_MONTH = 8  # August
+FISCAL_YEAR_START_DAY = 1
+
+def get_fiscal_year(date: datetime) -> str:
+    """
+    Berechnet das Geschäftsjahr für ein gegebenes Datum.
+    Geschäftsjahr läuft vom 01.08.YYYY bis 31.07.(YYYY+1)
+    
+    Beispiel: 15.09.2025 -> "2025/2026"
+              15.06.2026 -> "2025/2026"
+              15.08.2026 -> "2026/2027"
+    """
+    year = date.year
+    month = date.month
+    day = date.day
+    
+    # Wenn vor dem Start des Geschäftsjahrs (vor 1. August)
+    if month < FISCAL_YEAR_START_MONTH or (month == FISCAL_YEAR_START_MONTH and day < FISCAL_YEAR_START_DAY):
+        # Gehört zum vorherigen Geschäftsjahr
+        return f"{year-1}/{year}"
+    else:
+        # Gehört zum aktuellen Geschäftsjahr
+        return f"{year}/{year+1}"
+
+def get_current_fiscal_year() -> str:
+    """Gibt das aktuelle Geschäftsjahr zurück"""
+    return get_fiscal_year(datetime.now(timezone.utc))
+
 # Enums
 class UserRole(str, Enum):
     admin = "admin"
