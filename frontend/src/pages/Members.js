@@ -4,7 +4,7 @@ import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
-import { Users, Plus, Pencil, Trash2, QrCode } from 'lucide-react';
+import { Users, Plus, Pencil, Trash2, QrCode, Archive, ArchiveRestore } from 'lucide-react';
 import { toast } from 'sonner';
 import {
   Select,
