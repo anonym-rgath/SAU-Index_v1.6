@@ -121,13 +121,13 @@ const Fines = () => {
           
           <div className="flex items-center gap-2 bg-white border border-stone-200 rounded-full px-3 h-10 shadow-sm">
             <select
-              data-testid="fines-year-selector"
-              value={year}
-              onChange={(e) => setYear(Number(e.target.value))}
+              data-testid="fines-fiscal-year-selector"
+              value={fiscalYear}
+              onChange={(e) => setFiscalYear(e.target.value)}
               className="bg-transparent border-none outline-none text-stone-700 font-medium cursor-pointer text-base"
             >
-              {years.map(y => (
-                <option key={y} value={y}>{y}</option>
+              {fiscalYears.map(fy => (
+                <option key={fy} value={fy}>GJ {fy}</option>
               ))}
             </select>
           </div>
