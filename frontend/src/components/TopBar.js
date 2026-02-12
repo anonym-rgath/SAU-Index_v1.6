@@ -21,7 +21,7 @@ const TopBar = () => {
     { path: '/dashboard', icon: LayoutDashboard, label: 'Dashboard', hideForVorstand: true },
     { path: '/members', icon: Users, label: 'Mitglieder' },
     { path: '/statistics', icon: BarChart3, label: 'Statistiken' },
-    { path: '/fines', icon: Receipt, label: 'Strafen', hideForVorstand: true },
+    { path: '/fines', icon: Receipt, label: 'Strafenübersicht', hideForVorstand: true },
     { path: '/fine-types', icon: Tag, label: 'Strafenarten' },
   ];
   

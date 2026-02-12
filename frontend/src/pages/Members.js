@@ -207,7 +207,7 @@ const Members = () => {
           <div className="flex items-center gap-3 mb-4">
             <Users className="w-5 h-5 text-emerald-700" />
             <h2 className="text-xl font-bold text-stone-900 tracking-tight">
-              Aktive Mitglieder
+              Alle Mitglieder
             </h2>
             <span className="text-sm text-stone-500">({activeMembers.length})</span>
           </div>
