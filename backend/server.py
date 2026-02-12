@@ -191,6 +191,7 @@ class FineCreate(BaseModel):
     member_id: str
     fine_type_id: str
     amount: float
+    date: Optional[str] = None  # ISO date string, optional
     notes: Optional[str] = None
 
 class FineUpdate(BaseModel):
