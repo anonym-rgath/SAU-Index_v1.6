@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Target, LogOut, Menu, X, LayoutDashboard, Receipt, Users, Tag } from 'lucide-react';
+import { Target, LogOut, Menu, X, LayoutDashboard, Receipt, Users, Tag, BarChart3 } from 'lucide-react';
 import { Button } from './ui/button';
 import { useAuth } from '../contexts/AuthContext';
 import { cn } from '../lib/utils';
