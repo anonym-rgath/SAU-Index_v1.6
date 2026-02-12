@@ -24,7 +24,8 @@ Entwicklung einer Full-Stack-Webanwendung für einen "Schützenzug" (später umb
 
 ## Login Credentials
 - Admin: `admin` / `admin123`
-- Vorstand: `vorstand` / `vorstand`
+- Spiess: `spiess` / `spiess123`
+- Vorstand: `vorstand` / `vorstand123`
 
 ---
 
