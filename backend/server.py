@@ -461,13 +461,18 @@ async def delete_fine(fine_id: str, auth=Depends(require_admin)):
 @api_router.get("/statistics", response_model=Statistics)
 async def get_statistics(fiscal_year: str, auth=Depends(verify_token)):
     fines = await db.fines.find({"fiscal_year": fiscal_year}, {"_id": 0}).to_list(10000)
-    members = await db.members.find({}, {"_id": 0}).to_list(1000)
+    # Nur aktive und passive Mitglieder (keine archivierten)
+    members = await db.members.find({"status": {"$ne": "archiviert"}}, {"_id": 0}).to_list(1000)
     
     member_map = {m['id']: m['name'] for m in members}
+    member_status = {m['id']: m.get('status', 'aktiv') for m in members}
     totals = {}
     
     for fine in fines:
         member_id = fine['member_id']
+        # Nur Strafen von nicht-archivierten Mitgliedern zählen
+        if member_id not in member_map:
+            continue
         if member_id not in totals:
             totals[member_id] = 0
         totals[member_id] += fine['amount']
