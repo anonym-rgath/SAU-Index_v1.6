@@ -14,11 +14,16 @@ Ein modernes Verwaltungssystem für die Rheinzelmänner zur Erfassung und Verwal
 
 ### Rollen & Berechtigungen
 
-| Rolle | Dashboard | Mitglieder | Statistiken | Strafen | Strafenarten |
-|-------|-----------|------------|-------------|---------|--------------|
-| **admin** | Vollzugriff | Vollzugriff | Vollzugriff | Vollzugriff | Vollzugriff |
-| **spiess** | Vollzugriff | Vollzugriff | Vollzugriff | Vollzugriff | Vollzugriff |
-| **vorstand** | - | Vollzugriff | Nur Lesen (anonym) | - | Vollzugriff |
+| Rolle | Dashboard | Mitglieder | Statistiken | Strafen | Strafenarten | Benutzerverwaltung |
+|-------|-----------|------------|-------------|---------|--------------|-------------------|
+| **admin** | Vollzugriff | Vollzugriff | Vollzugriff | Vollzugriff | Vollzugriff | Vollzugriff |
+| **spiess** | Vollzugriff | Vollzugriff | Vollzugriff | Vollzugriff | Vollzugriff | - |
+| **vorstand** | - | Vollzugriff | Nur Lesen (anonym) | - | Vollzugriff | - |
+
+### Benutzerverwaltung (nur Admin)
+- Neue Benutzer anlegen mit Benutzername, Passwort und Rolle
+- Benutzer löschen (außer sich selbst und letzter Admin)
+- **Passwörter zurücksetzen** für alle Benutzer
 
 ### Dashboard
 - Übersichtliches Ranking aller Mitglieder nach Strafensumme
