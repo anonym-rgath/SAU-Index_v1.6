@@ -92,6 +92,13 @@ Ein modernes Verwaltungssystem für die Rheinzelmänner zur Erfassung und Verwal
   - Body: `{ current_password, new_password }`
   - Mindestlänge neues Passwort: 6 Zeichen
 
+### Benutzerverwaltung (nur Admin)
+- `GET /api/users` - Alle Benutzer
+- `POST /api/users` - Benutzer erstellen
+  - Body: `{ username, password, role }`
+  - Rollen: `admin`, `spiess`, `vorstand`
+- `DELETE /api/users/{id}` - Benutzer löschen
+
 ### Mitglieder
 - `GET /api/members` - Alle Mitglieder
 - `POST /api/members` - Neues Mitglied
