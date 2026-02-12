@@ -321,11 +321,21 @@ async def update_member(request: Request, member_id: str, input: MemberCreate, a
     
     update_data = {"name": input.name, "status": input.status}
     
+    # Wenn Status auf archiviert wechselt, archived_at setzen
+    old_status = result.get('status', 'aktiv')
+    if input.status == 'archiviert' and old_status != 'archiviert':
+        update_data['archived_at'] = datetime.now(timezone.utc).isoformat()
+    # Wenn Status von archiviert auf aktiv/passiv wechselt, archived_at löschen
+    elif input.status != 'archiviert' and old_status == 'archiviert':
+        update_data['archived_at'] = None
+    
     await db.members.update_one({"id": member_id}, {"$set": update_data})
     updated = await db.members.find_one({"id": member_id}, {"_id": 0})
     
     if isinstance(updated.get('created_at'), str):
         updated['created_at'] = datetime.fromisoformat(updated['created_at'])
+    if isinstance(updated.get('archived_at'), str):
+        updated['archived_at'] = datetime.fromisoformat(updated['archived_at'])
     
     # Audit Log
     await log_audit(
@@ -343,6 +353,25 @@ async def update_member(request: Request, member_id: str, input: MemberCreate, a
 @api_router.delete("/members/{member_id}")
 async def delete_member(request: Request, member_id: str, auth=Depends(require_admin)):
     member = await db.members.find_one({"id": member_id}, {"_id": 0})
+    if not member:
+        raise HTTPException(status_code=404, detail="Mitglied nicht gefunden")
+    
+    # Prüfen ob archiviert und mindestens 90 Tage vergangen
+    if member.get('status') == 'archiviert' and member.get('archived_at'):
+        archived_at = member['archived_at']
+        if isinstance(archived_at, str):
+            archived_at = datetime.fromisoformat(archived_at)
+        
+        days_archived = (datetime.now(timezone.utc) - archived_at).days
+        if days_archived < 90:
+            remaining = 90 - days_archived
+            raise HTTPException(
+                status_code=400, 
+                detail=f"Mitglied kann erst nach 90 Tagen gelöscht werden. Noch {remaining} Tage warten."
+            )
+    elif member.get('status') != 'archiviert':
+        raise HTTPException(status_code=400, detail="Nur archivierte Mitglieder können gelöscht werden")
+    
     result = await db.members.delete_one({"id": member_id})
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Mitglied nicht gefunden")
