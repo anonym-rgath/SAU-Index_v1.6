@@ -35,9 +35,11 @@ const Login = () => {
       <div className="relative z-10 w-full max-w-md">
         <div className="bg-white rounded-3xl shadow-2xl p-8 border border-stone-200">
           <div className="flex items-center justify-center mb-6">
-            <div className="bg-emerald-100 p-4 rounded-2xl">
-              <Target className="w-12 h-12 text-emerald-700" />
-            </div>
+            <img 
+              src="/logo.png" 
+              alt="Rheinzelmänner Logo" 
+              className="w-32 h-32 object-contain"
+            />
           </div>
           
           <h1 className="text-4xl font-bold text-center mb-2 text-stone-900 tracking-tight">
