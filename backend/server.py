@@ -181,7 +181,7 @@ async def get_members(auth=Depends(verify_token)):
     return members
 
 @api_router.post("/members", response_model=Member)
-async def create_member(input: MemberCreate, auth=Depends(verify_token)):
+async def create_member(input: MemberCreate, auth=Depends(require_admin)):
     member = Member(**input.model_dump())
     doc = member.model_dump()
     doc['created_at'] = doc['created_at'].isoformat()
@@ -189,12 +189,12 @@ async def create_member(input: MemberCreate, auth=Depends(verify_token)):
     return member
 
 @api_router.put("/members/{member_id}", response_model=Member)
-async def update_member(member_id: str, input: MemberCreate, auth=Depends(verify_token)):
+async def update_member(member_id: str, input: MemberCreate, auth=Depends(require_admin)):
     result = await db.members.find_one({"id": member_id}, {"_id": 0})
     if not result:
         raise HTTPException(status_code=404, detail="Mitglied nicht gefunden")
     
-    update_data = {"name": input.name}
+    update_data = {"name": input.name, "status": input.status}
     if input.nfc_id is not None:
         update_data["nfc_id"] = input.nfc_id
     
@@ -207,7 +207,7 @@ async def update_member(member_id: str, input: MemberCreate, auth=Depends(verify
     return Member(**updated)
 
 @api_router.delete("/members/{member_id}")
-async def delete_member(member_id: str, auth=Depends(verify_token)):
+async def delete_member(member_id: str, auth=Depends(require_admin)):
     result = await db.members.delete_one({"id": member_id})
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Mitglied nicht gefunden")
