@@ -100,7 +100,10 @@ Entwicklung einer Full-Stack-Webanwendung für einen "Schützenzug" (später umb
 - `/app/frontend/src/pages/Statistics.js` - Statistik-Seite
 - `/app/frontend/src/pages/Members.js` - Mitgliederverwaltung
 - `/app/frontend/src/pages/Fines.js` - Strafenübersicht
+- `/app/frontend/src/pages/UserManagement.js` - Benutzerverwaltung (nur Admin)
 - `/app/frontend/src/components/AddFineDialog.js` - Dialog zur Strafenerfassung
+- `/app/frontend/src/components/ChangePasswordDialog.js` - Dialog zur Passwortänderung
+- `/app/frontend/src/components/TopBar.js` - Navigation mit Benutzermenü
 - `/app/frontend/src/hooks/useAuth.js` - Auth-Hook
 - `/app/frontend/src/contexts/AuthContext.js` - Auth Context mit Rollenlogik
 
