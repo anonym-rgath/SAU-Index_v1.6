@@ -20,8 +20,8 @@ import { useAuth } from '../contexts/AuthContext';
 
 const Fines = () => {
   const { isAdmin } = useAuth();
-  const [year, setYear] = useState(new Date().getFullYear());
-  const [years, setYears] = useState([]);
+  const [fiscalYear, setFiscalYear] = useState('');
+  const [fiscalYears, setFiscalYears] = useState([]);
   const [fines, setFines] = useState([]);
   const [members, setMembers] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -31,21 +31,39 @@ const Fines = () => {
   const [deletingFine, setDeletingFine] = useState(null);
 
   useEffect(() => {
-    loadData();
-  }, [year]);
+    loadInitialData();
+  }, []);
+
+  useEffect(() => {
+    if (fiscalYear) {
+      loadData();
+    }
+  }, [fiscalYear]);
+
+  const loadInitialData = async () => {
+    try {
+      const yearsRes = await api.fiscalYears.getAll();
+      const years = yearsRes.data.fiscal_years || [];
+      setFiscalYears(years);
+      if (years.length > 0) {
+        setFiscalYear(years[0]);
+      }
+    } catch (error) {
+      toast.error('Fehler beim Laden der Geschäftsjahre');
+      console.error(error);
+    }
+  };
 
   const loadData = async () => {
     setLoading(true);
     try {
-      const [finesRes, membersRes, yearsRes] = await Promise.all([
-        api.fines.getAll(year),
+      const [finesRes, membersRes] = await Promise.all([
+        api.fines.getAll(fiscalYear),
         api.members.getAll(),
-        api.years.getAll(),
       ]);
       
       setFines(finesRes.data);
       setMembers(membersRes.data);
-      setYears(yearsRes.data.years || [year]);
     } catch (error) {
       toast.error('Fehler beim Laden der Daten');
       console.error(error);
