@@ -105,6 +105,31 @@ const UserManagement = () => {
     }
   };
 
+  const handleResetPassword = async () => {
+    if (!newPassword) {
+      toast.error('Bitte ein neues Passwort eingeben');
+      return;
+    }
+    if (newPassword.length < 6) {
+      toast.error('Passwort muss mindestens 6 Zeichen lang sein');
+      return;
+    }
+
+    setSubmitting(true);
+    try {
+      await api.users.resetPassword(resetPasswordUser.id, { new_password: newPassword });
+      toast.success(`Passwort für ${resetPasswordUser.username} zurückgesetzt`);
+      setResetPasswordDialogOpen(false);
+      setResetPasswordUser(null);
+      setNewPassword('');
+    } catch (error) {
+      const message = error.response?.data?.detail || 'Fehler beim Zurücksetzen';
+      toast.error(message);
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   const getRoleLabel = (role) => {
     switch (role) {
       case 'admin': return 'Admin';
