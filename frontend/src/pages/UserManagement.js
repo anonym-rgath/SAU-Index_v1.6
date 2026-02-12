@@ -204,16 +204,31 @@ const UserManagement = () => {
                   </div>
                 </div>
                 
-                <Button
-                  data-testid={`delete-user-${user.id}`}
-                  onClick={() => {
-                    setDeletingUser(user);
-                    setDeleteDialogOpen(true);
-                  }}
-                  className="h-10 w-10 p-0 rounded-full bg-red-50 border border-red-200 text-red-600 hover:bg-red-100 transition-colors"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </Button>
+                <div className="flex gap-2">
+                  <Button
+                    data-testid={`reset-password-${user.id}`}
+                    onClick={() => {
+                      setResetPasswordUser(user);
+                      setNewPassword('');
+                      setResetPasswordDialogOpen(true);
+                    }}
+                    className="h-10 w-10 p-0 rounded-full bg-amber-50 border border-amber-200 text-amber-600 hover:bg-amber-100 transition-colors"
+                    title="Passwort zurücksetzen"
+                  >
+                    <KeyRound className="w-4 h-4" />
+                  </Button>
+                  <Button
+                    data-testid={`delete-user-${user.id}`}
+                    onClick={() => {
+                      setDeletingUser(user);
+                      setDeleteDialogOpen(true);
+                    }}
+                    className="h-10 w-10 p-0 rounded-full bg-red-50 border border-red-200 text-red-600 hover:bg-red-100 transition-colors"
+                    title="Benutzer löschen"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
+                </div>
               </div>
             ))}
           </div>
