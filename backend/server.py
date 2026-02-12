@@ -224,15 +224,35 @@ def require_admin(payload: dict = Depends(verify_token)):
     return payload
 
 @api_router.post("/auth/login", response_model=LoginResponse)
-async def login(request: LoginRequest):
+@limiter.limit("5/minute")
+async def login(request: Request, login_data: LoginRequest):
+    ip_address = get_remote_address(request)
+    
     # Find user by username
-    user_doc = await db.users.find_one({"username": request.username}, {"_id": 0})
+    user_doc = await db.users.find_one({"username": login_data.username}, {"_id": 0})
     
     if not user_doc:
+        # Log failed login attempt
+        await log_audit(
+            action=AuditAction.LOGIN_FAILED,
+            resource_type="auth",
+            username=login_data.username,
+            details="Benutzer nicht gefunden",
+            ip_address=ip_address
+        )
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Benutzername oder Passwort falsch")
     
     # Verify password
-    if not pwd_context.verify(request.password, user_doc['password_hash']):
+    if not pwd_context.verify(login_data.password, user_doc['password_hash']):
+        # Log failed login attempt
+        await log_audit(
+            action=AuditAction.LOGIN_FAILED,
+            resource_type="auth",
+            user_id=user_doc.get('id'),
+            username=login_data.username,
+            details="Falsches Passwort",
+            ip_address=ip_address
+        )
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Benutzername oder Passwort falsch")
     
     token = jwt.encode(
@@ -246,6 +266,16 @@ async def login(request: LoginRequest):
         JWT_SECRET,
         algorithm=JWT_ALGORITHM
     )
+    
+    # Log successful login
+    await log_audit(
+        action=AuditAction.LOGIN_SUCCESS,
+        resource_type="auth",
+        user_id=user_doc['id'],
+        username=user_doc['username'],
+        ip_address=ip_address
+    )
+    
     return LoginResponse(
         token=token, 
         message="Login erfolgreich",
