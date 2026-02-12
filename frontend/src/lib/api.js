@@ -22,7 +22,7 @@ export const api = {
     delete: (id) => axios.delete(`${API_URL}/fines/${id}`),
   },
   statistics: {
-    getByFiscalYear: (fiscalYear) => axios.get(`${API_URL}/statistics/${fiscalYear}`),
+    getByFiscalYear: (fiscalYear) => axios.get(`${API_URL}/statistics`, { params: { fiscal_year: fiscalYear } }),
   },
   fiscalYears: {
     getAll: () => axios.get(`${API_URL}/fiscal-years`),
