@@ -44,7 +44,7 @@ const Members = () => {
   const [qrMember, setQrMember] = useState(null);
   const [editingMember, setEditingMember] = useState(null);
   const [deletingMember, setDeletingMember] = useState(null);
-  const [formData, setFormData] = useState({ name: '', nfc_id: '', status: 'aktiv' });
+  const [formData, setFormData] = useState({ name: '', status: 'aktiv' });
   const [sortBy, setSortBy] = useState('name-asc');
 
   useEffect(() => {
@@ -95,13 +95,13 @@ const Members = () => {
 
   const openAddDialog = () => {
     setEditingMember(null);
-    setFormData({ name: '', nfc_id: '', status: 'aktiv' });
+    setFormData({ name: '', status: 'aktiv' });
     setDialogOpen(true);
   };
 
   const openEditDialog = (member) => {
     setEditingMember(member);
-    setFormData({ name: member.name, nfc_id: member.nfc_id || '', status: member.status || 'aktiv' });
+    setFormData({ name: member.name, status: member.status || 'aktiv' });
     setDialogOpen(true);
   };
 
@@ -226,7 +226,7 @@ const Members = () => {
                       </span>
                     </div>
                     <p className="text-xs text-stone-500 truncate">
-                      {member.nfc_id ? `NFC: ${member.nfc_id}` : 'Keine NFC ID'}
+                      {member.status === 'aktiv' ? 'Aktives Mitglied' : 'Passives Mitglied'}
                     </p>
                   </div>
                   {isAdmin && (
@@ -304,17 +304,6 @@ const Members = () => {
                     <SelectItem value="passiv">Passiv</SelectItem>
                   </SelectContent>
                 </Select>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="nfc_id">NFC ID (optional)</Label>
-                <Input
-                  data-testid="member-nfc-input"
-                  id="nfc_id"
-                  value={formData.nfc_id}
-                  onChange={(e) => setFormData({ ...formData, nfc_id: e.target.value })}
-                  placeholder="z.B. A1B2C3D4"
-                  className="h-12 rounded-xl border-stone-200 bg-stone-50 focus:bg-white focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all text-base"
-                />
               </div>
             </div>
             <DialogFooter>
