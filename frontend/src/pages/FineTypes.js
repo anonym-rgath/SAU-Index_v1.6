@@ -128,7 +128,7 @@ const FineTypes = () => {
               Strafenkatalog
             </p>
           </div>
-          {isAdmin && (
+          {canManageFineTypes && (
             <Button
               data-testid="add-finetype-button"
               onClick={openAddDialog}
@@ -163,7 +163,7 @@ const FineTypes = () => {
                       {fineType.amount !== null ? formatCurrency(fineType.amount) : 'Variabel'}
                     </p>
                   </div>
-                  {isAdmin && (
+                  {canManageFineTypes && (
                     <div className="flex gap-2 flex-shrink-0 ml-2">
                       <Button
                         data-testid={`edit-finetype-${fineType.id}`}
