@@ -341,9 +341,9 @@ async def delete_fine(fine_id: str, auth=Depends(require_admin)):
         raise HTTPException(status_code=404, detail="Strafe nicht gefunden")
     return {"message": "Strafe gelöscht"}
 
-@api_router.get("/statistics/{year}", response_model=Statistics)
-async def get_statistics(year: int, auth=Depends(verify_token)):
-    fines = await db.fines.find({"year": year}, {"_id": 0}).to_list(10000)
+@api_router.get("/statistics/{fiscal_year}", response_model=Statistics)
+async def get_statistics(fiscal_year: str, auth=Depends(verify_token)):
+    fines = await db.fines.find({"fiscal_year": fiscal_year}, {"_id": 0}).to_list(10000)
     members = await db.members.find({}, {"_id": 0}).to_list(1000)
     
     member_map = {m['id']: m['name'] for m in members}
@@ -372,7 +372,7 @@ async def get_statistics(year: int, auth=Depends(verify_token)):
     laemmchen = ranking[1] if len(ranking) > 1 else None
     
     return Statistics(
-        year=year,
+        fiscal_year=fiscal_year,
         total_fines=len(fines),
         total_amount=sum(f['amount'] for f in fines),
         sau=sau,
@@ -380,19 +380,20 @@ async def get_statistics(year: int, auth=Depends(verify_token)):
         ranking=ranking
     )
 
-@api_router.get("/years")
-async def get_years(auth=Depends(verify_token)):
+@api_router.get("/fiscal-years")
+async def get_fiscal_years(auth=Depends(verify_token)):
     pipeline = [
-        {"$group": {"_id": "$year"}},
+        {"$group": {"_id": "$fiscal_year"}},
         {"$sort": {"_id": -1}}
     ]
     result = await db.fines.aggregate(pipeline).to_list(100)
-    years = [r['_id'] for r in result if r['_id']]
+    fiscal_years = [r['_id'] for r in result if r['_id']]
     
-    if not years:
-        years = [datetime.now(timezone.utc).year]
+    # Wenn keine Geschäftsjahre in DB, füge aktuelles hinzu
+    if not fiscal_years:
+        fiscal_years = [get_current_fiscal_year()]
     
-    return {"years": years}
+    return {"fiscal_years": fiscal_years}
 
 app.include_router(api_router)
 
