@@ -5,21 +5,22 @@ import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 import { toast } from 'sonner';
-import { Lock, Target } from 'lucide-react';
+import { Lock, Target, User } from 'lucide-react';
 
 const Login = () => {
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const { login, loading } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const result = await login(password);
+    const result = await login(username, password);
     if (result.success) {
       toast.success('Login erfolgreich!');
       navigate('/dashboard');
     } else {
-      toast.error(result.error || 'Falsches Passwort');
+      toast.error(result.error || 'Benutzername oder Passwort falsch');
     }
   };
 
@@ -47,6 +48,25 @@ const Login = () => {
           </p>
 
           <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="space-y-2">
+              <Label htmlFor="username" className="text-stone-700 font-medium">
+                Benutzername
+              </Label>
+              <div className="relative">
+                <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-stone-400" />
+                <Input
+                  data-testid="login-username-input"
+                  id="username"
+                  type="text"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  placeholder="Benutzername eingeben"
+                  className="pl-12 h-12 rounded-xl border-stone-200 bg-stone-50 focus:bg-white focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all text-base"
+                  required
+                />
+              </div>
+            </div>
+            
             <div className="space-y-2">
               <Label htmlFor="password" className="text-stone-700 font-medium">
                 Passwort
@@ -77,7 +97,7 @@ const Login = () => {
           </form>
 
           <p className="text-center text-sm text-stone-400 mt-6">
-            Standard-Passwort: <span className="font-mono font-medium">admin123</span>
+            Test-Benutzer: <span className="font-mono font-medium">admin / admin123</span>
           </p>
         </div>
       </div>

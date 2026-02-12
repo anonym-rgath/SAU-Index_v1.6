@@ -7,15 +7,18 @@ const API_URL = process.env.REACT_APP_BACKEND_URL + '/api';
 
 export const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(localStorage.getItem('token'));
+  const [user, setUser] = useState(JSON.parse(localStorage.getItem('user') || 'null'));
   const [loading, setLoading] = useState(false);
 
-  const login = async (password) => {
+  const login = async (username, password) => {
     setLoading(true);
     try {
-      const response = await axios.post(`${API_URL}/auth/login`, { password });
-      const { token } = response.data;
+      const response = await axios.post(`${API_URL}/auth/login`, { username, password });
+      const { token, role, username: userName } = response.data;
       localStorage.setItem('token', token);
+      localStorage.setItem('user', JSON.stringify({ username: userName, role }));
       setToken(token);
+      setUser({ username: userName, role });
       axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
       return { success: true };
     } catch (error) {
@@ -27,7 +30,9 @@ export const AuthProvider = ({ children }) => {
 
   const logout = () => {
     localStorage.removeItem('token');
+    localStorage.removeItem('user');
     setToken(null);
+    setUser(null);
     delete axios.defaults.headers.common['Authorization'];
   };
 
@@ -37,8 +42,20 @@ export const AuthProvider = ({ children }) => {
     }
   }, [token]);
 
+  const isAdmin = user?.role === 'admin';
+  const isVorstand = user?.role === 'vorstand';
+
   return (
-    <AuthContext.Provider value={{ token, login, logout, loading, isAuthenticated: !!token }}>
+    <AuthContext.Provider value={{ 
+      token, 
+      user,
+      login, 
+      logout, 
+      loading, 
+      isAuthenticated: !!token,
+      isAdmin,
+      isVorstand
+    }}>
       {children}
     </AuthContext.Provider>
   );
