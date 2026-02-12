@@ -28,6 +28,7 @@ const AddFineDialog = ({ open, onOpenChange, onSuccess, preselectedMemberId = nu
     member_id: preselectedMemberId || '',
     fine_type_id: '',
     amount: '',
+    date: '',
     notes: '',
   });
 
@@ -75,9 +76,10 @@ const AddFineDialog = ({ open, onOpenChange, onSuccess, preselectedMemberId = nu
         member_id: formData.member_id,
         fine_type_id: formData.fine_type_id,
         amount: parseFloat(formData.amount),
+        date: formData.date || null,
         notes: formData.notes || null,
       });
-      setFormData({ member_id: '', fine_type_id: '', amount: '', notes: '' });
+      setFormData({ member_id: '', fine_type_id: '', amount: '', date: '', notes: '' });
       onSuccess();
     } catch (error) {
       toast.error('Fehler beim Erstellen der Strafe');
@@ -146,6 +148,19 @@ const AddFineDialog = ({ open, onOpenChange, onSuccess, preselectedMemberId = nu
                 className="h-12 rounded-xl border-stone-200 bg-stone-50 focus:bg-white focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all text-base"
                 required
               />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="date">Datum (optional)</Label>
+              <Input
+                data-testid="fine-date-input"
+                id="date"
+                type="date"
+                value={formData.date}
+                onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+                className="h-12 rounded-xl border-stone-200 bg-stone-50 focus:bg-white focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all text-base"
+              />
+              <p className="text-xs text-stone-400">Leer lassen für heutiges Datum</p>
             </div>
 
             <div className="space-y-2">
