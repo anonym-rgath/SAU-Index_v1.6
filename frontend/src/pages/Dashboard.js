@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { api } from '../lib/api';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
-import { PiggyBank, Smile, Plus, Trophy, Calendar, Scan } from 'lucide-react';
+import { PiggyBank, Wallet, Plus, Trophy, Calendar, Scan } from 'lucide-react';
 import { toast } from 'sonner';
 import AddFineDialog from '../components/AddFineDialog';
 import ScanDemoDialog from '../components/ScanDemoDialog';
@@ -177,7 +177,7 @@ const Dashboard = () => {
                 <p className="text-xs text-stone-500">Zweithöchster</p>
               </div>
               <div className="bg-stone-100 p-2 rounded-lg">
-                <Smile className="w-5 h-5 text-stone-400" />
+                <Wallet className="w-5 h-5 text-stone-500" />
               </div>
             </div>
             <div data-testid="laemmchen-value">

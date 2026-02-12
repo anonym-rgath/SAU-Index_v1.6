@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { api } from '../lib/api';
 import { Card } from '../components/ui/card';
-import { Calendar, TrendingUp, Award, Users as UsersIcon, PiggyBank } from 'lucide-react';
+import { Calendar, TrendingUp, Award, Users as UsersIcon } from 'lucide-react';
 import { toast } from 'sonner';
 import { formatCurrency } from '../lib/utils';
 import {
@@ -203,7 +203,7 @@ const Statistics = () => {
 
           <Card className="bg-white rounded-2xl border border-stone-200 shadow-sm p-4">
             <div className="flex items-center gap-2 mb-2">
-              <PiggyBank className="w-4 h-4 text-pink-500" />
+              <TrendingUp className="w-4 h-4 text-blue-500" />
               <p className="text-xs text-stone-500 font-medium">Durchschnitt</p>
             </div>
             <p className="text-2xl font-bold text-stone-900">
