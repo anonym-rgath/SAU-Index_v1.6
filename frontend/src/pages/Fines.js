@@ -16,8 +16,10 @@ import {
 } from '../components/ui/alert-dialog';
 import EditFineDialog from '../components/EditFineDialog';
 import { formatCurrency, formatDate } from '../lib/utils';
+import { useAuth } from '../contexts/AuthContext';
 
 const Fines = () => {
+  const { isAdmin } = useAuth();
   const [year, setYear] = useState(new Date().getFullYear());
   const [years, setYears] = useState([]);
   const [fines, setFines] = useState([]);
