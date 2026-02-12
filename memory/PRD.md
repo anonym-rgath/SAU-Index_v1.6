@@ -27,8 +27,8 @@ Entwicklung einer Full-Stack-Webanwendung für einen "Schützenzug" (später umb
 
 ## Login Credentials
 - Admin: `admin` / `admin123`
-- Spiess: `Henrik Dinslage` / `rheinzel2025`
-- Vorstand: `Marius Geduldig` / `rheinzel2025`
+
+*Weitere Benutzer können vom Admin über die Benutzerverwaltung angelegt werden.*
 
 ---
 
