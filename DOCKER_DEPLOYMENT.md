@@ -40,47 +40,49 @@ unzip rheinzelmaenner.zip
 cd rheinzelmaenner
 ```
 
-### 2. Umgebungsvariablen anpassen
-
-Backend (.env):
-```bash
-nano backend/.env
-```
-Inhalt:
-```
-MONGO_URL=mongodb://mongodb:27017
-DB_NAME=rheinzelmaenner
-JWT_SECRET=dein-geheimer-schluessel-hier-aendern
-```
-
-Frontend (.env):
-```bash
-nano frontend/.env
-```
-Inhalt (RASPBERRY_IP durch die IP deines Pi ersetzen):
-```
-REACT_APP_BACKEND_URL=http://RASPBERRY_IP:8001
-```
-
-### 3. Docker Container bauen und starten
+### 2. Start-Script ausführen
 
 ```bash
-# Im Hauptverzeichnis (wo docker-compose.yml liegt):
-docker-compose up -d --build
-
-# Logs anzeigen:
-docker-compose logs -f
-
-# Status prüfen:
-docker-compose ps
+chmod +x start.sh
+./start.sh
 ```
 
-### 4. App aufrufen
+Das Script:
+- Erstellt automatisch SSL-Zertifikate (selbstsigniert)
+- Konfiguriert alle Umgebungsvariablen
+- Baut und startet alle Docker Container
 
-- Frontend: http://RASPBERRY_IP:3000
-- Backend API: http://RASPBERRY_IP:8001/api
+### 3. App aufrufen
 
-Login: admin / admin123
+- **URL:** https://RASPBERRY_PI_IP (Port 443)
+- **Login:** admin / admin123
+
+⚠️ **Hinweis:** Der Browser zeigt eine Sicherheitswarnung wegen des selbstsignierten Zertifikats. 
+Klicke auf "Erweitert" → "Weiter zu [IP] (unsicher)" um fortzufahren.
+
+---
+
+## Architektur
+
+```
+                    ┌─────────────────┐
+                    │   Browser       │
+                    └────────┬────────┘
+                             │ HTTPS (443)
+                    ┌────────▼────────┐
+                    │  Nginx Proxy    │
+                    │  (SSL/TLS)      │
+                    └───┬─────────┬───┘
+                        │         │
+              ┌─────────▼─┐   ┌───▼─────────┐
+              │ Frontend  │   │  Backend    │
+              │ (React)   │   │  (FastAPI)  │
+              └───────────┘   └──────┬──────┘
+                                     │
+                              ┌──────▼──────┐
+                              │  MongoDB    │
+                              └─────────────┘
+```
 
 ---
 
@@ -94,12 +96,16 @@ docker-compose down
 docker-compose restart
 
 # Logs anzeigen:
+docker-compose logs -f
+docker-compose logs -f nginx
 docker-compose logs -f backend
-docker-compose logs -f frontend
+
+# Status prüfen:
+docker-compose ps
 
 # Datenbank-Backup:
-docker exec mongodb mongodump --out /backup
-docker cp mongodb:/backup ./backup
+docker exec rheinzel-mongodb mongodump --out /backup
+docker cp rheinzel-mongodb:/backup ./backup
 
 # Alles löschen und neu bauen:
 docker-compose down -v
@@ -108,13 +114,27 @@ docker-compose up -d --build
 
 ---
 
-## Autostart nach Reboot
+## SSL-Zertifikate
 
-Docker-Container starten automatisch neu (restart: unless-stopped).
-Falls nicht, aktiviere den Docker-Service:
+### Selbstsigniertes Zertifikat (Standard)
+Wird automatisch vom start.sh Script erstellt. Browser zeigt Warnung - für lokale Nutzung OK.
+
+### Let's Encrypt (für öffentliche Domain)
+Falls du eine Domain hast und die App öffentlich erreichbar machen willst:
 
 ```bash
-sudo systemctl enable docker
+# Certbot installieren
+sudo apt install certbot -y
+
+# Zertifikat erstellen (Port 80 muss erreichbar sein)
+sudo certbot certonly --standalone -d deine-domain.de
+
+# Zertifikate kopieren
+sudo cp /etc/letsencrypt/live/deine-domain.de/fullchain.pem nginx/certs/cert.pem
+sudo cp /etc/letsencrypt/live/deine-domain.de/privkey.pem nginx/certs/key.pem
+
+# Container neustarten
+docker-compose restart nginx
 ```
 
 ---
@@ -123,18 +143,18 @@ sudo systemctl enable docker
 
 ### Container startet nicht:
 ```bash
+docker-compose logs nginx
 docker-compose logs backend
-docker-compose logs frontend
 ```
 
-### MongoDB Verbindungsfehler:
-- Warte 30 Sekunden nach Start (MongoDB braucht Zeit)
-- Prüfe: `docker-compose ps` - alle Container "Up"?
+### SSL-Fehler:
+- Prüfe ob Zertifikate existieren: `ls -la nginx/certs/`
+- Neu erstellen: `rm -rf nginx/certs && ./start.sh`
 
-### Frontend zeigt nichts an:
-- Prüfe REACT_APP_BACKEND_URL in frontend/.env
-- Muss die IP des Raspberry Pi sein, nicht localhost!
+### MongoDB Verbindungsfehler:
+- Warte 30 Sekunden nach Start
+- Prüfe: `docker-compose ps` - alle Container "Up"?
 
 ### Zu wenig Speicher:
 - Raspberry Pi 4 mit min. 2GB RAM empfohlen
-- `docker system prune` um alte Images zu löschen
+- `docker system prune -a` um alte Images zu löschen
