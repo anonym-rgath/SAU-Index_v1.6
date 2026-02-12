@@ -20,17 +20,9 @@ fi
 PI_IP=$(hostname -I | awk '{print $1}')
 echo "📍 Raspberry Pi IP: $PI_IP"
 
-# Erstelle SSL-Zertifikate falls nicht vorhanden
-if [ ! -f nginx/certs/cert.pem ]; then
-    echo ""
-    echo "🔐 Erstelle selbstsigniertes SSL-Zertifikat..."
-    mkdir -p nginx/certs
-    openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
-        -keyout nginx/certs/key.pem \
-        -out nginx/certs/cert.pem \
-        -subj "/C=DE/ST=NRW/L=Stadt/O=Rheinzelmaenner/CN=$PI_IP"
-    echo "✅ SSL-Zertifikat erstellt"
-fi
+# Erstelle/Update .env für Frontend mit korrekter IP
+echo "REACT_APP_BACKEND_URL=http://$PI_IP:8001" > frontend/.env
+echo "✅ Frontend .env erstellt mit Backend-URL: http://$PI_IP:8001"
 
 # Prüfe ob backend/.env existiert
 if [ ! -f backend/.env ]; then
@@ -39,10 +31,6 @@ if [ ! -f backend/.env ]; then
     echo "JWT_SECRET=$(openssl rand -hex 32)" >> backend/.env
     echo "✅ Backend .env erstellt"
 fi
-
-# Frontend .env für relativen API Pfad
-echo "REACT_APP_BACKEND_URL=/api" > frontend/.env
-echo "✅ Frontend .env erstellt"
 
 # Baue und starte Container
 echo ""
@@ -62,11 +50,8 @@ echo ""
 echo "=============================="
 echo "✅ Rheinzelmänner läuft!"
 echo ""
-echo "🌐 App:     https://$PI_IP"
-echo "🔒 HTTPS auf Port 443"
-echo ""
-echo "⚠️  Hinweis: Browser zeigt Sicherheitswarnung"
-echo "   (selbstsigniertes Zertifikat) - einfach akzeptieren"
+echo "🌐 Frontend: http://$PI_IP:3000"
+echo "🔧 Backend:  http://$PI_IP:8001/api"
 echo ""
 echo "👤 Login: admin / admin123"
 echo "=============================="
