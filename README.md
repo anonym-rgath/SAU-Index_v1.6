@@ -88,6 +88,9 @@ Ein modernes Verwaltungssystem für die Rheinzelmänner zur Erfassung und Verwal
 ### Authentifizierung
 - `POST /api/auth/login` - Login
 - `GET /api/auth/me` - Aktueller Benutzer
+- `PUT /api/auth/change-password` - Passwort ändern
+  - Body: `{ current_password, new_password }`
+  - Mindestlänge neues Passwort: 6 Zeichen
 
 ### Mitglieder
 - `GET /api/members` - Alle Mitglieder
