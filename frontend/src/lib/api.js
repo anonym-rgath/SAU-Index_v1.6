@@ -16,15 +16,15 @@ export const api = {
     delete: (id) => axios.delete(`${API_URL}/fine-types/${id}`),
   },
   fines: {
-    getAll: (year) => axios.get(`${API_URL}/fines`, { params: { year } }),
+    getAll: (fiscalYear) => axios.get(`${API_URL}/fines`, { params: { fiscal_year: fiscalYear } }),
     create: (data) => axios.post(`${API_URL}/fines`, data),
     update: (id, data) => axios.put(`${API_URL}/fines/${id}`, data),
     delete: (id) => axios.delete(`${API_URL}/fines/${id}`),
   },
   statistics: {
-    getByYear: (year) => axios.get(`${API_URL}/statistics/${year}`),
+    getByFiscalYear: (fiscalYear) => axios.get(`${API_URL}/statistics/${fiscalYear}`),
   },
-  years: {
-    getAll: () => axios.get(`${API_URL}/years`),
+  fiscalYears: {
+    getAll: () => axios.get(`${API_URL}/fiscal-years`),
   },
 };
