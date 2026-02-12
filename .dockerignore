@@ -1,0 +1,34 @@
+# Docker
+docker-compose.yml
+Dockerfile
+
+# Dependencies
+node_modules/
+venv/
+__pycache__/
+*.pyc
+
+# Build outputs
+build/
+dist/
+
+# Environment files (erstelle diese manuell auf dem Pi)
+.env
+.env.local
+.env.production
+
+# IDE
+.idea/
+.vscode/
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Test
+coverage/
+.pytest_cache/
