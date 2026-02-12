@@ -10,6 +10,7 @@ import Members from './pages/Members';
 import FineTypes from './pages/FineTypes';
 import Fines from './pages/Fines';
 import Statistics from './pages/Statistics';
+import UserManagement from './pages/UserManagement';
 
 // Redirect based on role
 const RoleBasedRedirect = () => {
@@ -22,6 +23,15 @@ const AdminOnlyRoute = ({ children }) => {
   const { isVorstand } = useAuth();
   if (isVorstand) {
     return <Navigate to="/members" replace />;
+  }
+  return children;
+};
+
+// Only admin can access
+const AdminRoute = ({ children }) => {
+  const { isAdmin } = useAuth();
+  if (!isAdmin) {
+    return <Navigate to="/dashboard" replace />;
   }
   return children;
 };
