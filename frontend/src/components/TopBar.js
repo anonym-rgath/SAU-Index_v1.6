@@ -82,9 +82,11 @@ const TopBar = () => {
           {/* Drawer Header */}
           <div className="flex items-center justify-between p-4 border-b border-stone-200">
             <div className="flex items-center gap-2">
-              <div className="bg-emerald-100 p-2 rounded-xl">
-                <Target className="w-6 h-6 text-emerald-700" />
-              </div>
+              <img 
+                src="/logo.png" 
+                alt="Rheinzelmänner" 
+                className="w-10 h-10 object-contain"
+              />
               <div>
                 <h2 className="font-bold text-lg text-stone-900">Rheinzelmänner</h2>
               </div>
