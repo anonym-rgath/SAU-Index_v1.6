@@ -110,6 +110,48 @@ class LoginResponse(BaseModel):
     role: str
     username: str
 
+# Audit Log Model
+class AuditAction(str, Enum):
+    LOGIN_SUCCESS = "login_success"
+    LOGIN_FAILED = "login_failed"
+    LOGOUT = "logout"
+    CREATE = "create"
+    UPDATE = "update"
+    DELETE = "delete"
+
+class AuditLog(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    user_id: Optional[str] = None
+    username: Optional[str] = None
+    action: AuditAction
+    resource_type: str
+    resource_id: Optional[str] = None
+    details: Optional[str] = None
+    ip_address: Optional[str] = None
+
+# Audit Log Helper
+async def log_audit(
+    action: AuditAction,
+    resource_type: str,
+    resource_id: Optional[str] = None,
+    user_id: Optional[str] = None,
+    username: Optional[str] = None,
+    details: Optional[str] = None,
+    ip_address: Optional[str] = None
+):
+    audit_entry = AuditLog(
+        action=action,
+        resource_type=resource_type,
+        resource_id=resource_id,
+        user_id=user_id,
+        username=username,
+        details=details,
+        ip_address=ip_address
+    )
+    await db.audit_logs.insert_one(audit_entry.model_dump())
+    logger.info(f"AUDIT: {action.value} - {resource_type} - User: {username} - IP: {ip_address}")
+
 class Member(BaseModel):
     model_config = ConfigDict(extra="ignore")
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
