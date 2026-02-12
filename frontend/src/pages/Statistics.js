@@ -4,6 +4,7 @@ import { Card } from '../components/ui/card';
 import { Calendar, TrendingUp, Award, Users as UsersIcon, Coins } from 'lucide-react';
 import { toast } from 'sonner';
 import { formatCurrency } from '../lib/utils';
+import { useAuth } from '../contexts/AuthContext';
 import {
   BarChart,
   Bar,
@@ -23,6 +24,7 @@ import {
 const COLORS = ['#10b981', '#f97316', '#ec4899', '#6366f1', '#eab308', '#06b6d4'];
 
 const Statistics = () => {
+  const { isVorstand } = useAuth();
   const [fiscalYear, setFiscalYear] = useState('');
   const [fiscalYears, setFiscalYears] = useState([]);
   const [statistics, setStatistics] = useState(null);
