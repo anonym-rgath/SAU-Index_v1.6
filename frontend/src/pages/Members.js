@@ -115,17 +115,6 @@ const Members = () => {
     setQrDialogOpen(true);
   };
 
-  const handleArchive = async (member) => {
-    try {
-      const newStatus = member.status === 'archiviert' ? 'aktiv' : 'archiviert';
-      await api.members.update(member.id, { name: member.name, status: newStatus });
-      toast.success(newStatus === 'archiviert' ? 'Mitglied archiviert' : 'Mitglied wiederhergestellt');
-      loadMembers();
-    } catch (error) {
-      toast.error('Fehler beim Archivieren');
-    }
-  };
-
   // Aktive Mitglieder (nicht archiviert)
   const activeMembers = members.filter(m => m.status !== 'archiviert');
   // Archivierte Mitglieder
