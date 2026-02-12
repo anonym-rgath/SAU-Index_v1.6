@@ -80,8 +80,8 @@ Ein modernes Verwaltungssystem für die Rheinzelmänner zur Erfassung und Verwal
 | Benutzer | Passwort | Rolle |
 |----------|----------|-------|
 | admin | admin123 | Admin (Vollzugriff) |
-| spiess | spiess123 | Spieß (Vollzugriff außer Rollen) |
-| vorstand | vorstand123 | Vorstand (eingeschränkt) |
+| Henrik Dinslage | rheinzel2025 | Spieß (Vollzugriff außer Rollen) |
+| Marius Geduldig | rheinzel2025 | Vorstand (eingeschränkt) |
 
 ## API Endpoints
 
