@@ -9,6 +9,7 @@ import Dashboard from './pages/Dashboard';
 import Members from './pages/Members';
 import FineTypes from './pages/FineTypes';
 import Fines from './pages/Fines';
+import Statistics from './pages/Statistics';
 
 function App() {
   return (
@@ -30,6 +31,7 @@ function App() {
             <Route path="members" element={<Members />} />
             <Route path="fine-types" element={<FineTypes />} />
             <Route path="fines" element={<Fines />} />
+            <Route path="statistics" element={<Statistics />} />
           </Route>
           
           <Route path="*" element={<Navigate to="/dashboard" replace />} />
