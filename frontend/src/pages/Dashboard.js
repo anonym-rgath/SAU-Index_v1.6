@@ -7,8 +7,10 @@ import { toast } from 'sonner';
 import AddFineDialog from '../components/AddFineDialog';
 import ScanDemoDialog from '../components/ScanDemoDialog';
 import { formatCurrency, formatDate } from '../lib/utils';
+import { useAuth } from '../contexts/AuthContext';
 
 const Dashboard = () => {
+  const { isAdmin } = useAuth();
   const [fiscalYear, setFiscalYear] = useState('');
   const [fiscalYears, setFiscalYears] = useState([]);
   const [statistics, setStatistics] = useState(null);
