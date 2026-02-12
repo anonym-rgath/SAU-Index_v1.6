@@ -132,12 +132,41 @@ const TopBar = () => {
             </ul>
           </nav>
 
-          {/* Drawer Footer */}
-          <div className="p-4 border-t border-stone-200">
+          {/* Drawer Footer - Benutzerbereich */}
+          <div className="p-4 border-t border-stone-200 space-y-3">
+            {/* Benutzer-Info */}
+            <div className="flex items-center gap-3 px-2">
+              <div className="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center">
+                <User className="w-5 h-5 text-emerald-700" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="font-semibold text-stone-900 truncate" data-testid="drawer-username">
+                  {user?.username}
+                </p>
+                <p className="text-xs text-stone-500 capitalize">
+                  {user?.role}
+                </p>
+              </div>
+            </div>
+            
+            {/* Passwort ändern */}
+            <Button
+              data-testid="drawer-change-password-button"
+              onClick={() => {
+                setPasswordDialogOpen(true);
+                setDrawerOpen(false);
+              }}
+              className="w-full h-11 rounded-full bg-white border border-stone-200 text-stone-700 hover:bg-stone-50 transition-colors flex items-center justify-center gap-2 text-base font-medium"
+            >
+              <Key className="w-4 h-4" />
+              Passwort ändern
+            </Button>
+            
+            {/* Abmelden */}
             <Button
               data-testid="drawer-logout-button"
               onClick={handleLogout}
-              className="w-full h-12 rounded-full bg-stone-100 text-stone-700 hover:bg-stone-200 transition-colors flex items-center justify-center gap-2 text-base font-medium"
+              className="w-full h-11 rounded-full bg-stone-100 text-stone-700 hover:bg-stone-200 transition-colors flex items-center justify-center gap-2 text-base font-medium"
             >
               <LogOut className="w-5 h-5" />
               Abmelden
