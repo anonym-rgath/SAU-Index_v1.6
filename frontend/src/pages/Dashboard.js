@@ -111,7 +111,7 @@ const Dashboard = () => {
               className="bg-transparent border-none outline-none text-stone-700 font-medium cursor-pointer text-base"
             >
               {fiscalYears.map(fy => (
-                <option key={fy} value={fy}>GJ {fy}</option>
+                <option key={fy} value={fy}>{fy}</option>
               ))}
             </select>
           </div>
@@ -201,7 +201,7 @@ const Dashboard = () => {
               <div className="flex items-center gap-3 mb-4">
                 <Trophy className="w-5 h-5 text-emerald-700" />
                 <h2 className="text-xl font-bold text-stone-900 tracking-tight">
-                  Ranking GJ {fiscalYear}
+                  Ranking {fiscalYear}
                 </h2>
               </div>
               
@@ -226,7 +226,7 @@ const Dashboard = () => {
                   ))
                 ) : (
                   <p className="text-center text-stone-400 py-8">
-                    Noch keine Strafen für GJ {fiscalYear}
+                    Noch keine Strafen für {fiscalYear}
                   </p>
                 )}
               </div>
