@@ -17,9 +17,10 @@ Entwicklung einer Full-Stack-Webanwendung für einen "Schützenzug" (später umb
 
 ## Tech Stack
 - **Frontend**: React, Tailwind CSS, Shadcn/UI, lucide-react, recharts, html5-qrcode, qrcode.react
-- **Backend**: Python FastAPI
+- **Backend**: Python FastAPI, slowapi (Rate Limiting)
 - **Database**: MongoDB
-- **Auth**: JWT
+- **Auth**: JWT mit bcrypt Passwort-Hashing
+- **Security**: Rate Limiting (5 Login-Versuche/Minute), Audit Logging
 
 ## Login Credentials
 - Admin: `admin` / `admin123`
@@ -38,6 +39,11 @@ Entwicklung einer Full-Stack-Webanwendung für einen "Schützenzug" (später umb
 - [x] Lämmchen-Logik korrigiert: Zeigt jetzt niedrigsten Betrag (statt zweithöchsten)
 - [x] QR-Code Scanner implementiert (Kamera-basiert, mit manuellem Fallback)
 - [x] QR-Code Generator für Mitglieder (Download als PNG)
+- [x] NFC-Referenzen entfernt
+- [x] Neue Rolle "spiess" hinzugefügt
+- [x] Vorstand-Berechtigungen angepasst (nur Mitglieder, Statistiken anonym, Strafenarten)
+- [x] Statistik-Seite für Vorstand anonymisiert (keine Namen sichtbar)
+- [x] Security-Upgrade: Rate Limiting, Audit Logging, sichere JWT-Konfiguration
 
 ### Previous Sessions
 - [x] Vollständige Full-Stack-Anwendung aufgebaut
