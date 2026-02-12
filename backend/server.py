@@ -111,6 +111,10 @@ class LoginResponse(BaseModel):
     role: str
     username: str
 
+class ChangePasswordRequest(BaseModel):
+    current_password: str
+    new_password: str
+
 # Audit Log Model
 class AuditAction(str, Enum):
     LOGIN_SUCCESS = "login_success"
