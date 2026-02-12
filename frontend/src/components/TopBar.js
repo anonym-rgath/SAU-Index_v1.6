@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Target, LogOut, Menu, X, LayoutDashboard, Receipt, Users, Tag, BarChart3 } from 'lucide-react';
 import { Button } from './ui/button';
