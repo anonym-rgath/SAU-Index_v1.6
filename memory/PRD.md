@@ -30,7 +30,14 @@ Entwicklung einer Full-Stack-Webanwendung für einen "Schützenzug" (später umb
 
 ## Completed Features
 
-### 2025-02 (Current Session)
+### 2025-02-12 (Current Session)
+- [x] **Rückwirkende Strafenerfassung**: Optionales Datumsfeld beim Erstellen von Strafen
+  - Backend: POST /api/fines akzeptiert optionales `date` (ISO-Format)
+  - Geschäftsjahr wird automatisch basierend auf Datum berechnet
+  - Frontend: AddFineDialog mit Datumsfeld "Datum (optional)"
+  - Vollständig getestet (15/15 Backend-Tests, Frontend-Tests bestanden)
+
+### 2025-02 (Previous Updates)
 - [x] Icon-Änderung: TrendingUp für "Durchschnitt" auf Statistik-Seite
 - [x] Icon-Änderung: Wallet für "Lämmchen" auf Dashboard
 - [x] Icon-Änderung: Coins für "Gesamt" auf Statistik-Seite
@@ -44,6 +51,8 @@ Entwicklung einer Full-Stack-Webanwendung für einen "Schützenzug" (später umb
 - [x] Vorstand-Berechtigungen angepasst (nur Mitglieder, Statistiken anonym, Strafenarten)
 - [x] Statistik-Seite für Vorstand anonymisiert (keine Namen sichtbar)
 - [x] Security-Upgrade: Rate Limiting, Audit Logging, sichere JWT-Konfiguration
+- [x] Mitglieder-Archivierungssystem (Status "archiviert", ausgeschlossen von Rankings)
+- [x] Strafen von Strafenübersicht-Seite erstellen
 
 ### Previous Sessions
 - [x] Vollständige Full-Stack-Anwendung aufgebaut
