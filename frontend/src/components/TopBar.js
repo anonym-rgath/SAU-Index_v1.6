@@ -49,9 +49,11 @@ const TopBar = () => {
           </Button>
           
           <div className="flex items-center gap-2">
-            <div className="bg-emerald-100 p-1.5 rounded-lg">
-              <Target className="w-5 h-5 text-emerald-700" />
-            </div>
+            <img 
+              src="/logo.png" 
+              alt="Rheinzelmänner" 
+              className="w-8 h-8 object-contain"
+            />
             <div>
               <h2 className="font-bold text-base text-stone-900 leading-none">Rheinzelmänner</h2>
             </div>
