@@ -25,8 +25,10 @@ import {
   AlertDialogTitle,
 } from '../components/ui/alert-dialog';
 import { formatCurrency } from '../lib/utils';
+import { useAuth } from '../contexts/AuthContext';
 
 const FineTypes = () => {
+  const { isAdmin } = useAuth();
   const [fineTypes, setFineTypes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
