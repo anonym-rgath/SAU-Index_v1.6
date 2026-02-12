@@ -333,6 +333,58 @@ const UserManagement = () => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Passwort zurücksetzen Dialog */}
+      <Dialog open={resetPasswordDialogOpen} onOpenChange={(open) => {
+        setResetPasswordDialogOpen(open);
+        if (!open) {
+          setNewPassword('');
+          setResetPasswordUser(null);
+        }
+      }}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <KeyRound className="w-5 h-5 text-amber-600" />
+              Passwort zurücksetzen
+            </DialogTitle>
+            <DialogDescription>
+              Setzen Sie ein neues Passwort für <strong>{resetPasswordUser?.username}</strong>
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="newPassword">Neues Passwort</Label>
+              <Input
+                data-testid="reset-password-input"
+                id="newPassword"
+                type="password"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                placeholder="Mindestens 6 Zeichen"
+                className="h-12 rounded-xl"
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button
+              type="button"
+              onClick={() => setResetPasswordDialogOpen(false)}
+              className="h-11 px-6 rounded-full bg-white border border-stone-200 text-stone-700 hover:bg-stone-50"
+            >
+              Abbrechen
+            </Button>
+            <Button
+              data-testid="confirm-reset-password"
+              onClick={handleResetPassword}
+              disabled={submitting}
+              className="h-11 px-8 rounded-full bg-amber-500 text-white font-medium hover:bg-amber-600"
+            >
+              {submitting ? 'Zurücksetzen...' : 'Zurücksetzen'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
