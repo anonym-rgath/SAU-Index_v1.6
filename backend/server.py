@@ -69,6 +69,7 @@ def get_current_fiscal_year() -> str:
 # Enums
 class UserRole(str, Enum):
     admin = "admin"
+    spiess = "spiess"
     vorstand = "vorstand"
 
 class MemberStatus(str, Enum):
