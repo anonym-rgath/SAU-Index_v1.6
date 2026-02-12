@@ -10,6 +10,7 @@ export const api = {
     getAll: () => axios.get(`${API_URL}/users`),
     create: (data) => axios.post(`${API_URL}/users`, data),
     delete: (id) => axios.delete(`${API_URL}/users/${id}`),
+    resetPassword: (id, data) => axios.put(`${API_URL}/users/${id}/reset-password`, data),
   },
   members: {
     getAll: () => axios.get(`${API_URL}/members`),
