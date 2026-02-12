@@ -16,12 +16,6 @@ if ! command -v docker &> /dev/null; then
     exit 1
 fi
 
-if ! command -v docker-compose &> /dev/null; then
-    echo "❌ Docker Compose ist nicht installiert!"
-    echo "Installiere mit: sudo apt install docker-compose -y"
-    exit 1
-fi
-
 # Hole IP-Adresse
 PI_IP=$(hostname -I | awk '{print $1}')
 echo "📍 Raspberry Pi IP: $PI_IP"
@@ -53,7 +47,7 @@ echo "✅ Frontend .env erstellt"
 # Baue und starte Container
 echo ""
 echo "🔨 Baue Docker Container (das kann einige Minuten dauern)..."
-docker-compose up -d --build
+docker compose up -d --build
 
 echo ""
 echo "⏳ Warte auf Container-Start..."
@@ -62,7 +56,7 @@ sleep 15
 # Prüfe Status
 echo ""
 echo "📊 Container Status:"
-docker-compose ps
+docker compose ps
 
 echo ""
 echo "=============================="
@@ -78,6 +72,6 @@ echo "👤 Login: admin / admin123"
 echo "=============================="
 echo ""
 echo "Nützliche Befehle:"
-echo "  Logs anzeigen:    docker-compose logs -f"
-echo "  Stoppen:          docker-compose down"
-echo "  Neustarten:       docker-compose restart"
+echo "  Logs anzeigen:    docker compose logs -f"
+echo "  Stoppen:          docker compose down"
+echo "  Neustarten:       docker compose restart"
