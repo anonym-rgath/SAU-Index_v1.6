@@ -292,15 +292,27 @@ async def get_members(auth=Depends(verify_token)):
     return members
 
 @api_router.post("/members", response_model=Member)
-async def create_member(input: MemberCreate, auth=Depends(require_admin)):
+async def create_member(request: Request, input: MemberCreate, auth=Depends(require_admin)):
     member = Member(**input.model_dump())
     doc = member.model_dump()
     doc['created_at'] = doc['created_at'].isoformat()
     await db.members.insert_one(doc)
+    
+    # Audit Log
+    await log_audit(
+        action=AuditAction.CREATE,
+        resource_type="member",
+        resource_id=member.id,
+        user_id=auth.get('sub'),
+        username=auth.get('username'),
+        details=f"Mitglied erstellt: {member.name}",
+        ip_address=get_remote_address(request)
+    )
+    
     return member
 
 @api_router.put("/members/{member_id}", response_model=Member)
-async def update_member(member_id: str, input: MemberCreate, auth=Depends(require_admin)):
+async def update_member(request: Request, member_id: str, input: MemberCreate, auth=Depends(require_admin)):
     result = await db.members.find_one({"id": member_id}, {"_id": 0})
     if not result:
         raise HTTPException(status_code=404, detail="Mitglied nicht gefunden")
@@ -313,14 +325,38 @@ async def update_member(member_id: str, input: MemberCreate, auth=Depends(requir
     if isinstance(updated.get('created_at'), str):
         updated['created_at'] = datetime.fromisoformat(updated['created_at'])
     
+    # Audit Log
+    await log_audit(
+        action=AuditAction.UPDATE,
+        resource_type="member",
+        resource_id=member_id,
+        user_id=auth.get('sub'),
+        username=auth.get('username'),
+        details=f"Mitglied aktualisiert: {input.name}",
+        ip_address=get_remote_address(request)
+    )
+    
     return Member(**updated)
 
 @api_router.delete("/members/{member_id}")
-async def delete_member(member_id: str, auth=Depends(require_admin)):
+async def delete_member(request: Request, member_id: str, auth=Depends(require_admin)):
+    member = await db.members.find_one({"id": member_id}, {"_id": 0})
     result = await db.members.delete_one({"id": member_id})
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Mitglied nicht gefunden")
     await db.fines.delete_many({"member_id": member_id})
+    
+    # Audit Log
+    await log_audit(
+        action=AuditAction.DELETE,
+        resource_type="member",
+        resource_id=member_id,
+        user_id=auth.get('sub'),
+        username=auth.get('username'),
+        details=f"Mitglied gelöscht: {member.get('name') if member else 'unbekannt'}",
+        ip_address=get_remote_address(request)
+    )
+    
     return {"message": "Mitglied gelöscht"}
 
 @api_router.get("/fine-types", response_model=List[FineType])
