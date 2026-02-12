@@ -156,27 +156,38 @@ const Members = () => {
                   data-testid={`member-item-${member.id}`}
                 >
                   <div className="min-w-0 flex-1">
-                    <p className="font-bold text-stone-900 truncate">{member.name}</p>
+                    <div className="flex items-center gap-2">
+                      <p className="font-bold text-stone-900 truncate">{member.name}</p>
+                      <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${
+                        member.status === 'aktiv' 
+                          ? 'bg-emerald-100 text-emerald-700' 
+                          : 'bg-stone-200 text-stone-600'
+                      }`}>
+                        {member.status === 'aktiv' ? 'Aktiv' : 'Passiv'}
+                      </span>
+                    </div>
                     <p className="text-xs text-stone-500 truncate">
                       {member.nfc_id ? `NFC: ${member.nfc_id}` : 'Keine NFC ID'}
                     </p>
                   </div>
-                  <div className="flex gap-2 flex-shrink-0 ml-2">
-                    <Button
-                      data-testid={`edit-member-${member.id}`}
-                      onClick={() => openEditDialog(member)}
-                      className="h-10 w-10 p-0 rounded-full bg-white border border-stone-200 text-stone-700 hover:bg-stone-50 transition-colors"
-                    >
-                      <Pencil className="w-4 h-4" />
-                    </Button>
-                    <Button
-                      data-testid={`delete-member-${member.id}`}
-                      onClick={() => openDeleteDialog(member)}
-                      className="h-10 w-10 p-0 rounded-full bg-red-50 border border-red-200 text-red-600 hover:bg-red-100 transition-colors"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
-                  </div>
+                  {isAdmin && (
+                    <div className="flex gap-2 flex-shrink-0 ml-2">
+                      <Button
+                        data-testid={`edit-member-${member.id}`}
+                        onClick={() => openEditDialog(member)}
+                        className="h-10 w-10 p-0 rounded-full bg-white border border-stone-200 text-stone-700 hover:bg-stone-50 transition-colors"
+                      >
+                        <Pencil className="w-4 h-4" />
+                      </Button>
+                      <Button
+                        data-testid={`delete-member-${member.id}`}
+                        onClick={() => openDeleteDialog(member)}
+                        className="h-10 w-10 p-0 rounded-full bg-red-50 border border-red-200 text-red-600 hover:bg-red-100 transition-colors"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  )}
                 </div>
               ))
             ) : (
