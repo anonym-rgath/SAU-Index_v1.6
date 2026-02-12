@@ -25,11 +25,14 @@ const TopBar = () => {
     { path: '/statistics', icon: BarChart3, label: 'Statistiken' },
     { path: '/fines', icon: Receipt, label: 'Strafenübersicht', hideForVorstand: true },
     { path: '/fine-types', icon: Tag, label: 'Strafenarten' },
+    { path: '/users', icon: UserCog, label: 'Benutzerverwaltung', adminOnly: true },
   ];
   
-  const navItems = isVorstand 
-    ? allNavItems.filter(item => !item.hideForVorstand)
-    : allNavItems;
+  const navItems = allNavItems.filter(item => {
+    if (item.adminOnly && !isAdmin) return false;
+    if (item.hideForVorstand && isVorstand) return false;
+    return true;
+  });
 
   const handleNavClick = (path) => {
     navigate(path);
