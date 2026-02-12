@@ -133,7 +133,7 @@ sudo cp /etc/letsencrypt/live/deine-domain.de/fullchain.pem nginx/certs/cert.pem
 sudo cp /etc/letsencrypt/live/deine-domain.de/privkey.pem nginx/certs/key.pem
 
 # Container neustarten
-docker-compose restart nginx
+docker compose restart nginx
 ```
 
 ---
