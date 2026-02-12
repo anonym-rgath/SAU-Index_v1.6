@@ -49,7 +49,7 @@ export const AuthProvider = ({ children }) => {
   // Berechtigungen
   const canManageMembers = ['admin', 'spiess', 'vorstand'].includes(user?.role);
   const canManageFines = ['admin', 'spiess'].includes(user?.role);
-  const canManageFineTypes = ['admin', 'spiess'].includes(user?.role);
+  const canManageFineTypes = ['admin', 'spiess', 'vorstand'].includes(user?.role);
   const canManageRoles = user?.role === 'admin';
 
   return (

@@ -16,13 +16,13 @@ const TopBar = () => {
     navigate('/login');
   };
 
-  // Vorstand sieht nur Mitglieder und Statistiken
+  // Vorstand sieht nur Mitglieder, Statistiken und Strafenarten
   const allNavItems = [
     { path: '/dashboard', icon: LayoutDashboard, label: 'Dashboard', hideForVorstand: true },
     { path: '/members', icon: Users, label: 'Mitglieder' },
     { path: '/statistics', icon: BarChart3, label: 'Statistiken' },
     { path: '/fines', icon: Receipt, label: 'Strafen', hideForVorstand: true },
-    { path: '/fine-types', icon: Tag, label: 'Strafenarten', hideForVorstand: true },
+    { path: '/fine-types', icon: Tag, label: 'Strafenarten' },
   ];
   
   const navItems = isVorstand 

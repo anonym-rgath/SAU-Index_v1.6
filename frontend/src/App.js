@@ -44,7 +44,7 @@ function App() {
             <Route index element={<RoleBasedRedirect />} />
             <Route path="dashboard" element={<AdminOnlyRoute><Dashboard /></AdminOnlyRoute>} />
             <Route path="members" element={<Members />} />
-            <Route path="fine-types" element={<AdminOnlyRoute><FineTypes /></AdminOnlyRoute>} />
+            <Route path="fine-types" element={<FineTypes />} />
             <Route path="fines" element={<AdminOnlyRoute><Fines /></AdminOnlyRoute>} />
             <Route path="statistics" element={<Statistics />} />
           </Route>
