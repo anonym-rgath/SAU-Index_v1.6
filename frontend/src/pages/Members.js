@@ -35,7 +35,7 @@ import { useAuth } from '../contexts/AuthContext';
 import QRCodeDialog from '../components/QRCodeDialog';
 
 const Members = () => {
-  const { isAdmin } = useAuth();
+  const { canManageMembers } = useAuth();
   const [members, setMembers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -165,7 +165,7 @@ const Members = () => {
             </p>
           </div>
           <div className="flex items-center gap-2">
-            {isAdmin && (
+            {canManageMembers && (
               <Button
                 data-testid="add-member-button"
                 onClick={openAddDialog}
@@ -226,7 +226,7 @@ const Members = () => {
                       </span>
                     </div>
                   </div>
-                  {isAdmin && (
+                  {canManageMembers && (
                     <div className="flex gap-2 flex-shrink-0 ml-2">
                       <Button
                         data-testid={`qr-member-${member.id}`}
