@@ -222,8 +222,6 @@ async def update_member(member_id: str, input: MemberCreate, auth=Depends(requir
         raise HTTPException(status_code=404, detail="Mitglied nicht gefunden")
     
     update_data = {"name": input.name, "status": input.status}
-    if input.nfc_id is not None:
-        update_data["nfc_id"] = input.nfc_id
     
     await db.members.update_one({"id": member_id}, {"$set": update_data})
     updated = await db.members.find_one({"id": member_id}, {"_id": 0})
