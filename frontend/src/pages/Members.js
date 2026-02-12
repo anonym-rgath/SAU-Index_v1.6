@@ -42,6 +42,7 @@ const Members = () => {
   const [editingMember, setEditingMember] = useState(null);
   const [deletingMember, setDeletingMember] = useState(null);
   const [formData, setFormData] = useState({ name: '', nfc_id: '', status: 'aktiv' });
+  const [sortBy, setSortBy] = useState('name-asc');
 
   useEffect(() => {
     loadMembers();
