@@ -57,6 +57,7 @@ function App() {
             <Route path="fine-types" element={<FineTypes />} />
             <Route path="fines" element={<AdminOnlyRoute><Fines /></AdminOnlyRoute>} />
             <Route path="statistics" element={<Statistics />} />
+            <Route path="users" element={<AdminRoute><UserManagement /></AdminRoute>} />
           </Route>
           
           <Route path="*" element={<RoleBasedRedirect />} />
