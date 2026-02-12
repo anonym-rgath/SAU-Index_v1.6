@@ -1,198 +1,150 @@
-# Schützenzug Manager
+# Rheinzelmänner Verwaltung
 
-Ein modernes Verwaltungssystem für Schützenvereine zur Erfassung und Verwaltung von Strafen und Mitglieder-Rankings.
+Ein modernes Verwaltungssystem für die Rheinzelmänner zur Erfassung und Verwaltung von Strafen und Mitglieder-Rankings.
 
-## 🎯 Features
+## Features
 
-### Authentifizierung
-- Einfache Passwort-basierte Anmeldung
+### Authentifizierung & Sicherheit
 - JWT-Token basierte Session-Verwaltung
-- Geschützte Routen
+- Passwörter mit bcrypt gehasht
+- Rate Limiting (max. 5 Login-Versuche/Minute)
+- Audit-Logging aller Aktionen
+- Rollenbasierte Zugriffskontrolle
+
+### Rollen & Berechtigungen
+
+| Rolle | Dashboard | Mitglieder | Statistiken | Strafen | Strafenarten |
+|-------|-----------|------------|-------------|---------|--------------|
+| **admin** | Vollzugriff | Vollzugriff | Vollzugriff | Vollzugriff | Vollzugriff |
+| **spiess** | Vollzugriff | Vollzugriff | Vollzugriff | Vollzugriff | Vollzugriff |
+| **vorstand** | - | Vollzugriff | Nur Lesen (anonym) | - | Vollzugriff |
 
 ### Dashboard
 - Übersichtliches Ranking aller Mitglieder nach Strafensumme
-- KPI-Anzeige: "Sau" (höchster Betrag) und "Lämmchen" (zweithöchster Betrag)
-- Jahres-/Saison-Auswahl
-- Liste der letzten Strafen
-- Schnellzugriff zum Hinzufügen von Strafen
+- KPI-Anzeige: "Sau" (höchster Betrag) und "Lämmchen" (niedrigster Betrag)
+- Geschäftsjahr-Auswahl (01.08. - 31.07.)
+- QR-Code Scanner zur schnellen Mitglieder-Identifikation
+
+### QR-Code System
+- Jedes Mitglied hat einen eindeutigen QR-Code
+- QR-Codes können als PNG heruntergeladen werden
+- Kamera-basierter Scanner mit manuellem Fallback
+- Funktioniert auf allen Geräten (iPhone, Android, Desktop)
 
 ### Mitgliederverwaltung
 - Mitglieder erstellen, bearbeiten und löschen
-- Übersichtliche Liste aller Mitglieder
+- Status: Aktiv / Passiv
+- QR-Code Generator für jedes Mitglied
+- Sortierbare Liste (Name, Status, Erstellungsdatum)
 
 ### Strafenarten-Verwaltung
 - Eigene Strafenarten definieren (z.B. "Zu spät", "Fehltermin")
 - Feste oder variable Beträge pro Strafenart
-- Bearbeiten und Löschen von Strafenarten
 
 ### Strafen-Management
 - Strafen für Mitglieder erfassen
-- Automatische Zuordnung zu Mitglied und Jahr
+- Automatische Zuordnung zu Geschäftsjahr
 - Bearbeiten und Löschen von Strafen
-- Optionale Notizen zu jeder Strafe
-- NFC/QR-Scan Simulation (Demo)
 
-### Multi-Jahr Unterstützung
-- Separate Verwaltung für verschiedene Jahre/Saisons
-- Historische Daten bleiben erhalten
-- Jahreswechsel-fähig
+### Statistiken
+- Detaillierte Auswertungen nach Geschäftsjahr
+- Balkendiagramm: Top 10 Mitglieder
+- Tortendiagramm: Strafen nach Art
+- Verlaufsdiagramm: Monatliche Entwicklung
+- Aktive vs. Passive Mitglieder Ranking
 
-## 🚀 Technologie-Stack
+## Technologie-Stack
 
 ### Backend
-- **FastAPI** - Modernes Python Web Framework
+- **FastAPI** - Python Web Framework
 - **MongoDB** - NoSQL Datenbank
 - **Motor** - Async MongoDB Driver
 - **JWT** - Token-basierte Authentifizierung
-- **Pydantic** - Datenvalidierung
+- **bcrypt** - Passwort-Hashing
+- **slowapi** - Rate Limiting
 
 ### Frontend
 - **React 19** - UI Framework
-- **React Router v7** - Navigation
 - **Tailwind CSS** - Utility-First CSS
 - **Shadcn/UI** - UI Component Library
-- **Axios** - HTTP Client
-- **Sonner** - Toast Notifications
+- **Recharts** - Diagramme
+- **html5-qrcode** - QR-Code Scanner
+- **qrcode.react** - QR-Code Generator
 - **Lucide React** - Icons
 
-## 🎨 Design
+## Login-Daten
 
-- **Helles, modernes Design** mit Emerald/Orange/Stone Farbschema
-- **Typografie**: Outfit (Headings) + Manrope (Body)
-- **Responsive Layout** für Desktop und Tablet
-- **Bento-Grid** Design für Dashboard
-- **Smooth Animations** und Micro-Interactions
+| Benutzer | Passwort | Rolle |
+|----------|----------|-------|
+| admin | admin123 | Admin (Vollzugriff) |
+| spiess | spiess123 | Spieß (Vollzugriff außer Rollen) |
+| vorstand | vorstand123 | Vorstand (eingeschränkt) |
 
-## 📦 Installation & Setup
-
-### Voraussetzungen
-- Python 3.9+
-- Node.js 18+
-- MongoDB
-
-### Backend Setup
-```bash
-cd /app/backend
-pip install -r requirements.txt
-```
-
-### Frontend Setup
-```bash
-cd /app/frontend
-yarn install
-```
-
-### Demo-Daten laden
-```bash
-python3 /app/scripts/seed_demo_data.py
-```
-
-## 🔐 Login-Daten
-
-**Passwort**: `admin123`
-
-(Kann in `/app/backend/.env` unter `ADMIN_PASSWORD` geändert werden)
-
-## 🌐 API Endpoints
+## API Endpoints
 
 ### Authentifizierung
-- `POST /api/auth/login` - Login mit Passwort
+- `POST /api/auth/login` - Login
+- `GET /api/auth/me` - Aktueller Benutzer
 
 ### Mitglieder
-- `GET /api/members` - Alle Mitglieder abrufen
-- `POST /api/members` - Neues Mitglied erstellen
+- `GET /api/members` - Alle Mitglieder
+- `POST /api/members` - Neues Mitglied
 - `PUT /api/members/{id}` - Mitglied aktualisieren
 - `DELETE /api/members/{id}` - Mitglied löschen
 
 ### Strafenarten
-- `GET /api/fine-types` - Alle Strafenarten abrufen
-- `POST /api/fine-types` - Neue Strafenart erstellen
+- `GET /api/fine-types` - Alle Strafenarten
+- `POST /api/fine-types` - Neue Strafenart
 - `PUT /api/fine-types/{id}` - Strafenart aktualisieren
 - `DELETE /api/fine-types/{id}` - Strafenart löschen
 
 ### Strafen
-- `GET /api/fines?year={year}` - Strafen abrufen (optional nach Jahr)
-- `POST /api/fines` - Neue Strafe erstellen
+- `GET /api/fines` - Strafen abrufen
+- `POST /api/fines` - Neue Strafe
 - `PUT /api/fines/{id}` - Strafe aktualisieren
 - `DELETE /api/fines/{id}` - Strafe löschen
 
 ### Statistiken
-- `GET /api/statistics/{year}` - Statistiken und Ranking für ein Jahr
-- `GET /api/years` - Liste aller verfügbaren Jahre
+- `GET /api/statistics?fiscal_year={year}` - Statistiken
+- `GET /api/fiscal-years` - Verfügbare Geschäftsjahre
 
-## 📁 Projektstruktur
+### Audit
+- `GET /api/audit-logs` - Audit-Logs (nur Admin)
+
+## Projektstruktur
 
 ```
 /app
 ├── backend/
 │   ├── server.py           # FastAPI Backend
-│   ├── .env               # Umgebungsvariablen
-│   └── requirements.txt   # Python Dependencies
+│   ├── .env                # Umgebungsvariablen
+│   └── requirements.txt    # Python Dependencies
 ├── frontend/
+│   ├── public/
+│   │   └── logo.png        # Vereinslogo
 │   ├── src/
-│   │   ├── components/    # React Komponenten
-│   │   ├── pages/         # Seiten-Komponenten
-│   │   ├── contexts/      # React Contexts
-│   │   ├── lib/           # Utils & API
-│   │   └── App.js         # Haupt-App
-│   ├── package.json       # Node Dependencies
-│   └── tailwind.config.js # Tailwind Config
-├── scripts/
-│   └── seed_demo_data.py  # Demo-Daten Script
+│   │   ├── components/     # React Komponenten
+│   │   ├── pages/          # Seiten
+│   │   ├── contexts/       # Auth Context
+│   │   └── lib/            # Utils & API
+│   ├── package.json
+│   └── tailwind.config.js
 └── README.md
 ```
 
-## 🔧 Umgebungsvariablen
+## Geschäftsjahr-Logik
 
-### Backend (.env)
-```env
-MONGO_URL="mongodb://localhost:27017"
-DB_NAME="test_database"
-JWT_SECRET="schuetzenzug-secret-key-change-in-production"
-ADMIN_PASSWORD="admin123"
-CORS_ORIGINS="*"
-```
+Die Anwendung arbeitet mit Geschäftsjahren (01.08. - 31.07.):
+- Beispiel: GJ 2025/2026 = 01.08.2025 bis 31.07.2026
+- Alle Strafen und Statistiken werden nach Geschäftsjahr gruppiert
 
-### Frontend (.env)
-```env
-REACT_APP_BACKEND_URL=https://your-app-url.com
-```
+## Design
 
-## 🎯 Verwendung
-
-1. **Login**: Melden Sie sich mit dem Admin-Passwort an
-2. **Dashboard**: Sehen Sie das aktuelle Ranking und die KPIs
-3. **Strafen hinzufügen**: Klicken Sie auf "+ STRAFE" oder nutzen Sie die NFC/QR-Scan Demo
-4. **Mitglieder verwalten**: Navigieren Sie zu "Mitglieder" um Vereinsmitglieder zu verwalten
-5. **Strafenarten anpassen**: Unter "Strafenarten" können Sie den Strafenkatalog bearbeiten
-6. **Strafen bearbeiten**: Auf der "Strafen"-Seite können Sie alle Einträge einsehen und bearbeiten
-
-## 🎨 Design-Highlights
-
-- **Sau & Lämmchen KPIs**: Spielerische Darstellung der Top-2 "Sünder"
-- **Live-Ranking**: Automatische Sortierung nach Gesamtsumme
-- **Jahres-Navigation**: Einfacher Wechsel zwischen Saisons
-- **Responsive Cards**: Moderne Card-basierte UI mit Hover-Effekten
-- **Toast Notifications**: Feedback bei allen Aktionen
-
-## 🚧 Zukünftige Features (Vorschläge)
-
-- Excel/PDF Export des Rankings
-- Echte NFC/QR-Code Integration für Mitglieder-Karten
-- Statistik-Dashboard mit Charts (Recharts Integration)
-- Email-Benachrichtigungen
-- Multi-User mit Rollen (Admin, Mitglied)
-- Mobile App Version
-- Zahlungs-Tracking (wer hat bezahlt?)
-
-## 📝 Lizenz
-
-Private Verwendung für Schützenvereine.
-
-## 🤝 Support
-
-Bei Fragen oder Problemen wenden Sie sich an den Administrator.
+- **Primärfarbe**: RGB 62/135/95 (#3E875F)
+- **Akzentfarbe**: Orange (#F97316)
+- **Mobile-First** Design
+- **Drawer-Navigation** für mobile Geräte
 
 ---
 
-**Erstellt mit ❤️ für Schützenvereine**
+**Erstellt für die Rheinzelmänner**
