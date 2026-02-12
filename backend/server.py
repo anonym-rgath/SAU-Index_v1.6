@@ -336,6 +336,106 @@ async def change_password(request: Request, data: ChangePasswordRequest, auth=De
     
     return {"message": "Passwort erfolgreich geändert"}
 
+# ============== Benutzerverwaltung (nur Admin) ==============
+
+class UserResponse(BaseModel):
+    id: str
+    username: str
+    role: str
+    created_at: Optional[str] = None
+
+class UserCreateRequest(BaseModel):
+    username: str
+    password: str
+    role: UserRole
+
+@api_router.get("/users", response_model=List[UserResponse])
+async def get_users(auth=Depends(require_admin)):
+    """Alle Benutzer abrufen (nur Admin)"""
+    users = await db.users.find({}, {"_id": 0, "password_hash": 0}).to_list(100)
+    return users
+
+@api_router.post("/users", response_model=UserResponse)
+async def create_user(request: Request, data: UserCreateRequest, auth=Depends(require_admin)):
+    """Neuen Benutzer erstellen (nur Admin)"""
+    ip_address = get_remote_address(request)
+    
+    # Prüfen ob Benutzername bereits existiert
+    existing = await db.users.find_one({"username": data.username})
+    if existing:
+        raise HTTPException(status_code=400, detail="Benutzername existiert bereits")
+    
+    # Passwort validieren
+    if len(data.password) < 6:
+        raise HTTPException(status_code=400, detail="Passwort muss mindestens 6 Zeichen lang sein")
+    
+    # Benutzer erstellen
+    user_id = str(uuid.uuid4())
+    user_doc = {
+        "id": user_id,
+        "username": data.username,
+        "password_hash": pwd_context.hash(data.password),
+        "role": data.role.value,
+        "created_at": datetime.now(timezone.utc).isoformat()
+    }
+    
+    await db.users.insert_one(user_doc)
+    
+    # Audit Log
+    await log_audit(
+        action=AuditAction.CREATE,
+        resource_type="user",
+        resource_id=user_id,
+        user_id=auth.get('sub'),
+        username=auth.get('username'),
+        details=f"Benutzer erstellt: {data.username} (Rolle: {data.role.value})",
+        ip_address=ip_address
+    )
+    
+    return UserResponse(
+        id=user_id,
+        username=data.username,
+        role=data.role.value,
+        created_at=user_doc["created_at"]
+    )
+
+@api_router.delete("/users/{user_id}")
+async def delete_user(request: Request, user_id: str, auth=Depends(require_admin)):
+    """Benutzer löschen (nur Admin)"""
+    ip_address = get_remote_address(request)
+    
+    # Benutzer finden
+    user = await db.users.find_one({"id": user_id}, {"_id": 0})
+    if not user:
+        raise HTTPException(status_code=404, detail="Benutzer nicht gefunden")
+    
+    # Admin kann sich nicht selbst löschen
+    if user_id == auth.get('sub'):
+        raise HTTPException(status_code=400, detail="Sie können sich nicht selbst löschen")
+    
+    # Letzten Admin nicht löschen
+    if user.get('role') == 'admin':
+        admin_count = await db.users.count_documents({"role": "admin"})
+        if admin_count <= 1:
+            raise HTTPException(status_code=400, detail="Der letzte Admin kann nicht gelöscht werden")
+    
+    await db.users.delete_one({"id": user_id})
+    
+    # Audit Log
+    await log_audit(
+        action=AuditAction.DELETE,
+        resource_type="user",
+        resource_id=user_id,
+        user_id=auth.get('sub'),
+        username=auth.get('username'),
+        details=f"Benutzer gelöscht: {user.get('username')}",
+        ip_address=ip_address
+    )
+    
+    return {"message": "Benutzer gelöscht"}
+
+# ============== Mitglieder ==============
+
 @api_router.get("/members", response_model=List[Member])
 async def get_members(auth=Depends(verify_token)):
     members = await db.members.find({}, {"_id": 0}).to_list(1000)
