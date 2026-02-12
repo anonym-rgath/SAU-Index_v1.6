@@ -229,10 +229,13 @@ const Statistics = () => {
           {/* Top 10 Mitglieder */}
           <Card className="bg-white rounded-2xl border border-stone-200 shadow-sm p-6">
             <h2 className="text-xl font-bold text-stone-900 mb-4">
-              Top 10 Mitglieder
+              Top 10 {isVorstand ? '' : 'Mitglieder'}
             </h2>
             <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={statistics?.ranking?.slice(0, 10) || []}>
+              <BarChart data={(statistics?.ranking?.slice(0, 10) || []).map((item, index) => ({
+                ...item,
+                member_name: isVorstand ? `Platz ${index + 1}` : item.member_name
+              }))}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#e7e5e4" />
                 <XAxis 
                   dataKey="member_name" 
