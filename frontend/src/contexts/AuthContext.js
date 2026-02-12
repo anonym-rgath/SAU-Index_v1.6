@@ -43,7 +43,14 @@ export const AuthProvider = ({ children }) => {
   }, [token]);
 
   const isAdmin = user?.role === 'admin';
+  const isSpiess = user?.role === 'spiess';
   const isVorstand = user?.role === 'vorstand';
+  
+  // Berechtigungen
+  const canManageMembers = ['admin', 'spiess', 'vorstand'].includes(user?.role);
+  const canManageFines = ['admin', 'spiess'].includes(user?.role);
+  const canManageFineTypes = ['admin', 'spiess'].includes(user?.role);
+  const canManageRoles = user?.role === 'admin';
 
   return (
     <AuthContext.Provider value={{ 
@@ -54,7 +61,12 @@ export const AuthProvider = ({ children }) => {
       loading, 
       isAuthenticated: !!token,
       isAdmin,
-      isVorstand
+      isSpiess,
+      isVorstand,
+      canManageMembers,
+      canManageFines,
+      canManageFineTypes,
+      canManageRoles
     }}>
       {children}
     </AuthContext.Provider>
