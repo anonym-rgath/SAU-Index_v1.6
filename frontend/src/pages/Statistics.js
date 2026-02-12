@@ -316,10 +316,10 @@ const Statistics = () => {
                 <Line 
                   type="monotone" 
                   dataKey="amount" 
-                  stroke="#10b981" 
+                  stroke="#3e875f" 
                   strokeWidth={3}
                   name="Betrag"
-                  dot={{ fill: '#10b981', r: 4 }}
+                  dot={{ fill: '#3e875f', r: 4 }}
                 />
               </LineChart>
             </ResponsiveContainer>
