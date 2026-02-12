@@ -6,6 +6,11 @@ export const api = {
   auth: {
     changePassword: (data) => axios.put(`${API_URL}/auth/change-password`, data),
   },
+  users: {
+    getAll: () => axios.get(`${API_URL}/users`),
+    create: (data) => axios.post(`${API_URL}/users`, data),
+    delete: (id) => axios.delete(`${API_URL}/users/${id}`),
+  },
   members: {
     getAll: () => axios.get(`${API_URL}/members`),
     create: (data) => axios.post(`${API_URL}/members`, data),
