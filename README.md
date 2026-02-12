@@ -33,7 +33,8 @@ Ein modernes Verwaltungssystem für die Rheinzelmänner zur Erfassung und Verwal
 
 ### Mitgliederverwaltung
 - Mitglieder erstellen, bearbeiten und löschen
-- Status: Aktiv / Passiv
+- Status: Aktiv / Passiv / Archiviert
+- Archivierte Mitglieder werden aus Rankings ausgeschlossen
 - QR-Code Generator für jedes Mitglied
 - Sortierbare Liste (Name, Status, Erstellungsdatum)
 
@@ -43,7 +44,8 @@ Ein modernes Verwaltungssystem für die Rheinzelmänner zur Erfassung und Verwal
 
 ### Strafen-Management
 - Strafen für Mitglieder erfassen
-- Automatische Zuordnung zu Geschäftsjahr
+- **Rückwirkende Erfassung**: Auf der Strafenübersicht-Seite kann ein optionales Datum angegeben werden
+- Automatische Zuordnung zum korrekten Geschäftsjahr basierend auf Datum
 - Bearbeiten und Löschen von Strafen
 
 ### Statistiken
@@ -99,8 +101,10 @@ Ein modernes Verwaltungssystem für die Rheinzelmänner zur Erfassung und Verwal
 - `DELETE /api/fine-types/{id}` - Strafenart löschen
 
 ### Strafen
-- `GET /api/fines` - Strafen abrufen
-- `POST /api/fines` - Neue Strafe
+- `GET /api/fines` - Strafen abrufen (optional: `?fiscal_year=2025/2026`)
+- `POST /api/fines` - Neue Strafe erstellen
+  - Body: `{ member_id, fine_type_id, amount, date?, notes? }`
+  - `date` (optional): ISO-Format für rückwirkende Einträge (z.B. "2024-10-15")
 - `PUT /api/fines/{id}` - Strafe aktualisieren
 - `DELETE /api/fines/{id}` - Strafe löschen
 
