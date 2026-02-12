@@ -150,7 +150,7 @@ class RankingEntry(BaseModel):
     rank: int
 
 class Statistics(BaseModel):
-    year: int
+    fiscal_year: str
     total_fines: int
     total_amount: float
     sau: Optional[RankingEntry] = None
