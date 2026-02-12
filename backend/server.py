@@ -290,6 +290,52 @@ async def login(request: Request, login_data: LoginRequest):
         username=user_doc['username']
     )
 
+@api_router.put("/auth/change-password")
+async def change_password(request: Request, data: ChangePasswordRequest, auth=Depends(verify_token)):
+    ip_address = get_remote_address(request)
+    user_id = auth.get('sub')
+    username = auth.get('username')
+    
+    # Benutzer aus DB holen
+    user_doc = await db.users.find_one({"id": user_id}, {"_id": 0})
+    if not user_doc:
+        raise HTTPException(status_code=404, detail="Benutzer nicht gefunden")
+    
+    # Aktuelles Passwort prüfen
+    if not pwd_context.verify(data.current_password, user_doc['password_hash']):
+        await log_audit(
+            action=AuditAction.UPDATE,
+            resource_type="password",
+            user_id=user_id,
+            username=username,
+            details="Passwortänderung fehlgeschlagen - falsches aktuelles Passwort",
+            ip_address=ip_address
+        )
+        raise HTTPException(status_code=400, detail="Aktuelles Passwort ist falsch")
+    
+    # Neues Passwort validieren
+    if len(data.new_password) < 6:
+        raise HTTPException(status_code=400, detail="Neues Passwort muss mindestens 6 Zeichen lang sein")
+    
+    # Neues Passwort hashen und speichern
+    new_password_hash = pwd_context.hash(data.new_password)
+    await db.users.update_one(
+        {"id": user_id},
+        {"$set": {"password_hash": new_password_hash}}
+    )
+    
+    # Audit Log
+    await log_audit(
+        action=AuditAction.UPDATE,
+        resource_type="password",
+        user_id=user_id,
+        username=username,
+        details="Passwort erfolgreich geändert",
+        ip_address=ip_address
+    )
+    
+    return {"message": "Passwort erfolgreich geändert"}
+
 @api_router.get("/members", response_model=List[Member])
 async def get_members(auth=Depends(verify_token)):
     members = await db.members.find({}, {"_id": 0}).to_list(1000)
