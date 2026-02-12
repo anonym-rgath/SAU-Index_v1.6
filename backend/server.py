@@ -441,12 +441,17 @@ async def create_fine(input: FineCreate, auth=Depends(require_admin)):
     fine_data = input.model_dump()
     fine_data['fine_type_label'] = fine_type['label']
     
-    # Berechne das Geschäftsjahr basierend auf dem Datum
-    fine_date = fine_data.get('date', datetime.now(timezone.utc))
-    if isinstance(fine_date, datetime):
-        fine_data['fiscal_year'] = get_fiscal_year(fine_date)
+    # Datum verarbeiten - wenn angegeben, parsen, sonst jetzt
+    if input.date:
+        try:
+            fine_date = datetime.fromisoformat(input.date.replace('Z', '+00:00'))
+        except:
+            fine_date = datetime.now(timezone.utc)
     else:
-        fine_data['fiscal_year'] = get_current_fiscal_year()
+        fine_date = datetime.now(timezone.utc)
+    
+    fine_data['date'] = fine_date
+    fine_data['fiscal_year'] = get_fiscal_year(fine_date)
     
     fine = Fine(**fine_data)
     doc = fine.model_dump()
