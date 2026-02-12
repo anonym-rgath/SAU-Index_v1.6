@@ -96,9 +96,6 @@ const Login = () => {
             </Button>
           </form>
 
-          <p className="text-center text-sm text-stone-400 mt-6">
-            Test-Benutzer: <span className="font-mono font-medium">admin / admin123</span>
-          </p>
         </div>
       </div>
     </div>
