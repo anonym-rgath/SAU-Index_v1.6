@@ -4,16 +4,19 @@
 Entwicklung einer Full-Stack-Webanwendung für einen "Schützenzug" (später umbenannt zu "Rheinzelmänner"), um Mitglieder und deren Strafen zu verwalten und ein Ranking basierend auf Strafen zu erstellen.
 
 ## User Personas
-- **Admin**: Vollzugriff auf alle Funktionen (CRUD für Mitglieder, Strafen, Strafarten)
-- **Vorstand**: Nur Lesezugriff auf alle Daten
+- **Admin**: Vollzugriff auf alle Funktionen (CRUD für Mitglieder, Strafen, Strafarten, Benutzerverwaltung)
+- **Spiess**: Vollzugriff wie Admin, außer Benutzerverwaltung
+- **Vorstand**: Eingeschränkter Zugriff (Mitglieder verwalten, Statistiken anonym, Strafenarten ansehen)
 
 ## Core Requirements
-- Benutzerverwaltung mit Rollen (admin/vorstand)
-- Mitgliederverwaltung (Name, Status aktiv/passiv, NFC-ID)
+- Benutzerverwaltung mit Rollen (admin/spiess/vorstand)
+- Mitgliederverwaltung (Name, Status aktiv/passiv/archiviert)
 - Strafenverwaltung mit konfigurierbaren Strafarten
+- Rückwirkende Strafenerfassung (nur auf Strafenübersicht-Seite)
 - Ranking basierend auf Geschäftsjahr (01.08. - 31.07.)
 - Mobile-First Design mit Drawer-Navigation
 - Statistik-Seite mit Diagrammen und KPIs
+- QR-Code System zur Mitglieder-Identifikation
 
 ## Tech Stack
 - **Frontend**: React, Tailwind CSS, Shadcn/UI, lucide-react, recharts, html5-qrcode, qrcode.react
