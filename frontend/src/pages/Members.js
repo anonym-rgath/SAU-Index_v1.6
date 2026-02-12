@@ -276,59 +276,42 @@ const Members = () => {
             </p>
 
             <div className="space-y-2" data-testid="archived-members-list">
-              {archivedMembers.map((member) => {
-                // Berechne Tage seit Archivierung
-                const archivedAt = member.archived_at ? new Date(member.archived_at) : null;
-                const daysSinceArchived = archivedAt 
-                  ? Math.floor((new Date() - archivedAt) / (1000 * 60 * 60 * 24))
-                  : 0;
-                const canDelete = daysSinceArchived >= 90;
-                const daysRemaining = 90 - daysSinceArchived;
-                
-                return (
-                  <div
-                    key={member.id}
-                    className="flex items-center justify-between p-4 rounded-xl border border-stone-100 bg-stone-100/50 transition-colors min-h-[72px] opacity-75"
-                    data-testid={`archived-member-item-${member.id}`}
-                  >
-                    <div className="min-w-0 flex-1">
-                      <div className="flex items-center gap-2">
-                        <p className="font-medium text-stone-600 truncate">{member.name}</p>
-                        <span className="text-xs px-2 py-0.5 rounded-full font-medium bg-stone-300 text-stone-600">
-                          Archiviert
-                        </span>
-                      </div>
-                      {archivedAt && !canDelete && (
-                        <p className="text-xs text-stone-400 mt-1">
-                          Löschbar in {daysRemaining} Tagen
-                        </p>
-                      )}
+              {archivedMembers.map((member) => (
+                <div
+                  key={member.id}
+                  className="flex items-center justify-between p-4 rounded-xl border border-stone-100 bg-stone-100/50 transition-colors min-h-[72px] opacity-75"
+                  data-testid={`archived-member-item-${member.id}`}
+                >
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-2">
+                      <p className="font-medium text-stone-600 truncate">{member.name}</p>
+                      <span className="text-xs px-2 py-0.5 rounded-full font-medium bg-stone-300 text-stone-600">
+                        Archiviert
+                      </span>
                     </div>
-                    {canManageMembers && (
-                      <div className="flex gap-2 flex-shrink-0 ml-2">
-                        <Button
-                          data-testid={`edit-archived-member-${member.id}`}
-                          onClick={() => openEditDialog(member)}
-                          className="h-10 w-10 p-0 rounded-full bg-white border border-stone-200 text-stone-700 hover:bg-stone-50 transition-colors"
-                          title="Bearbeiten"
-                        >
-                          <Pencil className="w-4 h-4" />
-                        </Button>
-                        {canDelete && (
-                          <Button
-                            data-testid={`delete-archived-member-${member.id}`}
-                            onClick={() => openDeleteDialog(member)}
-                            className="h-10 w-10 p-0 rounded-full bg-red-50 border border-red-200 text-red-600 hover:bg-red-100 transition-colors"
-                            title="Endgültig löschen"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </Button>
-                        )}
-                      </div>
-                    )}
                   </div>
-                );
-              })}
+                  {canManageMembers && (
+                    <div className="flex gap-2 flex-shrink-0 ml-2">
+                      <Button
+                        data-testid={`edit-archived-member-${member.id}`}
+                        onClick={() => openEditDialog(member)}
+                        className="h-10 w-10 p-0 rounded-full bg-white border border-stone-200 text-stone-700 hover:bg-stone-50 transition-colors"
+                        title="Bearbeiten"
+                      >
+                        <Pencil className="w-4 h-4" />
+                      </Button>
+                      <Button
+                        data-testid={`delete-archived-member-${member.id}`}
+                        onClick={() => openDeleteDialog(member)}
+                        className="h-10 w-10 p-0 rounded-full bg-red-50 border border-red-200 text-red-600 hover:bg-red-100 transition-colors"
+                        title="Endgültig löschen"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  )}
+                </div>
+              ))}
             </div>
           </Card>
         )}

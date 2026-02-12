@@ -356,20 +356,8 @@ async def delete_member(request: Request, member_id: str, auth=Depends(require_a
     if not member:
         raise HTTPException(status_code=404, detail="Mitglied nicht gefunden")
     
-    # Prüfen ob archiviert und mindestens 90 Tage vergangen
-    if member.get('status') == 'archiviert' and member.get('archived_at'):
-        archived_at = member['archived_at']
-        if isinstance(archived_at, str):
-            archived_at = datetime.fromisoformat(archived_at)
-        
-        days_archived = (datetime.now(timezone.utc) - archived_at).days
-        if days_archived < 90:
-            remaining = 90 - days_archived
-            raise HTTPException(
-                status_code=400, 
-                detail=f"Mitglied kann erst nach 90 Tagen gelöscht werden. Noch {remaining} Tage warten."
-            )
-    elif member.get('status') != 'archiviert':
+    # Nur archivierte Mitglieder können gelöscht werden
+    if member.get('status') != 'archiviert':
         raise HTTPException(status_code=400, detail="Nur archivierte Mitglieder können gelöscht werden")
     
     result = await db.members.delete_one({"id": member_id})
