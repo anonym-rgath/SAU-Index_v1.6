@@ -260,21 +260,6 @@ const Members = () => {
                       >
                         <Pencil className="w-4 h-4" />
                       </Button>
-                      <Button
-                        data-testid={`archive-member-${member.id}`}
-                        onClick={() => handleArchive(member)}
-                        className="h-10 w-10 p-0 rounded-full bg-amber-50 border border-amber-200 text-amber-600 hover:bg-amber-100 transition-colors"
-                        title="Archivieren"
-                      >
-                        <Archive className="w-4 h-4" />
-                      </Button>
-                      <Button
-                        data-testid={`delete-member-${member.id}`}
-                        onClick={() => openDeleteDialog(member)}
-                        className="h-10 w-10 p-0 rounded-full bg-red-50 border border-red-200 text-red-600 hover:bg-red-100 transition-colors"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
                     </div>
                   )}
                 </div>
