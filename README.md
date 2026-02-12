@@ -103,6 +103,8 @@ Ein modernes Verwaltungssystem für die Rheinzelmänner zur Erfassung und Verwal
   - Body: `{ username, password, role }`
   - Rollen: `admin`, `spiess`, `vorstand`
 - `DELETE /api/users/{id}` - Benutzer löschen
+- `PUT /api/users/{id}/reset-password` - Passwort zurücksetzen
+  - Body: `{ new_password }`
 
 ### Mitglieder
 - `GET /api/members` - Alle Mitglieder
