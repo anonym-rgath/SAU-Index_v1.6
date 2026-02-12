@@ -21,7 +21,7 @@ import {
 } from './ui/dialog';
 import { toast } from 'sonner';
 
-const AddFineDialog = ({ open, onOpenChange, onSuccess, preselectedMemberId = null }) => {
+const AddFineDialog = ({ open, onOpenChange, onSuccess, preselectedMemberId = null, showDateField = false }) => {
   const [members, setMembers] = useState([]);
   const [fineTypes, setFineTypes] = useState([]);
   const [formData, setFormData] = useState({
