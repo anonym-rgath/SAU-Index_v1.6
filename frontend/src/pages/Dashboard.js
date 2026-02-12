@@ -174,7 +174,7 @@ const Dashboard = () => {
                 <p className="text-xs text-stone-400 uppercase tracking-wider font-bold mb-0.5">
                   Lämmchen
                 </p>
-                <p className="text-xs text-stone-500">Zweithöchster</p>
+                <p className="text-xs text-stone-500">Niedrigster</p>
               </div>
               <div className="bg-stone-100 p-2 rounded-lg">
                 <Wallet className="w-5 h-5 text-stone-500" />
