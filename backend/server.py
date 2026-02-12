@@ -341,7 +341,7 @@ async def delete_fine(fine_id: str, auth=Depends(require_admin)):
         raise HTTPException(status_code=404, detail="Strafe nicht gefunden")
     return {"message": "Strafe gelöscht"}
 
-@api_router.get("/statistics/{fiscal_year}", response_model=Statistics)
+@api_router.get("/statistics", response_model=Statistics)
 async def get_statistics(fiscal_year: str, auth=Depends(verify_token)):
     fines = await db.fines.find({"fiscal_year": fiscal_year}, {"_id": 0}).to_list(10000)
     members = await db.members.find({}, {"_id": 0}).to_list(1000)
