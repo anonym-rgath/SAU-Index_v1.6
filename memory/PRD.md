@@ -35,6 +35,10 @@ Entwicklung einer Full-Stack-Webanwendung für einen "Schützenzug" (später umb
 ## Completed Features
 
 ### 2025-02-12 (Current Session)
+- [x] **Passwort-Änderung**: Angemeldete Benutzer können ihr Passwort ändern
+  - Backend: PUT /api/auth/change-password mit Validierung
+  - Frontend: Benutzeranzeige in TopBar mit Dropdown-Menü
+  - Zugriff über Klick auf Benutzernamen oben rechts
 - [x] **Rückwirkende Strafenerfassung**: Optionales Datumsfeld beim Erstellen von Strafen
   - Backend: POST /api/fines akzeptiert optionales `date` (ISO-Format)
   - Geschäftsjahr wird automatisch basierend auf Datum berechnet
