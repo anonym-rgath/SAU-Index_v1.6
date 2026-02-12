@@ -91,13 +91,13 @@ const Members = () => {
 
   const openAddDialog = () => {
     setEditingMember(null);
-    setFormData({ name: '', nfc_id: '' });
+    setFormData({ name: '', nfc_id: '', status: 'aktiv' });
     setDialogOpen(true);
   };
 
   const openEditDialog = (member) => {
     setEditingMember(member);
-    setFormData({ name: member.name, nfc_id: member.nfc_id || '' });
+    setFormData({ name: member.name, nfc_id: member.nfc_id || '', status: member.status || 'aktiv' });
     setDialogOpen(true);
   };
 
