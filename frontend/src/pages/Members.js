@@ -200,7 +200,7 @@ const Members = () => {
 
           <div className="space-y-2" data-testid="members-list">
             {members.length > 0 ? (
-              members.map((member) => (
+              getSortedMembers().map((member) => (
                 <div
                   key={member.id}
                   className="flex items-center justify-between p-4 rounded-xl border border-stone-100 bg-stone-50 active:bg-stone-100 transition-colors min-h-[72px]"
