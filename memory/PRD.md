@@ -35,7 +35,8 @@ Entwicklung einer Full-Stack-Webanwendung für einen "Schützenzug" (später umb
 - [x] **Rückwirkende Strafenerfassung**: Optionales Datumsfeld beim Erstellen von Strafen
   - Backend: POST /api/fines akzeptiert optionales `date` (ISO-Format)
   - Geschäftsjahr wird automatisch basierend auf Datum berechnet
-  - Frontend: AddFineDialog mit Datumsfeld "Datum (optional)"
+  - Frontend: AddFineDialog mit Datumsfeld "Datum (optional)" - **nur auf Strafenübersicht-Seite**
+  - Dashboard: Schnelle Erfassung ohne Datumsfeld (nutzt aktuelles Datum)
   - Vollständig getestet (15/15 Backend-Tests, Frontend-Tests bestanden)
 
 ### 2025-02 (Previous Updates)
