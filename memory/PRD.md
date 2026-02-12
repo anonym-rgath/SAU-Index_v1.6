@@ -32,6 +32,8 @@ Entwicklung einer Full-Stack-Webanwendung für einen "Schützenzug" (später umb
 ### 2025-02 (Current Session)
 - [x] Icon-Änderung: TrendingUp für "Durchschnitt" auf Statistik-Seite
 - [x] Icon-Änderung: Wallet für "Lämmchen" auf Dashboard
+- [x] Icon-Änderung: Coins für "Gesamt" auf Statistik-Seite
+- [x] Menü-Reihenfolge angepasst: Dashboard → Mitglieder → Statistiken → Strafen → Strafenarten
 
 ### Previous Sessions
 - [x] Vollständige Full-Stack-Anwendung aufgebaut
