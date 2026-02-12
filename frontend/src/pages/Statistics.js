@@ -330,7 +330,7 @@ const Statistics = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <Card className="bg-white rounded-2xl border border-stone-200 shadow-sm p-6">
             <h2 className="text-xl font-bold text-stone-900 mb-4">
-              Aktive Mitglieder (Top 5)
+              Aktive {isVorstand ? '' : 'Mitglieder'} (Top 5)
             </h2>
             <div className="space-y-3">
               {activeMembersRanking.slice(0, 5).map((entry, idx) => (
@@ -342,7 +342,9 @@ const Statistics = () => {
                     <div className="w-8 h-8 rounded-full bg-emerald-100 text-emerald-700 font-bold text-sm flex items-center justify-center">
                       {idx + 1}
                     </div>
-                    <span className="font-medium text-stone-900">{entry.member_name}</span>
+                    <span className="font-medium text-stone-900">
+                      {isVorstand ? `Platz ${idx + 1}` : entry.member_name}
+                    </span>
                   </div>
                   <span className="font-bold text-emerald-700">
                     {formatCurrency(entry.total)}
@@ -357,7 +359,7 @@ const Statistics = () => {
 
           <Card className="bg-white rounded-2xl border border-stone-200 shadow-sm p-6">
             <h2 className="text-xl font-bold text-stone-900 mb-4">
-              Passive Mitglieder (Top 5)
+              Passive {isVorstand ? '' : 'Mitglieder'} (Top 5)
             </h2>
             <div className="space-y-3">
               {passiveMembersRanking.slice(0, 5).map((entry, idx) => (
@@ -369,7 +371,9 @@ const Statistics = () => {
                     <div className="w-8 h-8 rounded-full bg-stone-100 text-stone-600 font-bold text-sm flex items-center justify-center">
                       {idx + 1}
                     </div>
-                    <span className="font-medium text-stone-900">{entry.member_name}</span>
+                    <span className="font-medium text-stone-900">
+                      {isVorstand ? `Platz ${idx + 1}` : entry.member_name}
+                    </span>
                   </div>
                   <span className="font-bold text-stone-700">
                     {formatCurrency(entry.total)}
