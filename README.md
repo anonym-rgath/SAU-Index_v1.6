@@ -15,10 +15,8 @@ chmod +x start.sh
 ```
 
 Die App ist dann erreichbar unter:
-- **URL:** https://RASPBERRY_PI_IP (Port 443, HTTPS)
+- **Frontend:** http://RASPBERRY_PI_IP:3000
 - **Login:** admin / admin123
-
-⚠️ Browser zeigt Sicherheitswarnung (selbstsigniertes Zertifikat) - einfach akzeptieren.
 
 Detaillierte Anleitung: [DOCKER_DEPLOYMENT.md](DOCKER_DEPLOYMENT.md)
 
