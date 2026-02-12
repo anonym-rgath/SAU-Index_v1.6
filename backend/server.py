@@ -86,6 +86,7 @@ class UserRole(str, Enum):
 class MemberStatus(str, Enum):
     aktiv = "aktiv"
     passiv = "passiv"
+    archiviert = "archiviert"
 
 # Models
 class User(BaseModel):
