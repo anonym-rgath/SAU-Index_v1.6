@@ -8,6 +8,7 @@ import logging
 from pathlib import Path
 from pydantic import BaseModel, Field, ConfigDict
 from typing import List, Optional
+from enum import Enum
 import uuid
 from datetime import datetime, timezone, timedelta
 import jwt
@@ -36,23 +37,49 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+# Enums
+class UserRole(str, Enum):
+    admin = "admin"
+    vorstand = "vorstand"
+
+class MemberStatus(str, Enum):
+    aktiv = "aktiv"
+    passiv = "passiv"
+
 # Models
+class User(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    username: str
+    role: UserRole
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class UserCreate(BaseModel):
+    username: str
+    password: str
+    role: UserRole
+
 class LoginRequest(BaseModel):
+    username: str
     password: str
 
 class LoginResponse(BaseModel):
     token: str
     message: str
+    role: str
+    username: str
 
 class Member(BaseModel):
     model_config = ConfigDict(extra="ignore")
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     name: str
+    status: MemberStatus = MemberStatus.aktiv
     nfc_id: Optional[str] = None
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 class MemberCreate(BaseModel):
     name: str
+    status: MemberStatus = MemberStatus.aktiv
     nfc_id: Optional[str] = None
 
 class FineType(BaseModel):
