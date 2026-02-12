@@ -14,10 +14,11 @@ import {
 } from './ui/dropdown-menu';
 
 const TopBar = () => {
-  const { logout, isVorstand } = useAuth();
+  const { logout, isVorstand, user } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [passwordDialogOpen, setPasswordDialogOpen] = useState(false);
 
   const handleLogout = () => {
     logout();
