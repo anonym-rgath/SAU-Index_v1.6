@@ -218,13 +218,14 @@ const Members = () => {
           <div className="flex items-center gap-3 mb-4">
             <Users className="w-5 h-5 text-emerald-700" />
             <h2 className="text-xl font-bold text-stone-900 tracking-tight">
-              Alle Mitglieder
+              Aktive Mitglieder
             </h2>
+            <span className="text-sm text-stone-500">({activeMembers.length})</span>
           </div>
 
           <div className="space-y-2" data-testid="members-list">
-            {members.length > 0 ? (
-              getSortedMembers().map((member) => (
+            {activeMembers.length > 0 ? (
+              getSortedMembers(activeMembers).map((member) => (
                 <div
                   key={member.id}
                   className="flex items-center justify-between p-4 rounded-xl border border-stone-100 bg-stone-50 active:bg-stone-100 transition-colors min-h-[72px]"
@@ -260,6 +261,14 @@ const Members = () => {
                         <Pencil className="w-4 h-4" />
                       </Button>
                       <Button
+                        data-testid={`archive-member-${member.id}`}
+                        onClick={() => handleArchive(member)}
+                        className="h-10 w-10 p-0 rounded-full bg-amber-50 border border-amber-200 text-amber-600 hover:bg-amber-100 transition-colors"
+                        title="Archivieren"
+                      >
+                        <Archive className="w-4 h-4" />
+                      </Button>
+                      <Button
                         data-testid={`delete-member-${member.id}`}
                         onClick={() => openDeleteDialog(member)}
                         className="h-10 w-10 p-0 rounded-full bg-red-50 border border-red-200 text-red-600 hover:bg-red-100 transition-colors"
@@ -277,6 +286,60 @@ const Members = () => {
             )}
           </div>
         </Card>
+
+        {/* Archiv */}
+        {archivedMembers.length > 0 && (
+          <Card className="bg-white rounded-2xl border border-stone-200 shadow-sm p-4 mt-6">
+            <div className="flex items-center gap-3 mb-4">
+              <Archive className="w-5 h-5 text-stone-500" />
+              <h2 className="text-xl font-bold text-stone-900 tracking-tight">
+                Archiv
+              </h2>
+              <span className="text-sm text-stone-500">({archivedMembers.length})</span>
+            </div>
+            <p className="text-sm text-stone-500 mb-4">
+              Ausgetretene Mitglieder (erscheinen nicht in Rankings)
+            </p>
+
+            <div className="space-y-2" data-testid="archived-members-list">
+              {archivedMembers.map((member) => (
+                <div
+                  key={member.id}
+                  className="flex items-center justify-between p-4 rounded-xl border border-stone-100 bg-stone-100/50 transition-colors min-h-[72px] opacity-75"
+                  data-testid={`archived-member-item-${member.id}`}
+                >
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-2">
+                      <p className="font-medium text-stone-600 truncate">{member.name}</p>
+                      <span className="text-xs px-2 py-0.5 rounded-full font-medium bg-stone-300 text-stone-600">
+                        Archiviert
+                      </span>
+                    </div>
+                  </div>
+                  {canManageMembers && (
+                    <div className="flex gap-2 flex-shrink-0 ml-2">
+                      <Button
+                        data-testid={`restore-member-${member.id}`}
+                        onClick={() => handleArchive(member)}
+                        className="h-10 w-10 p-0 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 hover:bg-emerald-100 transition-colors"
+                        title="Wiederherstellen"
+                      >
+                        <ArchiveRestore className="w-4 h-4" />
+                      </Button>
+                      <Button
+                        data-testid={`delete-archived-member-${member.id}`}
+                        onClick={() => openDeleteDialog(member)}
+                        className="h-10 w-10 p-0 rounded-full bg-red-50 border border-red-200 text-red-600 hover:bg-red-100 transition-colors"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </Card>
+        )}
       </div>
 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
