@@ -5,7 +5,7 @@ import { Card } from '../components/ui/card';
 import { PiggyBank, Wallet, Plus, Trophy, Calendar, Scan } from 'lucide-react';
 import { toast } from 'sonner';
 import AddFineDialog from '../components/AddFineDialog';
-import ScanDemoDialog from '../components/ScanDemoDialog';
+import QRScanDialog from '../components/QRScanDialog';
 import { formatCurrency, formatDate } from '../lib/utils';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -298,7 +298,7 @@ const Dashboard = () => {
         preselectedMemberId={selectedMemberId}
       />
       
-      <ScanDemoDialog
+      <QRScanDialog
         open={scanDialogOpen}
         onOpenChange={setScanDialogOpen}
         onScanComplete={handleScanComplete}
