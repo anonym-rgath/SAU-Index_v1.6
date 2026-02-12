@@ -106,6 +106,11 @@ Entwicklung einer Full-Stack-Webanwendung für einen "Schützenzug" (später umb
 
 ## API Endpoints
 - `POST /api/auth/login` - Anmeldung (Rate Limited: 5/min)
+- `PUT /api/auth/change-password` - Eigenes Passwort ändern
+- `GET /api/users` - Alle Benutzer (nur Admin)
+- `POST /api/users` - Benutzer erstellen (nur Admin)
+- `DELETE /api/users/{id}` - Benutzer löschen (nur Admin)
+- `PUT /api/users/{id}/reset-password` - Passwort zurücksetzen (nur Admin)
 - `GET /api/fiscal-years` - Geschäftsjahre
 - `GET /api/statistics?fiscal_year=YYYY/YYYY` - Statistiken
 - `/api/members` - Mitglieder CRUD
