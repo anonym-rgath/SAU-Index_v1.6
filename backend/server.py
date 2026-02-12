@@ -264,7 +264,7 @@ async def get_fines(year: Optional[int] = None, auth=Depends(verify_token)):
     return fines
 
 @api_router.post("/fines", response_model=Fine)
-async def create_fine(input: FineCreate, auth=Depends(verify_token)):
+async def create_fine(input: FineCreate, auth=Depends(require_admin)):
     fine_type = await db.fine_types.find_one({"id": input.fine_type_id}, {"_id": 0})
     if not fine_type:
         raise HTTPException(status_code=404, detail="Strafenart nicht gefunden")
@@ -284,7 +284,7 @@ async def create_fine(input: FineCreate, auth=Depends(verify_token)):
     return fine
 
 @api_router.put("/fines/{fine_id}", response_model=Fine)
-async def update_fine(fine_id: str, input: FineUpdate, auth=Depends(verify_token)):
+async def update_fine(fine_id: str, input: FineUpdate, auth=Depends(require_admin)):
     result = await db.fines.find_one({"id": fine_id}, {"_id": 0})
     if not result:
         raise HTTPException(status_code=404, detail="Strafe nicht gefunden")
@@ -300,7 +300,7 @@ async def update_fine(fine_id: str, input: FineUpdate, auth=Depends(verify_token
     return Fine(**updated)
 
 @api_router.delete("/fines/{fine_id}")
-async def delete_fine(fine_id: str, auth=Depends(verify_token)):
+async def delete_fine(fine_id: str, auth=Depends(require_admin)):
     result = await db.fines.delete_one({"id": fine_id})
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Strafe nicht gefunden")
