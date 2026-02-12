@@ -163,22 +163,24 @@ const FineTypes = () => {
                       {fineType.amount !== null ? formatCurrency(fineType.amount) : 'Variabel'}
                     </p>
                   </div>
-                  <div className="flex gap-2 flex-shrink-0 ml-2">
-                    <Button
-                      data-testid={`edit-finetype-${fineType.id}`}
-                      onClick={() => openEditDialog(fineType)}
-                      className="h-10 w-10 p-0 rounded-full bg-white border border-stone-200 text-stone-700 hover:bg-stone-50 transition-colors"
-                    >
-                      <Pencil className="w-4 h-4" />
-                    </Button>
-                    <Button
-                      data-testid={`delete-finetype-${fineType.id}`}
-                      onClick={() => openDeleteDialog(fineType)}
-                      className="h-10 w-10 p-0 rounded-full bg-red-50 border border-red-200 text-red-600 hover:bg-red-100 transition-colors"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
-                  </div>
+                  {isAdmin && (
+                    <div className="flex gap-2 flex-shrink-0 ml-2">
+                      <Button
+                        data-testid={`edit-finetype-${fineType.id}`}
+                        onClick={() => openEditDialog(fineType)}
+                        className="h-10 w-10 p-0 rounded-full bg-white border border-stone-200 text-stone-700 hover:bg-stone-50 transition-colors"
+                      >
+                        <Pencil className="w-4 h-4" />
+                      </Button>
+                      <Button
+                        data-testid={`delete-finetype-${fineType.id}`}
+                        onClick={() => openDeleteDialog(fineType)}
+                        className="h-10 w-10 p-0 rounded-full bg-red-50 border border-red-200 text-red-600 hover:bg-red-100 transition-colors"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  )}
                 </div>
               ))
             ) : (
