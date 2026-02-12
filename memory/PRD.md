@@ -35,16 +35,24 @@ Entwicklung einer Full-Stack-Webanwendung für einen "Schützenzug" (später umb
 ## Completed Features
 
 ### 2025-02-12 (Current Session)
+- [x] **Benutzerverwaltung (Admin)**: Vollständige Benutzer-Administration
+  - Neue Benutzer anlegen mit Benutzername, Passwort und Rolle
+  - Benutzer löschen (mit Schutz für letzten Admin)
+  - **Passwörter zurücksetzen** für alle Benutzer
+  - Neue Seite `/users` nur für Admin sichtbar
+- [x] **Echte Benutzerkonten**: Personalisierte Accounts erstellt
+  - Henrik Dinslage (Spieß)
+  - Marius Geduldig (Vorstand)
+  - Alte generische Accounts (spiess, vorstand) entfernt
 - [x] **Passwort-Änderung**: Angemeldete Benutzer können ihr Passwort ändern
   - Backend: PUT /api/auth/change-password mit Validierung
-  - Frontend: Benutzeranzeige in TopBar mit Dropdown-Menü
-  - Zugriff über Klick auf Benutzernamen oben rechts
+  - Frontend: Benutzeranzeige im Drawer-Menü (unten)
+  - Benutzernamen werden großgeschrieben angezeigt
 - [x] **Rückwirkende Strafenerfassung**: Optionales Datumsfeld beim Erstellen von Strafen
   - Backend: POST /api/fines akzeptiert optionales `date` (ISO-Format)
   - Geschäftsjahr wird automatisch basierend auf Datum berechnet
   - Frontend: AddFineDialog mit Datumsfeld "Datum (optional)" - **nur auf Strafenübersicht-Seite**
   - Dashboard: Schnelle Erfassung ohne Datumsfeld (nutzt aktuelles Datum)
-  - Vollständig getestet (15/15 Backend-Tests, Frontend-Tests bestanden)
 
 ### 2025-02 (Previous Updates)
 - [x] Icon-Änderung: TrendingUp für "Durchschnitt" auf Statistik-Seite
