@@ -169,7 +169,7 @@ const QRScanDialog = ({ open, onOpenChange, onScanComplete }) => {
               
               <div className="max-h-64 overflow-y-auto space-y-2">
                 {members
-                  .filter(m => m.status === 'aktiv')
+                  .filter(m => m.status !== 'archiviert')
                   .map(member => (
                     <button
                       key={member.id}
