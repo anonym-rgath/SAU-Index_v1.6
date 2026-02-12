@@ -204,7 +204,7 @@ const Fines = () => {
               ))
             ) : (
               <p className="text-center text-stone-400 py-8">
-                Noch keine Strafen für GJ {fiscalYear}
+                Noch keine Strafen für {fiscalYear}
               </p>
             )}
           </div>
