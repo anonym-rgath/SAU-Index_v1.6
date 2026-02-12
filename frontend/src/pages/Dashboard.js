@@ -267,7 +267,7 @@ const Dashboard = () => {
             </Card>
 
           {/* Floating Action Button - nur für Admin */}
-          {isAdmin && (
+          {canManageFines && (
             <>
               <button
                 data-testid="add-fine-fab"
