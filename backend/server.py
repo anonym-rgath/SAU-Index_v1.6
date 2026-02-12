@@ -129,7 +129,7 @@ class Fine(BaseModel):
     fine_type_id: str
     fine_type_label: str
     amount: float
-    year: int
+    fiscal_year: str  # z.B. "2025/2026"
     date: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     notes: Optional[str] = None
 
