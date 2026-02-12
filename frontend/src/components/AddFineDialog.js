@@ -150,18 +150,20 @@ const AddFineDialog = ({ open, onOpenChange, onSuccess, preselectedMemberId = nu
               />
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="date">Datum (optional)</Label>
-              <Input
-                data-testid="fine-date-input"
-                id="date"
-                type="date"
-                value={formData.date}
-                onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-                className="h-12 rounded-xl border-stone-200 bg-stone-50 focus:bg-white focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all text-base"
-              />
-              <p className="text-xs text-stone-400">Leer lassen für heutiges Datum</p>
-            </div>
+            {showDateField && (
+              <div className="space-y-2">
+                <Label htmlFor="date">Datum (optional)</Label>
+                <Input
+                  data-testid="fine-date-input"
+                  id="date"
+                  type="date"
+                  value={formData.date}
+                  onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+                  className="h-12 rounded-xl border-stone-200 bg-stone-50 focus:bg-white focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all text-base"
+                />
+                <p className="text-xs text-stone-400">Leer lassen für heutiges Datum</p>
+              </div>
+            )}
 
             <div className="space-y-2">
               <Label htmlFor="notes">Notiz (optional)</Label>
