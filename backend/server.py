@@ -369,7 +369,7 @@ async def get_statistics(fiscal_year: str, auth=Depends(verify_token)):
         entry.rank = idx + 1
     
     sau = ranking[0] if len(ranking) > 0 else None
-    laemmchen = ranking[1] if len(ranking) > 1 else None
+    laemmchen = ranking[-1] if len(ranking) > 0 else None
     
     return Statistics(
         fiscal_year=fiscal_year,
