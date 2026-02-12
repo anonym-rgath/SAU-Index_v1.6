@@ -18,10 +18,10 @@ const TopBar = () => {
 
   const navItems = [
     { path: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
-    { path: '/fines', icon: Receipt, label: 'Strafen' },
     { path: '/members', icon: Users, label: 'Mitglieder' },
-    { path: '/fine-types', icon: Tag, label: 'Strafenarten' },
     { path: '/statistics', icon: BarChart3, label: 'Statistiken' },
+    { path: '/fines', icon: Receipt, label: 'Strafen' },
+    { path: '/fine-types', icon: Tag, label: 'Strafenarten' },
   ];
 
   const handleNavClick = (path) => {
