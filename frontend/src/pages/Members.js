@@ -293,12 +293,12 @@ const Members = () => {
                   {canManageMembers && (
                     <div className="flex gap-2 flex-shrink-0 ml-2">
                       <Button
-                        data-testid={`restore-member-${member.id}`}
-                        onClick={() => handleArchive(member)}
-                        className="h-10 w-10 p-0 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 hover:bg-emerald-100 transition-colors"
-                        title="Wiederherstellen"
+                        data-testid={`edit-archived-member-${member.id}`}
+                        onClick={() => openEditDialog(member)}
+                        className="h-10 w-10 p-0 rounded-full bg-white border border-stone-200 text-stone-700 hover:bg-stone-50 transition-colors"
+                        title="Bearbeiten"
                       >
-                        <ArchiveRestore className="w-4 h-4" />
+                        <Pencil className="w-4 h-4" />
                       </Button>
                       <Button
                         data-testid={`delete-archived-member-${member.id}`}
