@@ -353,6 +353,10 @@ class UserCreateRequest(BaseModel):
 async def get_users(auth=Depends(require_admin)):
     """Alle Benutzer abrufen (nur Admin)"""
     users = await db.users.find({}, {"_id": 0, "password_hash": 0}).to_list(100)
+    # Konvertiere datetime zu string falls nötig
+    for user in users:
+        if user.get('created_at') and not isinstance(user['created_at'], str):
+            user['created_at'] = user['created_at'].isoformat()
     return users
 
 @api_router.post("/users", response_model=UserResponse)
