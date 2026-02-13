@@ -107,7 +107,9 @@ const AddFineDialog = ({ open, onOpenChange, onSuccess, preselectedMemberId = nu
                   <SelectValue placeholder="Mitglied wählen" />
                 </SelectTrigger>
                 <SelectContent>
-                  {members.map(member => (
+                  {members
+                    .filter(member => member.status !== 'archiviert')
+                    .map(member => (
                     <SelectItem key={member.id} value={member.id}>
                       {member.name}
                     </SelectItem>
