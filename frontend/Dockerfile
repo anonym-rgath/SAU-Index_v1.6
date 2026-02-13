@@ -2,17 +2,19 @@
 # Multi-stage build für optimale Image-Größe
 
 # Stage 1: Build
-FROM node:18-alpine AS builder
+FROM node:20-alpine AS builder
 
 WORKDIR /app
 
 # Setze Backend-URL für den Build (API calls gehen über Nginx Proxy)
 ENV REACT_APP_BACKEND_URL=
 
-# Install dependencies - yarn.lock ist optional
-COPY package.json ./
-COPY yarn.lock* ./
-RUN yarn install --frozen-lockfile || yarn install
+# Yarn aktivieren (Corepack ist in Node 20 integriert)
+RUN corepack enable
+
+# Install dependencies
+COPY package.json yarn.lock ./
+RUN yarn install --frozen-lockfile
 
 # Copy source and build
 COPY . .
