@@ -498,7 +498,7 @@ async def get_members(auth=Depends(verify_token)):
     return members
 
 @api_router.post("/members", response_model=Member)
-async def create_member(request: Request, input: MemberCreate, auth=Depends(require_admin_or_spiess)):
+async def create_member(request: Request, input: MemberCreate, auth=Depends(require_any_role)):
     member = Member(**input.model_dump())
     doc = member.model_dump()
     doc['created_at'] = doc['created_at'].isoformat()
@@ -518,7 +518,7 @@ async def create_member(request: Request, input: MemberCreate, auth=Depends(requ
     return member
 
 @api_router.put("/members/{member_id}", response_model=Member)
-async def update_member(request: Request, member_id: str, input: MemberCreate, auth=Depends(require_admin_or_spiess)):
+async def update_member(request: Request, member_id: str, input: MemberCreate, auth=Depends(require_any_role)):
     result = await db.members.find_one({"id": member_id}, {"_id": 0})
     if not result:
         raise HTTPException(status_code=404, detail="Mitglied nicht gefunden")
@@ -555,7 +555,7 @@ async def update_member(request: Request, member_id: str, input: MemberCreate, a
     return Member(**updated)
 
 @api_router.delete("/members/{member_id}")
-async def delete_member(request: Request, member_id: str, auth=Depends(require_admin_or_spiess)):
+async def delete_member(request: Request, member_id: str, auth=Depends(require_any_role)):
     member = await db.members.find_one({"id": member_id}, {"_id": 0})
     if not member:
         raise HTTPException(status_code=404, detail="Mitglied nicht gefunden")
@@ -591,7 +591,7 @@ async def get_fine_types(auth=Depends(verify_token)):
     return fine_types
 
 @api_router.post("/fine-types", response_model=FineType)
-async def create_fine_type(input: FineTypeCreate, auth=Depends(require_admin_or_spiess)):
+async def create_fine_type(input: FineTypeCreate, auth=Depends(require_any_role)):
     fine_type = FineType(**input.model_dump())
     doc = fine_type.model_dump()
     doc['created_at'] = doc['created_at'].isoformat()
@@ -599,7 +599,7 @@ async def create_fine_type(input: FineTypeCreate, auth=Depends(require_admin_or_
     return fine_type
 
 @api_router.put("/fine-types/{fine_type_id}", response_model=FineType)
-async def update_fine_type(fine_type_id: str, input: FineTypeCreate, auth=Depends(require_admin_or_spiess)):
+async def update_fine_type(fine_type_id: str, input: FineTypeCreate, auth=Depends(require_any_role)):
     result = await db.fine_types.find_one({" id": fine_type_id}, {"_id": 0})
     if not result:
         raise HTTPException(status_code=404, detail="Strafenart nicht gefunden")
@@ -613,7 +613,7 @@ async def update_fine_type(fine_type_id: str, input: FineTypeCreate, auth=Depend
     return FineType(**updated)
 
 @api_router.delete("/fine-types/{fine_type_id}")
-async def delete_fine_type(fine_type_id: str, auth=Depends(require_admin_or_spiess)):
+async def delete_fine_type(fine_type_id: str, auth=Depends(require_any_role)):
     result = await db.fine_types.delete_one({"id": fine_type_id})
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Strafenart nicht gefunden")
