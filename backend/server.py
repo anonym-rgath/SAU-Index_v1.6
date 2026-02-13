@@ -776,7 +776,7 @@ async def startup_db_client():
                 "username": "admin",
                 "password_hash": pwd_context.hash(admin_password),
                 "role": "admin",
-                "created_at": datetime.now(timezone.utc)
+                "created_at": datetime.now(timezone.utc).isoformat()
             }
             await db.users.insert_one(admin_user)
             logger.info(f"Admin-Benutzer erstellt mit Passwort aus Umgebungsvariable")
