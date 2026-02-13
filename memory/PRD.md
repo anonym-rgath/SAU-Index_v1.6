@@ -24,6 +24,7 @@ Entwicklung einer Full-Stack-Webanwendung für einen "Schützenzug" (später umb
 - **Database**: MongoDB
 - **Auth**: JWT mit bcrypt Passwort-Hashing
 - **Security**: Rate Limiting (5 Login-Versuche/Minute), Audit Logging
+- **Deployment**: Docker, Docker Compose, Nginx (Reverse Proxy)
 
 ## Login Credentials
 - Admin: `admin` / `admin123`
@@ -34,7 +35,18 @@ Entwicklung einer Full-Stack-Webanwendung für einen "Schützenzug" (später umb
 
 ## Completed Features
 
-### 2025-02-12 (Current Session)
+### 2025-12-14 (Current Session)
+- [x] **Docker Deployment für Raspberry Pi**: Vollständiges Setup
+  - `docker-compose.yml` mit MongoDB, Backend, Frontend
+  - ARM64-kompatible Images (Raspberry Pi 4/5)
+  - Nginx Reverse Proxy integriert im Frontend-Container
+  - Health-Checks für alle Services
+  - Environment-Variablen über `.env` konfigurierbar
+  - `start.sh`, `stop.sh`, `logs.sh` Scripts
+  - Detaillierte Dokumentation in `DOCKER_DEPLOYMENT.md`
+- [x] **Health-Check Endpoint**: `/health` im Backend für Docker-Monitoring
+
+### 2025-02-12 (Previous Session)
 - [x] **Benutzerverwaltung (Admin)**: Vollständige Benutzer-Administration
   - Neue Benutzer anlegen mit Benutzername, Passwort und Rolle
   - Benutzer löschen (mit Schutz für letzten Admin)
