@@ -26,7 +26,18 @@ const QRScanDialog = ({ open, onOpenChange, onScanComplete }) => {
       loadMembers();
       setScannedMember(null);
       setError(null);
-      setManualMode(false);
+      
+      // Kamera funktioniert nur über HTTPS oder localhost
+      const isSecure = window.location.protocol === 'https:' || 
+                       window.location.hostname === 'localhost' ||
+                       window.location.hostname === '127.0.0.1';
+      
+      if (!isSecure) {
+        setManualMode(true);
+        setError("Kamera benötigt HTTPS. Bitte Mitglied manuell auswählen.");
+      } else {
+        setManualMode(false);
+      }
     } else {
       stopScanner();
     }
