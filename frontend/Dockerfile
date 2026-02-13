@@ -12,9 +12,9 @@ ENV REACT_APP_BACKEND_URL=
 # Yarn aktivieren (Corepack ist in Node 20 integriert)
 RUN corepack enable
 
-# Install dependencies
-COPY package.json yarn.lock ./
-RUN yarn install --frozen-lockfile
+# Install dependencies (yarn.lock optional)
+COPY package.json ./
+RUN yarn install
 
 # Copy source and build
 COPY . .
