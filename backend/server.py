@@ -764,6 +764,27 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+@app.on_event("startup")
+async def startup_db_client():
+    """Erstellt den Admin-Benutzer beim Start, falls nicht vorhanden"""
+    try:
+        existing_admin = await db.users.find_one({"username": "admin"})
+        if not existing_admin:
+            admin_password = os.environ.get('ADMIN_PASSWORD', 'admin123')
+            admin_user = {
+                "id": str(uuid.uuid4()),
+                "username": "admin",
+                "password_hash": pwd_context.hash(admin_password),
+                "role": "admin",
+                "created_at": datetime.now(timezone.utc)
+            }
+            await db.users.insert_one(admin_user)
+            logger.info(f"Admin-Benutzer erstellt mit Passwort aus Umgebungsvariable")
+        else:
+            logger.info("Admin-Benutzer existiert bereits")
+    except Exception as e:
+        logger.error(f"Fehler beim Erstellen des Admin-Benutzers: {e}")
+
 @app.on_event("shutdown")
 async def shutdown_db_client():
     client.close()
