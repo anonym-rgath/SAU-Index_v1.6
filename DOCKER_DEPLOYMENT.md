@@ -1,127 +1,320 @@
-# ============================================
-# Rheinzelmänner - Docker Deployment Anleitung
-# ============================================
+# Rheinzelmänner - Docker Deployment Guide
 
-## Voraussetzungen auf dem Raspberry Pi
+Detaillierte Anleitung zur Installation auf einem Raspberry Pi.
 
-1. Raspberry Pi 4 (empfohlen) mit 64-bit Raspberry Pi OS
-2. Docker installiert
+## Voraussetzungen
 
-### Docker installieren:
-```bash
-curl -fsSL https://get.docker.com -o get-docker.sh
-sudo sh get-docker.sh
-sudo usermod -aG docker $USER
-# Neu einloggen oder: newgrp docker
-```
+- **Raspberry Pi 4** (4GB+ RAM empfohlen) oder **Raspberry Pi 5**
+- **Raspberry Pi OS** (64-bit, Bookworm empfohlen)
+- **SD-Karte** mit min. 16GB
+- **Netzwerk-Zugang** (LAN oder WLAN)
 
-Docker Compose V2 ist in Docker bereits integriert (`docker compose`).
-
----
-
-## Deployment Schritte
-
-### 1. Code auf den Raspberry Pi übertragen
-
-Option A - Git Clone (wenn auf Github gespeichert):
-```bash
-git clone https://github.com/DEIN_USERNAME/rheinzelmaenner.git
-cd rheinzelmaenner
-```
-
-Option B - ZIP übertragen:
-```bash
-# ZIP auf Pi kopieren (von deinem PC aus):
-scp rheinzelmaenner.zip pi@RASPBERRY_IP:/home/pi/
-
-# Auf dem Pi entpacken:
-unzip rheinzelmaenner.zip
-cd rheinzelmaenner
-```
-
-### 2. Start-Script ausführen
-
-```bash
-chmod +x start.sh
-./start.sh
-```
-
-Das Script:
-- Konfiguriert alle Umgebungsvariablen
-- Baut und startet alle Docker Container
-
-### 3. App aufrufen
-
-- **Frontend:** http://RASPBERRY_PI_IP:3000
-- **Backend API:** http://RASPBERRY_PI_IP:8001/api
-- **Login:** admin / admin123
+> **Hinweis:** Raspberry Pi 3 oder ältere 32-bit Modelle werden aufgrund von MongoDB-Einschränkungen nicht unterstützt.
 
 ---
 
 ## Architektur
 
 ```
-                    ┌─────────────────┐
-                    │   Browser       │
-                    └───┬─────────┬───┘
-                        │         │
-              Port 3000 │         │ Port 8001
-              ┌─────────▼─┐   ┌───▼─────────┐
-              │ Frontend  │   │  Backend    │
-              │ (React)   │   │  (FastAPI)  │
-              └───────────┘   └──────┬──────┘
-                                     │
-                              ┌──────▼──────┐
-                              │  MongoDB    │
-                              └─────────────┘
+                    +------------------+
+                    |     Browser      |
+                    +--------+---------+
+                             |
+                        Port 80
+                             |
+              +--------------v--------------+
+              |   Frontend Container        |
+              |   (React + Nginx)           |
+              |   - Statische Dateien       |
+              |   - API Proxy -> Backend    |
+              +--------------+--------------+
+                             |
+                      /api/* Requests
+                             |
+              +--------------v--------------+
+              |   Backend Container         |
+              |   (FastAPI + Python)        |
+              +--------------+--------------+
+                             |
+              +--------------v--------------+
+              |   MongoDB Container         |
+              |   (Datenbank)               |
+              +-----------------------------+
 ```
 
 ---
 
-## Nützliche Befehle
+## Installation
+
+### 1. Docker installieren
 
 ```bash
-# Container stoppen:
-docker compose down
+# Docker installieren
+curl -fsSL https://get.docker.com | sh
 
-# Container neustarten:
-docker compose restart
+# Benutzer zur Docker-Gruppe hinzufügen
+sudo usermod -aG docker $USER
 
-# Logs anzeigen:
-docker compose logs -f
-docker compose logs -f backend
-docker compose logs -f frontend
-
-# Status prüfen:
-docker compose ps
-
-# Datenbank-Backup:
-docker exec rheinzel-mongodb mongodump --out /backup
-docker cp rheinzel-mongodb:/backup ./backup
-
-# Alles löschen und neu bauen:
-docker compose down -v
-docker compose up -d --build
+# Abmelden und neu anmelden (wichtig!)
+exit
+# Dann erneut per SSH verbinden
 ```
+
+### 2. Docker Compose Plugin installieren
+
+```bash
+sudo apt-get update
+sudo apt-get install -y docker-compose-plugin
+
+# Prüfen ob es funktioniert
+docker compose version
+```
+
+### 3. Projekt herunterladen
+
+**Option A - Git Clone (empfohlen):**
+```bash
+cd ~
+git clone https://github.com/DEIN_USERNAME/rheinzelmaenner.git
+cd rheinzelmaenner
+```
+
+**Option B - ZIP übertragen:**
+```bash
+# Auf deinem PC:
+scp rheinzelmaenner.zip pi@RASPBERRY_PI_IP:/home/pi/
+
+# Auf dem Raspberry Pi:
+cd ~
+unzip rheinzelmaenner.zip
+cd rheinzelmaenner
+```
+
+### 4. Konfiguration anpassen (optional aber empfohlen)
+
+Erstelle eine `.env` Datei im Projektordner:
+
+```bash
+nano .env
+```
+
+Inhalt:
+
+```env
+# Port auf dem die App läuft
+APP_PORT=80
+
+# JWT Secret (UNBEDINGT ÄNDERN für Produktion!)
+JWT_SECRET=dein-sehr-langer-geheimer-schluessel-hier
+
+# Admin Passwort (UNBEDINGT ÄNDERN!)
+ADMIN_PASSWORD=dein-sicheres-passwort
+```
+
+> **Tipp:** Ein sicheres JWT_SECRET kannst du so generieren:
+> ```bash
+> openssl rand -hex 32
+> ```
+
+### 5. App starten
+
+```bash
+# Scripts ausführbar machen
+chmod +x start.sh stop.sh logs.sh
+
+# App starten
+./start.sh
+```
+
+**Hinweis:** Der erste Start dauert 5-10 Minuten, da alle Docker Images gebaut werden müssen.
+
+---
+
+## Zugriff auf die App
+
+Nach erfolgreichem Start:
+
+1. **IP-Adresse des Raspberry Pi herausfinden:**
+   ```bash
+   hostname -I
+   ```
+
+2. **App im Browser öffnen:**
+   ```
+   http://[IP-ADRESSE]
+   ```
+   Beispiel: `http://192.168.1.100`
+
+3. **Login:**
+   - Benutzer: `admin`
+   - Passwort: `admin123` (oder wie in `.env` konfiguriert)
+
+---
+
+## Verfügbare Befehle
+
+| Befehl | Beschreibung |
+|--------|--------------|
+| `./start.sh` | App starten (baut bei Bedarf neu) |
+| `./stop.sh` | App stoppen |
+| `./logs.sh` | Logs aller Services anzeigen |
+| `docker compose ps` | Status aller Container |
+| `docker compose restart` | Alle Services neu starten |
+| `docker compose down -v` | Alles löschen inkl. Datenbank |
 
 ---
 
 ## Troubleshooting
 
-### Container startet nicht:
+### Container starten nicht
+
 ```bash
+# Alle Logs prüfen
+./logs.sh
+
+# Nur Backend-Logs
 docker compose logs backend
-docker compose logs frontend
+
+# Nur MongoDB-Logs
+docker compose logs mongodb
 ```
 
-### MongoDB Verbindungsfehler:
-- Warte 30 Sekunden nach Start
-- Prüfe: `docker compose ps` - alle Container "Up"?
+### Port 80 bereits belegt
 
-### Frontend zeigt nichts an:
-- Prüfe REACT_APP_BACKEND_URL in frontend/.env
-- Muss die IP des Raspberry Pi sein, nicht localhost!
+Falls ein anderer Dienst (z.B. Apache) Port 80 nutzt:
 
-### Zu wenig Speicher:
-- Raspberry Pi 4 mit min. 2GB RAM empfohlen
-- `docker system prune -a` um alte Images zu löschen
+```bash
+# Option 1: Apache deaktivieren
+sudo systemctl stop apache2
+sudo systemctl disable apache2
+
+# Option 2: Anderen Port nutzen
+# In .env Datei: APP_PORT=8080
+# Dann: ./start.sh
+```
+
+### MongoDB startet nicht (Speicher)
+
+```bash
+# Speicher prüfen
+free -h
+
+# Swap erhöhen falls nötig
+sudo dphys-swapfile swapoff
+sudo nano /etc/dphys-swapfile
+# Setze: CONF_SWAPSIZE=2048
+sudo dphys-swapfile setup
+sudo dphys-swapfile swapon
+```
+
+### Alles zurücksetzen
+
+```bash
+# ACHTUNG: Löscht alle Daten!
+docker compose down -v
+./start.sh
+```
+
+---
+
+## Automatischer Start beim Booten
+
+Damit die App nach einem Neustart des Raspberry Pi automatisch startet:
+
+```bash
+# Systemd Service erstellen
+sudo nano /etc/systemd/system/rheinzelmaenner.service
+```
+
+Inhalt (passe den Pfad an deinen Benutzernamen an):
+
+```ini
+[Unit]
+Description=Rheinzelmaenner Verwaltung
+Requires=docker.service
+After=docker.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+WorkingDirectory=/home/pi/rheinzelmaenner
+ExecStart=/usr/bin/docker compose up -d
+ExecStop=/usr/bin/docker compose down
+User=pi
+
+[Install]
+WantedBy=multi-user.target
+```
+
+Aktivieren:
+
+```bash
+sudo systemctl daemon-reload
+sudo systemctl enable rheinzelmaenner.service
+
+# Testen (optional)
+sudo systemctl start rheinzelmaenner.service
+sudo systemctl status rheinzelmaenner.service
+```
+
+---
+
+## Backup & Restore
+
+### Datenbank sichern
+
+```bash
+# Backup erstellen
+docker compose exec mongodb mongodump --out /data/backup
+
+# Backup aus Container kopieren
+docker cp rheinzel-mongodb:/data/backup ./backup_$(date +%Y%m%d)
+
+# Backup archivieren
+tar -czvf backup_$(date +%Y%m%d).tar.gz backup_$(date +%Y%m%d)
+```
+
+### Datenbank wiederherstellen
+
+```bash
+# Backup entpacken (falls archiviert)
+tar -xzvf backup_20241215.tar.gz
+
+# Backup in Container kopieren
+docker cp ./backup_20241215 rheinzel-mongodb:/data/backup
+
+# Wiederherstellen
+docker compose exec mongodb mongorestore /data/backup
+```
+
+---
+
+## Updates
+
+```bash
+# Neueste Version holen (bei Git Clone)
+git pull
+
+# Neu bauen und starten
+docker compose down
+docker compose build --no-cache
+docker compose up -d
+```
+
+---
+
+## Sicherheitshinweise
+
+1. **Admin-Passwort ändern:** Nach der ersten Anmeldung unbedingt ein sicheres Passwort setzen
+2. **JWT_SECRET:** Verwende einen zufälligen String mit min. 32 Zeichen
+3. **Lokales Netzwerk:** Die App ist standardmäßig nur im lokalen Netzwerk erreichbar
+4. **Firewall:** Bei Bedarf Port 80 in der Router-Firewall für externen Zugriff freigeben
+
+---
+
+## Technische Details
+
+- **Frontend:** React 19 mit Nginx als Webserver und Reverse Proxy
+- **Backend:** FastAPI (Python) auf Port 8001 (intern)
+- **Datenbank:** MongoDB 6
+- **Alle Services:** ARM64-kompatibel für Raspberry Pi
