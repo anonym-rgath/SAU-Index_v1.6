@@ -1,7 +1,7 @@
 services:
-  # MongoDB Datenbank (ARM64 kompatibel für Raspberry Pi)
+  # MongoDB Datenbank (ARM64 kompatibel für Raspberry Pi 4)
   mongodb:
-    image: mongo:5.0
+    image: mongo:4.4.18
     container_name: rheinzel-mongodb
     restart: unless-stopped
     volumes:
