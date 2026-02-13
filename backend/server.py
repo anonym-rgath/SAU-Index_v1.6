@@ -742,6 +742,18 @@ async def get_audit_logs(
     logs = await db.audit_logs.find(query, {"_id": 0}).sort("timestamp", -1).limit(limit).to_list(limit)
     return {"logs": logs, "total": len(logs)}
 
+# Health Check Endpoint (für Docker und Monitoring)
+@app.get("/health")
+async def health_check():
+    """Health check endpoint für Docker und Load Balancer"""
+    try:
+        # Prüfe MongoDB Verbindung
+        await client.admin.command('ping')
+        return {"status": "healthy", "database": "connected"}
+    except Exception as e:
+        logger.error(f"Health check failed: {e}")
+        return {"status": "unhealthy", "database": "disconnected", "error": str(e)}
+
 app.include_router(api_router)
 
 app.add_middleware(
