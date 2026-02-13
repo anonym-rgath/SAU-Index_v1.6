@@ -104,6 +104,12 @@ Entwicklung einer Full-Stack-Webanwendung für einen "Schützenzug" (später umb
 
 ## Key Files
 - `/app/backend/server.py` - Backend API
+- `/app/docker-compose.yml` - Docker Compose Konfiguration
+- `/app/backend/Dockerfile` - Backend Docker Image
+- `/app/frontend/Dockerfile` - Frontend Docker Image
+- `/app/frontend/nginx.conf` - Nginx Reverse Proxy Config
+- `/app/start.sh` - Start-Script für Raspberry Pi
+- `/app/DOCKER_DEPLOYMENT.md` - Deployment Anleitung
 - `/app/frontend/src/pages/Dashboard.js` - Dashboard mit Ranking
 - `/app/frontend/src/pages/Statistics.js` - Statistik-Seite
 - `/app/frontend/src/pages/Members.js` - Mitgliederverwaltung
