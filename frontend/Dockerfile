@@ -9,9 +9,10 @@ WORKDIR /app
 # Setze Backend-URL für den Build (API calls gehen über Nginx Proxy)
 ENV REACT_APP_BACKEND_URL=
 
-# Install dependencies
-COPY package.json yarn.lock ./
-RUN yarn install --frozen-lockfile
+# Install dependencies - yarn.lock ist optional
+COPY package.json ./
+COPY yarn.lock* ./
+RUN yarn install --frozen-lockfile || yarn install
 
 # Copy source and build
 COPY . .
