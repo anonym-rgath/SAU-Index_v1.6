@@ -230,6 +230,12 @@ def require_admin(payload: dict = Depends(verify_token)):
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Admin-Berechtigung erforderlich")
     return payload
 
+def require_admin_or_spiess(payload: dict = Depends(verify_token)):
+    """Erlaubt Zugriff für Admin und Spiess"""
+    if payload.get('role') not in ['admin', 'spiess']:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Admin- oder Spiess-Berechtigung erforderlich")
+    return payload
+
 @api_router.post("/auth/login", response_model=LoginResponse)
 @limiter.limit("5/minute")
 async def login(request: Request, login_data: LoginRequest):
