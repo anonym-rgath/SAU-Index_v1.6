@@ -175,7 +175,7 @@ const QRScanDialog = ({ open, onOpenChange, onScanComplete }) => {
             <div className="space-y-4">
               <div className="flex items-center gap-2 p-3 bg-amber-50 border border-amber-200 rounded-xl text-amber-800 text-sm">
                 <AlertCircle className="w-4 h-4 flex-shrink-0" />
-                <span>Kamera nicht verfügbar. Bitte Mitglied manuell auswählen.</span>
+                <span>{error || "Kamera nicht verfügbar. Bitte Mitglied manuell auswählen."}</span>
               </div>
               
               <div className="max-h-64 overflow-y-auto space-y-2">
