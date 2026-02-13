@@ -1,0 +1,11 @@
+# Backend Docker Ignore
+node_modules
+__pycache__
+*.pyc
+.env
+.git
+.gitignore
+*.md
+tests/
+.pytest_cache
+.coverage
