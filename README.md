@@ -2,7 +2,7 @@
 
 Ein modernes Verwaltungssystem für die Rheinzelmänner zur Erfassung und Verwaltung von Strafen und Mitglieder-Rankings.
 
-## 🚀 Quick Start (Docker auf Raspberry Pi)
+## Quick Start (Docker auf Raspberry Pi)
 
 ```bash
 # 1. Code auf Raspberry Pi übertragen
@@ -10,12 +10,12 @@ git clone https://github.com/DEIN_USERNAME/rheinzelmaenner.git
 cd rheinzelmaenner
 
 # 2. Start-Script ausführen
-chmod +x start.sh
+chmod +x start.sh stop.sh logs.sh
 ./start.sh
 ```
 
 Die App ist dann erreichbar unter:
-- **Frontend:** http://RASPBERRY_PI_IP:3000
+- **URL:** http://RASPBERRY_PI_IP (Port 80)
 - **Login:** admin / admin123
 
 Detaillierte Anleitung: [DOCKER_DEPLOYMENT.md](DOCKER_DEPLOYMENT.md)
