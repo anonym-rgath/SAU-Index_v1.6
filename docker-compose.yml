@@ -1,7 +1,7 @@
 services:
   # MongoDB Datenbank (ARM64 kompatibel für Raspberry Pi)
   mongodb:
-    image: mongo:6
+    image: mongo:5.0
     container_name: rheinzel-mongodb
     restart: unless-stopped
     volumes:
@@ -9,11 +9,11 @@ services:
     networks:
       - rheinzel-network
     healthcheck:
-      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      test: ["CMD", "mongo", "--eval", "db.adminCommand('ping')"]
       interval: 30s
       timeout: 10s
       retries: 5
-      start_period: 40s
+      start_period: 60s
 
   # FastAPI Backend
   backend:
