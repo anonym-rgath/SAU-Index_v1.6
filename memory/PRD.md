@@ -94,6 +94,7 @@ Entwicklung einer Full-Stack-Webanwendung für einen "Schützenzug" (später umb
 ## Backlog
 
 ### P1 - Future Tasks
+- [ ] **Automatisches Datenbank-Backup** - Wöchentliches Backup der MongoDB, das überschrieben wird
 - [ ] Daten-Export (CSV/PDF) - vom Benutzer vorerst zurückgestellt
 
 ### P2 - Potential Improvements
