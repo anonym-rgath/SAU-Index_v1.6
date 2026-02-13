@@ -2,21 +2,23 @@
 
 Ein modernes Verwaltungssystem für die Rheinzelmänner zur Erfassung und Verwaltung von Strafen und Mitglieder-Rankings.
 
-## Quick Start (Docker auf Raspberry Pi)
+## Quick Start (Raspberry Pi 4)
 
 ```bash
-# 1. Code auf Raspberry Pi übertragen
+# 1. Repository klonen
 git clone https://github.com/DEIN_USERNAME/rheinzelmaenner.git
 cd rheinzelmaenner
 
-# 2. Start-Script ausführen
+# 2. Scripts ausführbar machen und starten
 chmod +x start.sh stop.sh logs.sh
 ./start.sh
 ```
 
 Die App ist dann erreichbar unter:
-- **URL:** http://RASPBERRY_PI_IP (Port 80)
+- **URL:** http://RASPBERRY_PI_IP
 - **Login:** admin / admin123
+
+> **Wichtig:** Beim ersten Start wird automatisch ein Admin-Benutzer erstellt. Das Passwort kann über die `.env` Datei angepasst werden.
 
 Detaillierte Anleitung: [DOCKER_DEPLOYMENT.md](DOCKER_DEPLOYMENT.md)
 
@@ -27,7 +29,7 @@ Detaillierte Anleitung: [DOCKER_DEPLOYMENT.md](DOCKER_DEPLOYMENT.md)
 ### Authentifizierung & Sicherheit
 - JWT-Token basierte Session-Verwaltung
 - Passwörter mit bcrypt gehasht
-- **Passwort-Änderung** für angemeldete Benutzer (über Benutzermenü)
+- Passwort-Änderung für angemeldete Benutzer
 - Rate Limiting (max. 5 Login-Versuche/Minute)
 - Audit-Logging aller Aktionen
 - Rollenbasierte Zugriffskontrolle
@@ -43,7 +45,7 @@ Detaillierte Anleitung: [DOCKER_DEPLOYMENT.md](DOCKER_DEPLOYMENT.md)
 ### Benutzerverwaltung (nur Admin)
 - Neue Benutzer anlegen mit Benutzername, Passwort und Rolle
 - Benutzer löschen (außer sich selbst und letzter Admin)
-- **Passwörter zurücksetzen** für alle Benutzer
+- Passwörter zurücksetzen für alle Benutzer
 
 ### Dashboard
 - Übersichtliches Ranking aller Mitglieder nach Strafensumme
@@ -55,13 +57,11 @@ Detaillierte Anleitung: [DOCKER_DEPLOYMENT.md](DOCKER_DEPLOYMENT.md)
 - Jedes Mitglied hat einen eindeutigen QR-Code
 - QR-Codes können als PNG heruntergeladen werden
 - Kamera-basierter Scanner mit manuellem Fallback
-- Funktioniert auf allen Geräten (iPhone, Android, Desktop)
 
 ### Mitgliederverwaltung
 - Mitglieder erstellen, bearbeiten und löschen
 - Status: Aktiv / Passiv / Archiviert
 - Archivierte Mitglieder werden aus Rankings ausgeschlossen
-- QR-Code Generator für jedes Mitglied
 - Sortierbare Liste (Name, Status, Erstellungsdatum)
 
 ### Strafenarten-Verwaltung
@@ -70,8 +70,8 @@ Detaillierte Anleitung: [DOCKER_DEPLOYMENT.md](DOCKER_DEPLOYMENT.md)
 
 ### Strafen-Management
 - Strafen für Mitglieder erfassen
-- **Rückwirkende Erfassung**: Auf der Strafenübersicht-Seite kann ein optionales Datum angegeben werden
-- Automatische Zuordnung zum korrekten Geschäftsjahr basierend auf Datum
+- Rückwirkende Erfassung mit optionalem Datum (nur auf Strafenübersicht-Seite)
+- Automatische Zuordnung zum korrekten Geschäftsjahr
 - Bearbeiten und Löschen von Strafen
 
 ### Statistiken
@@ -79,13 +79,14 @@ Detaillierte Anleitung: [DOCKER_DEPLOYMENT.md](DOCKER_DEPLOYMENT.md)
 - Balkendiagramm: Top 10 Mitglieder
 - Tortendiagramm: Strafen nach Art
 - Verlaufsdiagramm: Monatliche Entwicklung
-- Aktive vs. Passive Mitglieder Ranking
+
+---
 
 ## Technologie-Stack
 
 ### Backend
 - **FastAPI** - Python Web Framework
-- **MongoDB** - NoSQL Datenbank
+- **MongoDB 4.4** - NoSQL Datenbank (kompatibel mit Raspberry Pi 4)
 - **Motor** - Async MongoDB Driver
 - **JWT** - Token-basierte Authentifizierung
 - **bcrypt** - Passwort-Hashing
@@ -100,31 +101,109 @@ Detaillierte Anleitung: [DOCKER_DEPLOYMENT.md](DOCKER_DEPLOYMENT.md)
 - **qrcode.react** - QR-Code Generator
 - **Lucide React** - Icons
 
-## Login-Daten
+### Deployment
+- **Docker & Docker Compose** - Containerisierung
+- **Nginx** - Reverse Proxy (integriert im Frontend-Container)
 
-| Benutzer | Passwort | Rolle |
-|----------|----------|-------|
-| admin | admin123 | Admin (Vollzugriff) |
+---
 
-*Weitere Benutzer können über die Benutzerverwaltung angelegt werden.*
+## Systemanforderungen
+
+| Komponente | Minimum | Empfohlen |
+|------------|---------|-----------|
+| Raspberry Pi | Pi 4 (2GB) | Pi 4 (4GB) oder Pi 5 |
+| OS | Raspberry Pi OS 64-bit | Raspberry Pi OS Bookworm 64-bit |
+| Speicher | 16GB SD-Karte | 32GB SD-Karte |
+| Docker | 20.10+ | Aktuellste Version |
+
+> **Hinweis:** Raspberry Pi 3 und ältere 32-bit Modelle werden nicht unterstützt (MongoDB-Einschränkung).
+
+---
+
+## Projektstruktur
+
+```
+rheinzelmaenner/
+├── backend/
+│   ├── Dockerfile
+│   ├── requirements.prod.txt
+│   └── server.py
+├── frontend/
+│   ├── Dockerfile
+│   ├── nginx.conf
+│   ├── package.json
+│   ├── public/
+│   │   └── logo.png
+│   └── src/
+│       ├── components/
+│       ├── contexts/
+│       ├── hooks/
+│       └── pages/
+├── docker-compose.yml
+├── start.sh
+├── stop.sh
+├── logs.sh
+├── .env.example
+├── README.md
+└── DOCKER_DEPLOYMENT.md
+```
+
+---
+
+## Konfiguration
+
+Erstellen Sie eine `.env` Datei im Hauptverzeichnis (wird automatisch beim ersten Start erstellt):
+
+```env
+# Port auf dem die App läuft (Standard: 80)
+APP_PORT=80
+
+# JWT Secret für Token-Verschlüsselung (ÄNDERN!)
+JWT_SECRET=ihr-geheimer-schluessel
+
+# Admin Passwort beim ersten Start (ÄNDERN!)
+ADMIN_PASSWORD=admin123
+```
+
+---
+
+## Nützliche Befehle
+
+```bash
+# App starten
+./start.sh
+
+# App stoppen
+./stop.sh
+
+# Logs anzeigen
+./logs.sh
+
+# Status prüfen
+docker compose ps
+
+# Einzelnen Service neustarten
+docker compose restart backend
+
+# Alles löschen und neu starten
+docker compose down -v
+./start.sh
+```
+
+---
 
 ## API Endpoints
 
 ### Authentifizierung
-- `POST /api/auth/login` - Login
+- `POST /api/auth/login` - Login (Rate Limited)
 - `GET /api/auth/me` - Aktueller Benutzer
 - `PUT /api/auth/change-password` - Passwort ändern
-  - Body: `{ current_password, new_password }`
-  - Mindestlänge neues Passwort: 6 Zeichen
 
 ### Benutzerverwaltung (nur Admin)
 - `GET /api/users` - Alle Benutzer
 - `POST /api/users` - Benutzer erstellen
-  - Body: `{ username, password, role }`
-  - Rollen: `admin`, `spiess`, `vorstand`
 - `DELETE /api/users/{id}` - Benutzer löschen
 - `PUT /api/users/{id}/reset-password` - Passwort zurücksetzen
-  - Body: `{ new_password }`
 
 ### Mitglieder
 - `GET /api/members` - Alle Mitglieder
@@ -139,10 +218,8 @@ Detaillierte Anleitung: [DOCKER_DEPLOYMENT.md](DOCKER_DEPLOYMENT.md)
 - `DELETE /api/fine-types/{id}` - Strafenart löschen
 
 ### Strafen
-- `GET /api/fines` - Strafen abrufen (optional: `?fiscal_year=2025/2026`)
-- `POST /api/fines` - Neue Strafe erstellen
-  - Body: `{ member_id, fine_type_id, amount, date?, notes? }`
-  - `date` (optional): ISO-Format für rückwirkende Einträge (z.B. "2024-10-15")
+- `GET /api/fines` - Strafen abrufen
+- `POST /api/fines` - Neue Strafe
 - `PUT /api/fines/{id}` - Strafe aktualisieren
 - `DELETE /api/fines/{id}` - Strafe löschen
 
@@ -150,29 +227,10 @@ Detaillierte Anleitung: [DOCKER_DEPLOYMENT.md](DOCKER_DEPLOYMENT.md)
 - `GET /api/statistics?fiscal_year={year}` - Statistiken
 - `GET /api/fiscal-years` - Verfügbare Geschäftsjahre
 
-### Audit
-- `GET /api/audit-logs` - Audit-Logs (nur Admin)
+### System
+- `GET /health` - Health Check
 
-## Projektstruktur
-
-```
-/app
-├── backend/
-│   ├── server.py           # FastAPI Backend
-│   ├── .env                # Umgebungsvariablen
-│   └── requirements.txt    # Python Dependencies
-├── frontend/
-│   ├── public/
-│   │   └── logo.png        # Vereinslogo
-│   ├── src/
-│   │   ├── components/     # React Komponenten
-│   │   ├── pages/          # Seiten
-│   │   ├── contexts/       # Auth Context
-│   │   └── lib/            # Utils & API
-│   ├── package.json
-│   └── tailwind.config.js
-└── README.md
-```
+---
 
 ## Geschäftsjahr-Logik
 
@@ -180,13 +238,17 @@ Die Anwendung arbeitet mit Geschäftsjahren (01.08. - 31.07.):
 - Beispiel: GJ 2025/2026 = 01.08.2025 bis 31.07.2026
 - Alle Strafen und Statistiken werden nach Geschäftsjahr gruppiert
 
+---
+
 ## Design
 
-- **Primärfarbe**: RGB 62/135/95 (#3E875F)
-- **Akzentfarbe**: Orange (#F97316)
+- **Primärfarbe:** #3E875F (Grün)
+- **Akzentfarbe:** #F97316 (Orange)
 - **Mobile-First** Design
 - **Drawer-Navigation** für mobile Geräte
 
 ---
 
-**Erstellt für die Rheinzelmänner**
+## Lizenz
+
+Erstellt für die Rheinzelmänner.

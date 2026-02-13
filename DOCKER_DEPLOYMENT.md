@@ -1,15 +1,19 @@
 # Rheinzelmänner - Docker Deployment Guide
 
-Detaillierte Anleitung zur Installation auf einem Raspberry Pi.
+Detaillierte Anleitung zur Installation auf einem Raspberry Pi 4.
 
-## Voraussetzungen
+---
 
-- **Raspberry Pi 4** (4GB+ RAM empfohlen) oder **Raspberry Pi 5**
-- **Raspberry Pi OS** (64-bit, Bookworm empfohlen)
-- **SD-Karte** mit min. 16GB
-- **Netzwerk-Zugang** (LAN oder WLAN)
+## Systemvoraussetzungen
 
-> **Hinweis:** Raspberry Pi 3 oder ältere 32-bit Modelle werden aufgrund von MongoDB-Einschränkungen nicht unterstützt.
+| Komponente | Anforderung |
+|------------|-------------|
+| Hardware | Raspberry Pi 4 (2GB+) oder Raspberry Pi 5 |
+| Betriebssystem | Raspberry Pi OS 64-bit (Bookworm empfohlen) |
+| Speicher | Min. 16GB SD-Karte |
+| Netzwerk | LAN oder WLAN |
+
+> **Wichtig:** Raspberry Pi 3 und ältere 32-bit Modelle werden **nicht unterstützt** (MongoDB benötigt ARMv8.2-A, Pi 4 hat ARMv8.0 - funktioniert nur mit MongoDB 4.4.18).
 
 ---
 
@@ -26,18 +30,20 @@ Detaillierte Anleitung zur Installation auf einem Raspberry Pi.
               |   Frontend Container        |
               |   (React + Nginx)           |
               |   - Statische Dateien       |
-              |   - API Proxy -> Backend    |
+              |   - /api/* -> Backend       |
               +--------------+--------------+
                              |
-                      /api/* Requests
+                      intern Port 8001
                              |
               +--------------v--------------+
               |   Backend Container         |
-              |   (FastAPI + Python)        |
+              |   (FastAPI + Python 3.11)   |
               +--------------+--------------+
                              |
+                      intern Port 27017
+                             |
               +--------------v--------------+
-              |   MongoDB Container         |
+              |   MongoDB 4.4.18            |
               |   (Datenbank)               |
               +-----------------------------+
 ```
@@ -55,68 +61,65 @@ curl -fsSL https://get.docker.com | sh
 # Benutzer zur Docker-Gruppe hinzufügen
 sudo usermod -aG docker $USER
 
-# Abmelden und neu anmelden (wichtig!)
+# WICHTIG: Abmelden und neu anmelden!
 exit
-# Dann erneut per SSH verbinden
 ```
 
-### 2. Docker Compose Plugin installieren
+Nach dem erneuten Einloggen:
 
 ```bash
+# Docker Compose Plugin installieren
 sudo apt-get update
 sudo apt-get install -y docker-compose-plugin
 
-# Prüfen ob es funktioniert
+# Installation prüfen
+docker --version
 docker compose version
 ```
 
-### 3. Projekt herunterladen
+### 2. Projekt herunterladen
 
-**Option A - Git Clone (empfohlen):**
+**Option A - Git Clone:**
 ```bash
 cd ~
 git clone https://github.com/DEIN_USERNAME/rheinzelmaenner.git
 cd rheinzelmaenner
 ```
 
-**Option B - ZIP übertragen:**
+**Option B - ZIP-Datei:**
 ```bash
-# Auf deinem PC:
-scp rheinzelmaenner.zip pi@RASPBERRY_PI_IP:/home/pi/
+# Auf dem PC: ZIP auf Pi kopieren
+scp rheinzelmaenner.zip pi@RASPBERRY_IP:/home/pi/
 
-# Auf dem Raspberry Pi:
+# Auf dem Pi: Entpacken
 cd ~
 unzip rheinzelmaenner.zip
 cd rheinzelmaenner
 ```
 
-### 4. Konfiguration anpassen (optional aber empfohlen)
+### 3. Konfiguration (optional)
 
-Erstelle eine `.env` Datei im Projektordner:
+Die `.env` Datei wird beim ersten Start automatisch erstellt. Sie können sie vorher anpassen:
 
 ```bash
+cp .env.example .env
 nano .env
 ```
 
 Inhalt:
-
 ```env
-# Port auf dem die App läuft
+# Port (Standard: 80)
 APP_PORT=80
 
-# JWT Secret (UNBEDINGT ÄNDERN für Produktion!)
-JWT_SECRET=dein-sehr-langer-geheimer-schluessel-hier
+# JWT Secret - UNBEDINGT ÄNDERN!
+# Generieren mit: openssl rand -hex 32
+JWT_SECRET=ihr-geheimer-schluessel-hier
 
-# Admin Passwort (UNBEDINGT ÄNDERN!)
-ADMIN_PASSWORD=dein-sicheres-passwort
+# Admin Passwort beim ersten Start
+ADMIN_PASSWORD=admin123
 ```
 
-> **Tipp:** Ein sicheres JWT_SECRET kannst du so generieren:
-> ```bash
-> openssl rand -hex 32
-> ```
-
-### 5. App starten
+### 4. App starten
 
 ```bash
 # Scripts ausführbar machen
@@ -126,40 +129,40 @@ chmod +x start.sh stop.sh logs.sh
 ./start.sh
 ```
 
-**Hinweis:** Der erste Start dauert 5-10 Minuten, da alle Docker Images gebaut werden müssen.
+**Erster Start dauert 5-10 Minuten** (Docker Images werden gebaut).
 
 ---
 
-## Zugriff auf die App
+## Zugriff
 
 Nach erfolgreichem Start:
 
-1. **IP-Adresse des Raspberry Pi herausfinden:**
+1. **IP-Adresse ermitteln:**
    ```bash
    hostname -I
    ```
 
-2. **App im Browser öffnen:**
+2. **Browser öffnen:**
    ```
-   http://[IP-ADRESSE]
+   http://192.168.x.x
    ```
-   Beispiel: `http://192.168.1.100`
 
-3. **Login:**
+3. **Anmelden:**
    - Benutzer: `admin`
    - Passwort: `admin123` (oder wie in `.env` konfiguriert)
 
 ---
 
-## Verfügbare Befehle
+## Befehle
 
 | Befehl | Beschreibung |
 |--------|--------------|
-| `./start.sh` | App starten (baut bei Bedarf neu) |
+| `./start.sh` | App starten (baut bei Bedarf) |
 | `./stop.sh` | App stoppen |
 | `./logs.sh` | Logs aller Services anzeigen |
 | `docker compose ps` | Status aller Container |
-| `docker compose restart` | Alle Services neu starten |
+| `docker compose restart backend` | Backend neustarten |
+| `docker compose logs backend` | Nur Backend-Logs |
 | `docker compose down -v` | Alles löschen inkl. Datenbank |
 
 ---
@@ -169,65 +172,86 @@ Nach erfolgreichem Start:
 ### Container starten nicht
 
 ```bash
-# Alle Logs prüfen
-./logs.sh
+# Logs prüfen
+docker compose logs
 
-# Nur Backend-Logs
-docker compose logs backend
-
-# Nur MongoDB-Logs
+# Speziell MongoDB
 docker compose logs mongodb
+
+# Speziell Backend
+docker compose logs backend
 ```
 
-### Port 80 bereits belegt
+### MongoDB-Fehler: "requires ARMv8.2-A"
 
-Falls ein anderer Dienst (z.B. Apache) Port 80 nutzt:
+Sie verwenden eine falsche MongoDB-Version. Stellen Sie sicher, dass in `docker-compose.yml` steht:
+```yaml
+mongodb:
+  image: mongo:4.4.18
+```
+
+### Port 80 belegt
 
 ```bash
-# Option 1: Apache deaktivieren
+# Prüfen was Port 80 nutzt
+sudo lsof -i :80
+
+# Apache deaktivieren (falls installiert)
 sudo systemctl stop apache2
 sudo systemctl disable apache2
 
-# Option 2: Anderen Port nutzen
-# In .env Datei: APP_PORT=8080
-# Dann: ./start.sh
+# Oder anderen Port nutzen in .env:
+APP_PORT=8080
 ```
 
-### MongoDB startet nicht (Speicher)
+### Login funktioniert nicht
+
+1. Prüfen Sie die Backend-Logs:
+   ```bash
+   docker compose logs backend | grep -i error
+   ```
+
+2. Admin-Benutzer wird beim Start automatisch erstellt. Falls Probleme:
+   ```bash
+   # Datenbank zurücksetzen
+   docker compose down -v
+   ./start.sh
+   ```
+
+### Zu wenig Speicher
 
 ```bash
 # Speicher prüfen
 free -h
 
-# Swap erhöhen falls nötig
+# Swap erhöhen
 sudo dphys-swapfile swapoff
 sudo nano /etc/dphys-swapfile
-# Setze: CONF_SWAPSIZE=2048
+# CONF_SWAPSIZE=2048 setzen
 sudo dphys-swapfile setup
 sudo dphys-swapfile swapon
 ```
 
-### Alles zurücksetzen
+### Container neustarten sich ständig
 
 ```bash
-# ACHTUNG: Löscht alle Daten!
-docker compose down -v
-./start.sh
+# Ressourcen prüfen
+docker stats
+
+# Einzelnen Container-Log prüfen
+docker logs rheinzel-backend --tail 100
 ```
 
 ---
 
-## Automatischer Start beim Booten
-
-Damit die App nach einem Neustart des Raspberry Pi automatisch startet:
+## Autostart beim Booten
 
 ```bash
 # Systemd Service erstellen
 sudo nano /etc/systemd/system/rheinzelmaenner.service
 ```
 
-Inhalt (passe den Pfad an deinen Benutzernamen an):
-
+Inhalt:
 ```ini
 [Unit]
 Description=Rheinzelmaenner Verwaltung
@@ -247,44 +271,33 @@ WantedBy=multi-user.target
 ```
 
 Aktivieren:
-
 ```bash
 sudo systemctl daemon-reload
 sudo systemctl enable rheinzelmaenner.service
-
-# Testen (optional)
-sudo systemctl start rheinzelmaenner.service
-sudo systemctl status rheinzelmaenner.service
 ```
 
 ---
 
-## Backup & Restore
+## Backup
 
 ### Datenbank sichern
 
 ```bash
 # Backup erstellen
-docker compose exec mongodb mongodump --out /data/backup
+docker exec rheinzel-mongodb mongodump --out /data/backup
 
-# Backup aus Container kopieren
+# Auf Host kopieren
 docker cp rheinzel-mongodb:/data/backup ./backup_$(date +%Y%m%d)
-
-# Backup archivieren
-tar -czvf backup_$(date +%Y%m%d).tar.gz backup_$(date +%Y%m%d)
 ```
 
 ### Datenbank wiederherstellen
 
 ```bash
-# Backup entpacken (falls archiviert)
-tar -xzvf backup_20241215.tar.gz
-
 # Backup in Container kopieren
 docker cp ./backup_20241215 rheinzel-mongodb:/data/backup
 
 # Wiederherstellen
-docker compose exec mongodb mongorestore /data/backup
+docker exec rheinzel-mongodb mongorestore /data/backup
 ```
 
 ---
@@ -292,7 +305,7 @@ docker compose exec mongodb mongorestore /data/backup
 ## Updates
 
 ```bash
-# Neueste Version holen (bei Git Clone)
+# Bei Git Clone
 git pull
 
 # Neu bauen und starten
@@ -305,16 +318,35 @@ docker compose up -d
 
 ## Sicherheitshinweise
 
-1. **Admin-Passwort ändern:** Nach der ersten Anmeldung unbedingt ein sicheres Passwort setzen
-2. **JWT_SECRET:** Verwende einen zufälligen String mit min. 32 Zeichen
-3. **Lokales Netzwerk:** Die App ist standardmäßig nur im lokalen Netzwerk erreichbar
-4. **Firewall:** Bei Bedarf Port 80 in der Router-Firewall für externen Zugriff freigeben
+1. **JWT_SECRET ändern** - Nutzen Sie einen zufälligen 32+ Zeichen String
+2. **Admin-Passwort ändern** - Nach dem ersten Login
+3. **Firewall** - App ist nur im lokalen Netzwerk erreichbar
+4. **Updates** - Regelmäßig `git pull` und neu deployen
 
 ---
 
 ## Technische Details
 
-- **Frontend:** React 19 mit Nginx als Webserver und Reverse Proxy
-- **Backend:** FastAPI (Python) auf Port 8001 (intern)
-- **Datenbank:** MongoDB 6
-- **Alle Services:** ARM64-kompatibel für Raspberry Pi
+| Service | Image | Port (intern) |
+|---------|-------|---------------|
+| Frontend | node:20-alpine + nginx:alpine | 80 |
+| Backend | python:3.11-slim | 8001 |
+| MongoDB | mongo:4.4.18 | 27017 |
+
+### Warum MongoDB 4.4.18?
+
+Der Raspberry Pi 4 verwendet einen ARM Cortex-A72 Prozessor (ARMv8.0-A). MongoDB 5.0+ benötigt ARMv8.2-A Features, die der Pi 4 nicht hat. MongoDB 4.4.18 ist die letzte kompatible Version.
+
+### Dateien
+
+| Datei | Beschreibung |
+|-------|--------------|
+| `docker-compose.yml` | Service-Definitionen |
+| `backend/Dockerfile` | Backend Image |
+| `backend/requirements.prod.txt` | Python Dependencies |
+| `backend/server.py` | API Server |
+| `frontend/Dockerfile` | Frontend Image |
+| `frontend/nginx.conf` | Nginx Reverse Proxy |
+| `start.sh` | Start-Script |
+| `stop.sh` | Stop-Script |
+| `logs.sh` | Log-Viewer |
