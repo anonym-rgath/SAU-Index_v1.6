@@ -641,6 +641,10 @@ async def create_fine(input: FineCreate, auth=Depends(require_admin_or_spiess)):
     if not member:
         raise HTTPException(status_code=404, detail="Mitglied nicht gefunden")
     
+    # Keine Strafen für archivierte Mitglieder
+    if member.get('status') == 'archiviert':
+        raise HTTPException(status_code=400, detail="Keine Strafen für archivierte Mitglieder möglich")
+    
     fine_data = input.model_dump()
     fine_data['fine_type_label'] = fine_type['label']
     
