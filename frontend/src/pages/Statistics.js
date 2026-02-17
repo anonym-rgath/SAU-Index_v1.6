@@ -23,6 +23,16 @@ import {
 
 const COLORS = ['#3e875f', '#f97316', '#ec4899', '#6366f1', '#eab308', '#06b6d4'];
 
+// Formatiert Name als "Vorname N."
+const formatShortName = (fullName) => {
+  if (!fullName) return '';
+  const parts = fullName.trim().split(' ');
+  if (parts.length === 1) return parts[0];
+  const firstName = parts[0];
+  const lastInitial = parts[parts.length - 1].charAt(0).toUpperCase();
+  return `${firstName} ${lastInitial}.`;
+};
+
 const Statistics = () => {
   const { isVorstand } = useAuth();
   const [fiscalYear, setFiscalYear] = useState('');
