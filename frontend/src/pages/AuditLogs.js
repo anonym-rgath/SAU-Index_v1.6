@@ -42,9 +42,12 @@ const AuditLogs = () => {
     setLoading(true);
     try {
       const response = await api.get('/audit-logs?limit=500');
-      setLogs(response.data.logs || []);
+      setLogs(response.data?.logs || []);
     } catch (error) {
-      toast.error('Fehler beim Laden der Audit-Logs');
+      console.error('Fehler beim Laden der Audit-Logs:', error);
+      if (error?.code !== 'ERR_CANCELED') {
+        toast.error('Fehler beim Laden der Audit-Logs');
+      }
     } finally {
       setLoading(false);
     }
