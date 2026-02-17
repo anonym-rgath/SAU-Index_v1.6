@@ -90,7 +90,7 @@ const QRCodeDialog = ({ open, onOpenChange, member }) => {
               bgColor="#ffffff"
               fgColor="#1c1917"
             />
-            <p className="mt-4 font-bold text-lg text-stone-900">{member.name}</p>
+            <p className="mt-4 font-bold text-lg text-stone-900">{fullName}</p>
             <p className="text-sm text-stone-500">Rheinzelmänner</p>
           </div>
           
