@@ -105,8 +105,9 @@ Entwicklung einer Full-Stack-Webanwendung für einen "Schützenzug" (später umb
 ## Backlog
 
 ### P1 - Future Tasks
-- [ ] **Automatisches Datenbank-Backup** - Wöchentliches Backup der MongoDB, das überschrieben wird
-- [ ] Daten-Export (CSV/PDF) - vom Benutzer vorerst zurückgestellt
+- [ ] **Automatisches Datenbank-Backup** - Wöchentliches Backup der MongoDB
+- [ ] **HTTPS Setup-Anleitung** - Anleitung für Self-Signed SSL auf Raspberry Pi (für QR-Scanner Kamera-Zugriff)
+- [ ] Daten-Export (CSV/PDF)
 
 ### P2 - Potential Improvements
 - [ ] Komponentenrefactoring (Dashboard.js, Members.js aufteilen)
