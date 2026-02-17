@@ -39,8 +39,18 @@ JWT_SECRET = os.environ.get('JWT_SECRET', secrets.token_hex(32))
 JWT_ALGORITHM = 'HS256'
 JWT_EXPIRATION_HOURS = 24
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+# Verstärktes Passwort-Hashing (bcrypt mit 12 Runden)
+pwd_context = CryptContext(
+    schemes=["bcrypt"],
+    deprecated="auto",
+    bcrypt__rounds=12  # Standard ist 12, erhöht die Sicherheit
+)
 security = HTTPBearer()
+
+# Brute-Force-Schutz Konfiguration
+MAX_LOGIN_ATTEMPTS = 5  # Maximale Fehlversuche
+LOCKOUT_DURATION_MINUTES = 15  # Sperrzeit in Minuten
+LOGIN_ATTEMPT_WINDOW_MINUTES = 30  # Zeitfenster für Fehlversuche
 
 logging.basicConfig(
     level=logging.INFO,
