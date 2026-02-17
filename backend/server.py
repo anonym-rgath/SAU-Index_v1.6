@@ -637,7 +637,7 @@ async def update_member(request: Request, member_id: str, input: MemberCreate, a
     if not result:
         raise HTTPException(status_code=404, detail="Mitglied nicht gefunden")
     
-    update_data = {"name": input.name, "status": input.status}
+    update_data = {"firstName": input.firstName, "lastName": input.lastName, "status": input.status}
     
     # Wenn Status auf archiviert wechselt, archived_at setzen
     old_status = result.get('status', 'aktiv')
@@ -655,6 +655,8 @@ async def update_member(request: Request, member_id: str, input: MemberCreate, a
     if isinstance(updated.get('archived_at'), str):
         updated['archived_at'] = datetime.fromisoformat(updated['archived_at'])
     
+    full_name = f"{input.firstName} {input.lastName}"
+    
     # Audit Log
     await log_audit(
         action=AuditAction.UPDATE,
@@ -662,7 +664,7 @@ async def update_member(request: Request, member_id: str, input: MemberCreate, a
         resource_id=member_id,
         user_id=auth.get('sub'),
         username=auth.get('username'),
-        details=f"Mitglied aktualisiert: {input.name}",
+        details=f"Mitglied aktualisiert: {full_name}",
         ip_address=get_remote_address(request)
     )
     
