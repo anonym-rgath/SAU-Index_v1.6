@@ -252,10 +252,102 @@ def require_any_role(payload: dict = Depends(verify_token)):
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Keine Berechtigung")
     return payload
 
+# Brute-Force-Schutz Hilfsfunktionen
+async def get_failed_login_attempts(username: str, ip_address: str) -> int:
+    """Zählt fehlgeschlagene Login-Versuche im Zeitfenster"""
+    window_start = datetime.now(timezone.utc) - timedelta(minutes=LOGIN_ATTEMPT_WINDOW_MINUTES)
+    
+    count = await db.login_attempts.count_documents({
+        "$or": [
+            {"username": username},
+            {"ip_address": ip_address}
+        ],
+        "success": False,
+        "timestamp": {"$gte": window_start}
+    })
+    return count
+
+async def is_account_locked(username: str, ip_address: str) -> tuple[bool, int]:
+    """Prüft ob Account/IP gesperrt ist und gibt verbleibende Sperrzeit zurück"""
+    lockout = await db.account_lockouts.find_one({
+        "$or": [
+            {"username": username},
+            {"ip_address": ip_address}
+        ],
+        "locked_until": {"$gt": datetime.now(timezone.utc)}
+    })
+    
+    if lockout:
+        remaining = (lockout["locked_until"] - datetime.now(timezone.utc)).total_seconds()
+        return True, int(remaining / 60) + 1
+    return False, 0
+
+async def record_login_attempt(username: str, ip_address: str, success: bool):
+    """Speichert Login-Versuch"""
+    await db.login_attempts.insert_one({
+        "username": username,
+        "ip_address": ip_address,
+        "success": success,
+        "timestamp": datetime.now(timezone.utc)
+    })
+    
+    # Bei Fehlversuch prüfen ob Sperre nötig
+    if not success:
+        failed_attempts = await get_failed_login_attempts(username, ip_address)
+        if failed_attempts >= MAX_LOGIN_ATTEMPTS:
+            await lock_account(username, ip_address)
+
+async def lock_account(username: str, ip_address: str):
+    """Sperrt Account und IP"""
+    locked_until = datetime.now(timezone.utc) + timedelta(minutes=LOCKOUT_DURATION_MINUTES)
+    
+    # Sperre für Benutzername
+    await db.account_lockouts.update_one(
+        {"username": username},
+        {"$set": {
+            "username": username,
+            "locked_until": locked_until,
+            "reason": f"Zu viele fehlgeschlagene Login-Versuche"
+        }},
+        upsert=True
+    )
+    
+    # Sperre für IP
+    await db.account_lockouts.update_one(
+        {"ip_address": ip_address},
+        {"$set": {
+            "ip_address": ip_address,
+            "locked_until": locked_until,
+            "reason": f"Zu viele fehlgeschlagene Login-Versuche"
+        }},
+        upsert=True
+    )
+    
+    logger.warning(f"SECURITY: Account/IP gesperrt - User: {username}, IP: {ip_address}")
+
+async def clear_lockout(username: str):
+    """Entfernt Sperre nach erfolgreichem Login"""
+    await db.account_lockouts.delete_many({"username": username})
+
 @api_router.post("/auth/login", response_model=LoginResponse)
-@limiter.limit("5/minute")
+@limiter.limit("10/minute")
 async def login(request: Request, login_data: LoginRequest):
     ip_address = get_remote_address(request)
+    
+    # Brute-Force-Schutz: Prüfe ob gesperrt
+    locked, remaining_minutes = await is_account_locked(login_data.username, ip_address)
+    if locked:
+        await log_audit(
+            action=AuditAction.LOGIN_FAILED,
+            resource_type="auth",
+            username=login_data.username,
+            details=f"Account gesperrt - noch {remaining_minutes} Minuten",
+            ip_address=ip_address
+        )
+        raise HTTPException(
+            status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+            detail=f"Zu viele fehlgeschlagene Versuche. Bitte warten Sie {remaining_minutes} Minuten."
+        )
     
     # Find user by username
     user_doc = await db.users.find_one({"username": login_data.username}, {"_id": 0})
