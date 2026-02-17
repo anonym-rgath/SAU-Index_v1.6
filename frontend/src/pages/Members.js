@@ -137,20 +137,20 @@ const Members = () => {
     
     switch (sortBy) {
       case 'name-asc':
-        return sorted.sort((a, b) => a.name.localeCompare(b.name));
+        return sorted.sort((a, b) => getFullName(a).localeCompare(getFullName(b)));
       case 'name-desc':
-        return sorted.sort((a, b) => b.name.localeCompare(a.name));
+        return sorted.sort((a, b) => getFullName(b).localeCompare(getFullName(a)));
       case 'status-aktiv':
         return sorted.sort((a, b) => {
           if (a.status === 'aktiv' && b.status !== 'aktiv') return -1;
           if (a.status !== 'aktiv' && b.status === 'aktiv') return 1;
-          return a.name.localeCompare(b.name);
+          return getFullName(a).localeCompare(getFullName(b));
         });
       case 'status-passiv':
         return sorted.sort((a, b) => {
           if (a.status === 'passiv' && b.status !== 'passiv') return -1;
           if (a.status !== 'passiv' && b.status === 'passiv') return 1;
-          return a.name.localeCompare(b.name);
+          return getFullName(a).localeCompare(getFullName(b));
         });
       case 'date-newest':
         return sorted.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
