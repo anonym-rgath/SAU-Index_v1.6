@@ -26,6 +26,7 @@ const TopBar = () => {
     { path: '/fines', icon: Receipt, label: 'Strafenübersicht', hideForVorstand: true },
     { path: '/fine-types', icon: Tag, label: 'Strafenarten' },
     { path: '/users', icon: UserCog, label: 'Benutzerverwaltung', adminOnly: true },
+    { path: '/audit', icon: Shield, label: 'Audit-Log', adminOnly: true },
   ];
   
   const navItems = allNavItems.filter(item => {
