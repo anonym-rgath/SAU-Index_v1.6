@@ -170,13 +170,19 @@ async def log_audit(
 class Member(BaseModel):
     model_config = ConfigDict(extra="ignore")
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
-    name: str
+    firstName: str
+    lastName: str
     status: MemberStatus = MemberStatus.aktiv
     archived_at: Optional[datetime] = None
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    
+    @property
+    def name(self) -> str:
+        return f"{self.firstName} {self.lastName}"
 
 class MemberCreate(BaseModel):
-    name: str
+    firstName: str
+    lastName: str
     status: MemberStatus = MemberStatus.aktiv
 
 class FineType(BaseModel):
