@@ -188,9 +188,13 @@ const QRScanDialog = ({ open, onOpenChange, onScanComplete }) => {
                       className="w-full p-3 rounded-xl border border-stone-200 hover:bg-stone-50 active:bg-stone-100 transition-colors text-left flex items-center gap-3"
                     >
                       <div className="w-10 h-10 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold">
-                        {member.name.charAt(0)}
+                        {(member.firstName || member.name || '?').charAt(0)}
                       </div>
-                      <span className="font-medium text-stone-900">{member.name}</span>
+                      <span className="font-medium text-stone-900">
+                        {member.firstName && member.lastName 
+                          ? `${member.firstName} ${member.lastName}` 
+                          : member.name}
+                      </span>
                     </button>
                   ))}
               </div>
