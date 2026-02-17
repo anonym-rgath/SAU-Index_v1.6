@@ -34,18 +34,21 @@ const Dashboard = () => {
   const loadInitialData = async () => {
     try {
       const yearsRes = await api.fiscalYears.getAll();
-      const years = yearsRes.data.fiscal_years || [];
+      const years = yearsRes.data?.fiscal_years || [];
       setFiscalYears(years);
       if (years.length > 0) {
-        setFiscalYear(years[0]); // Aktuellstes Geschäftsjahr
+        setFiscalYear(years[0]);
       }
     } catch (error) {
-      toast.error('Fehler beim Laden der Geschäftsjahre');
-      console.error(error);
+      console.error('Fehler beim Laden der Geschäftsjahre:', error);
+      if (error?.code !== 'ERR_CANCELED') {
+        toast.error('Fehler beim Laden der Geschäftsjahre');
+      }
     }
   };
 
   const loadData = async () => {
+    if (!fiscalYear) return;
     setLoading(true);
     try {
       const [statsRes, finesRes, membersRes] = await Promise.all([
@@ -58,8 +61,10 @@ const Dashboard = () => {
       setRecentFines(finesRes.data.slice(0, 6));
       setMembers(membersRes.data);
     } catch (error) {
-      toast.error('Fehler beim Laden der Daten');
-      console.error(error);
+      console.error('Fehler beim Laden der Daten:', error);
+      if (error?.code !== 'ERR_CANCELED') {
+        toast.error('Fehler beim Laden der Daten');
+      }
     } finally {
       setLoading(false);
     }
