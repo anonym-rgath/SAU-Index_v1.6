@@ -58,7 +58,10 @@ const UserManagement = () => {
       const response = await api.users.getAll();
       setUsers(response.data);
     } catch (error) {
-      toast.error('Fehler beim Laden der Benutzer');
+      console.error('Fehler beim Laden der Benutzer:', error);
+      if (error?.code !== 'ERR_CANCELED') {
+        toast.error('Fehler beim Laden der Benutzer');
+      }
     } finally {
       setLoading(false);
     }
