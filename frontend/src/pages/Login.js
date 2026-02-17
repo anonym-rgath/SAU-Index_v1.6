@@ -1,20 +1,31 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 import { toast } from 'sonner';
-import { Lock, Target, User } from 'lucide-react';
+import { Lock, User, AlertCircle } from 'lucide-react';
 
 const Login = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [logoutReason, setLogoutReason] = useState('');
   const { login, loading } = useAuth();
   const navigate = useNavigate();
 
+  useEffect(() => {
+    // Prüfe ob es einen Logout-Grund gibt
+    const reason = sessionStorage.getItem('logoutReason');
+    if (reason) {
+      setLogoutReason(reason);
+      sessionStorage.removeItem('logoutReason');
+    }
+  }, []);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLogoutReason('');
     const result = await login(username, password);
     if (result.success) {
       toast.success('Login erfolgreich!');
@@ -48,6 +59,13 @@ const Login = () => {
           <p className="text-center text-stone-500 mb-8">
             Verwaltung
           </p>
+
+          {logoutReason && (
+            <div className="mb-6 p-4 bg-amber-50 border border-amber-200 rounded-xl flex items-start gap-3">
+              <AlertCircle className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
+              <p className="text-sm text-amber-800">{logoutReason}</p>
+            </div>
+          )}
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="space-y-2">
