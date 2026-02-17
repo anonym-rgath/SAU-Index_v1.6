@@ -234,7 +234,7 @@ const Members = () => {
                 >
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2">
-                      <p className="font-bold text-stone-900 truncate">{member.name}</p>
+                      <p className="font-bold text-stone-900 truncate">{getFullName(member)}</p>
                       <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${
                         member.status === 'aktiv' 
                           ? 'bg-emerald-100 text-emerald-700' 
