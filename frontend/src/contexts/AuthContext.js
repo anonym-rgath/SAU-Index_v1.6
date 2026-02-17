@@ -154,6 +154,7 @@ export const AuthProvider = ({ children }) => {
       canManageMembers,
       canManageFines,
       canManageFineTypes,
+      canEditFineTypes,
       canManageRoles
     }}>
       {children}
