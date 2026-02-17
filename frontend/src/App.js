@@ -11,6 +11,7 @@ import FineTypes from './pages/FineTypes';
 import Fines from './pages/Fines';
 import Statistics from './pages/Statistics';
 import UserManagement from './pages/UserManagement';
+import AuditLogs from './pages/AuditLogs';
 
 // Redirect based on role
 const RoleBasedRedirect = () => {
