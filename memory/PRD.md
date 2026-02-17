@@ -45,6 +45,12 @@ Entwicklung einer Full-Stack-Webanwendung für einen "Schützenzug" (später umb
   - Strafenarten-Seite: Responsive
   - Benutzerverwaltung: Responsive
   - Audit-Log: Responsive, Suchfeld und Filter funktional
+- [x] **HTTPS erzwungen**: Self-Signed SSL-Zertifikate standardmäßig aktiviert
+  - Neue `nginx.ssl.conf` mit HTTP->HTTPS Redirect
+  - `docker-compose.yml` aktualisiert für Ports 80 + 443
+  - Automatische Zertifikatserstellung im `start.sh` Script
+  - Neues `setup-https.sh` Script zum manuellen Erneuern
+  - `HTTPS_SETUP.md` Anleitung bereits vorhanden
 
 ### 2025-12-14 (Previous Session)
 - [x] **Docker Deployment für Raspberry Pi**: Vollständiges Setup
