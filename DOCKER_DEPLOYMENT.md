@@ -24,13 +24,15 @@ Detaillierte Anleitung zur Installation auf einem Raspberry Pi 4.
                     |     Browser      |
                     +--------+---------+
                              |
-                        Port 80
+                    Port 443 (HTTPS)
+                    Port 80 -> 301 Redirect
                              |
               +--------------v--------------+
               |   Frontend Container        |
-              |   (React + Nginx)           |
+              |   (React + Nginx + SSL)     |
               |   - Statische Dateien       |
               |   - /api/* -> Backend       |
+              |   - HTTP -> HTTPS Redirect  |
               +--------------+--------------+
                              |
                       intern Port 8001
@@ -47,6 +49,8 @@ Detaillierte Anleitung zur Installation auf einem Raspberry Pi 4.
               |   (Datenbank)               |
               +-----------------------------+
 ```
+
+> **HTTPS:** Die App verwendet standardmäßig HTTPS mit selbstsignierten Zertifikaten. HTTP-Anfragen werden automatisch auf HTTPS weitergeleitet.
 
 ---
 
