@@ -35,7 +35,18 @@ Entwicklung einer Full-Stack-Webanwendung für einen "Schützenzug" (später umb
 
 ## Completed Features
 
-### 2025-12-14 (Current Session)
+### 2025-02-17 (Current Session)
+- [x] **Mobile-First UI Review abgeschlossen**: Alle Seiten auf mobile Responsiveness geprüft
+  - Login-Seite: Responsive
+  - Dashboard: Responsive, KPI-Cards in Grid-Layout
+  - Mitglieder-Seite: Responsive, Buttons angepasst ("Neu" statt "Mitglied" auf Mobile)
+  - Statistiken-Seite: Responsive, Charts und KPIs gut lesbar
+  - Strafen-Seite: Responsive, Strafenliste übersichtlich
+  - Strafenarten-Seite: Responsive
+  - Benutzerverwaltung: Responsive
+  - Audit-Log: Responsive, Suchfeld und Filter funktional
+
+### 2025-12-14 (Previous Session)
 - [x] **Docker Deployment für Raspberry Pi**: Vollständiges Setup
   - `docker-compose.yml` mit MongoDB, Backend, Frontend
   - ARM64-kompatible Images (Raspberry Pi 4/5)
