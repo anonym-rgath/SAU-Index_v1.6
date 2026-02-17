@@ -603,13 +603,20 @@ async def reset_user_password(request: Request, user_id: str, data: ResetPasswor
 
 # ============== Mitglieder ==============
 
-@api_router.get("/members", response_model=List[Member])
+@api_router.get("/members")
 async def get_members(auth=Depends(verify_token)):
     members = await db.members.find({}, {"_id": 0}).to_list(1000)
+    result = []
     for member in members:
         if isinstance(member.get('created_at'), str):
             member['created_at'] = datetime.fromisoformat(member['created_at'])
-    return members
+        # Migration: Alte Daten mit nur 'name' Feld unterstützen
+        if 'firstName' not in member and 'name' in member:
+            name_parts = member['name'].split(' ', 1)
+            member['firstName'] = name_parts[0]
+            member['lastName'] = name_parts[1] if len(name_parts) > 1 else ''
+        result.append(member)
+    return result
 
 @api_router.post("/members", response_model=Member)
 async def create_member(request: Request, input: MemberCreate, auth=Depends(require_any_role)):
@@ -618,6 +625,8 @@ async def create_member(request: Request, input: MemberCreate, auth=Depends(requ
     doc['created_at'] = doc['created_at'].isoformat()
     await db.members.insert_one(doc)
     
+    full_name = f"{input.firstName} {input.lastName}"
+    
     # Audit Log
     await log_audit(
         action=AuditAction.CREATE,
@@ -625,7 +634,7 @@ async def create_member(request: Request, input: MemberCreate, auth=Depends(requ
         resource_id=member.id,
         user_id=auth.get('sub'),
         username=auth.get('username'),
-        details=f"Mitglied erstellt: {member.name}",
+        details=f"Mitglied erstellt: {full_name}",
         ip_address=get_remote_address(request)
     )
     
