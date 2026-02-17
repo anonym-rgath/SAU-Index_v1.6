@@ -615,6 +615,9 @@ async def get_members(auth=Depends(verify_token)):
             name_parts = member['name'].split(' ', 1)
             member['firstName'] = name_parts[0]
             member['lastName'] = name_parts[1] if len(name_parts) > 1 else ''
+        # Default Status auf 'aktiv' wenn leer oder nicht gesetzt
+        if not member.get('status'):
+            member['status'] = 'aktiv'
         result.append(member)
     return result
 
