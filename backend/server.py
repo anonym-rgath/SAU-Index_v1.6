@@ -894,8 +894,9 @@ app.add_middleware(
 
 @app.on_event("startup")
 async def startup_db_client():
-    """Erstellt den Admin-Benutzer beim Start, falls nicht vorhanden"""
+    """Initialisierung beim Start"""
     try:
+        # Admin-Benutzer erstellen falls nicht vorhanden
         existing_admin = await db.users.find_one({"username": "admin"})
         if not existing_admin:
             admin_password = os.environ.get('ADMIN_PASSWORD', 'admin123')
@@ -910,8 +911,18 @@ async def startup_db_client():
             logger.info(f"Admin-Benutzer erstellt mit Passwort aus Umgebungsvariable")
         else:
             logger.info("Admin-Benutzer existiert bereits")
+        
+        # Indizes für Brute-Force-Schutz erstellen
+        await db.login_attempts.create_index("timestamp", expireAfterSeconds=3600)  # Auto-Löschung nach 1h
+        await db.login_attempts.create_index([("username", 1), ("timestamp", -1)])
+        await db.login_attempts.create_index([("ip_address", 1), ("timestamp", -1)])
+        await db.account_lockouts.create_index("locked_until", expireAfterSeconds=0)  # Auto-Löschung nach Ablauf
+        await db.account_lockouts.create_index("username")
+        await db.account_lockouts.create_index("ip_address")
+        logger.info("Datenbank-Indizes für Brute-Force-Schutz erstellt")
+        
     except Exception as e:
-        logger.error(f"Fehler beim Erstellen des Admin-Benutzers: {e}")
+        logger.error(f"Fehler bei der Initialisierung: {e}")
 
 @app.on_event("shutdown")
 async def shutdown_db_client():
