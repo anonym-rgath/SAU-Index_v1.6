@@ -1,25 +1,73 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
 import axios from 'axios';
 
 const AuthContext = createContext(null);
 
 const API_URL = process.env.REACT_APP_BACKEND_URL + '/api';
 
+// Timeout-Konfiguration
+const IDLE_TIMEOUT_MS = 15 * 60 * 1000; // 15 Minuten
+const ABSOLUTE_TIMEOUT_MS = 8 * 60 * 60 * 1000; // 8 Stunden
+
 export const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(localStorage.getItem('token'));
   const [user, setUser] = useState(JSON.parse(localStorage.getItem('user') || 'null'));
   const [loading, setLoading] = useState(false);
+  const [loginTime, setLoginTime] = useState(parseInt(localStorage.getItem('loginTime') || '0'));
+  
+  const idleTimerRef = useRef(null);
+  const absoluteTimerRef = useRef(null);
+
+  const logout = useCallback((reason = '') => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    localStorage.removeItem('loginTime');
+    setToken(null);
+    setUser(null);
+    setLoginTime(0);
+    delete axios.defaults.headers.common['Authorization'];
+    
+    // Timer aufräumen
+    if (idleTimerRef.current) clearTimeout(idleTimerRef.current);
+    if (absoluteTimerRef.current) clearTimeout(absoluteTimerRef.current);
+    
+    if (reason) {
+      // Speichere Grund für Anzeige auf Login-Seite
+      sessionStorage.setItem('logoutReason', reason);
+    }
+  }, []);
+
+  const resetIdleTimer = useCallback(() => {
+    if (idleTimerRef.current) {
+      clearTimeout(idleTimerRef.current);
+    }
+    
+    if (token) {
+      idleTimerRef.current = setTimeout(() => {
+        logout('Automatisch abgemeldet wegen Inaktivität (15 Minuten)');
+      }, IDLE_TIMEOUT_MS);
+    }
+  }, [token, logout]);
 
   const login = async (username, password) => {
     setLoading(true);
     try {
       const response = await axios.post(`${API_URL}/auth/login`, { username, password });
-      const { token, role, username: userName } = response.data;
-      localStorage.setItem('token', token);
+      const { token: newToken, role, username: userName } = response.data;
+      const now = Date.now();
+      
+      localStorage.setItem('token', newToken);
       localStorage.setItem('user', JSON.stringify({ username: userName, role }));
-      setToken(token);
+      localStorage.setItem('loginTime', now.toString());
+      
+      setToken(newToken);
       setUser({ username: userName, role });
-      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+      setLoginTime(now);
+      axios.defaults.headers.common['Authorization'] = `Bearer ${newToken}`;
+      
+      // Logout-Grund entfernen
+      sessionStorage.removeItem('logoutReason');
+      
       return { success: true };
     } catch (error) {
       return { success: false, error: error.response?.data?.detail || 'Login fehlgeschlagen' };
@@ -28,14 +76,53 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const logout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    setToken(null);
-    setUser(null);
-    delete axios.defaults.headers.common['Authorization'];
-  };
+  // Absolute Timeout prüfen
+  useEffect(() => {
+    if (token && loginTime) {
+      const elapsed = Date.now() - loginTime;
+      const remaining = ABSOLUTE_TIMEOUT_MS - elapsed;
+      
+      if (remaining <= 0) {
+        logout('Sitzung abgelaufen (maximale Sitzungsdauer: 8 Stunden)');
+      } else {
+        absoluteTimerRef.current = setTimeout(() => {
+          logout('Sitzung abgelaufen (maximale Sitzungsdauer: 8 Stunden)');
+        }, remaining);
+      }
+    }
+    
+    return () => {
+      if (absoluteTimerRef.current) clearTimeout(absoluteTimerRef.current);
+    };
+  }, [token, loginTime, logout]);
 
+  // Idle Timer und Activity Listener
+  useEffect(() => {
+    if (token) {
+      // Events die als Aktivität zählen
+      const events = ['mousedown', 'keydown', 'scroll', 'touchstart', 'click'];
+      
+      const handleActivity = () => {
+        resetIdleTimer();
+      };
+      
+      events.forEach(event => {
+        document.addEventListener(event, handleActivity, { passive: true });
+      });
+      
+      // Initial Timer starten
+      resetIdleTimer();
+      
+      return () => {
+        events.forEach(event => {
+          document.removeEventListener(event, handleActivity);
+        });
+        if (idleTimerRef.current) clearTimeout(idleTimerRef.current);
+      };
+    }
+  }, [token, resetIdleTimer]);
+
+  // Token beim Start setzen
   useEffect(() => {
     if (token) {
       axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
