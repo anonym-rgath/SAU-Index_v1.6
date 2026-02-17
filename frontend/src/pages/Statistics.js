@@ -56,18 +56,22 @@ const Statistics = () => {
   const loadInitialData = async () => {
     try {
       const yearsRes = await api.fiscalYears.getAll();
-      const years = yearsRes.data.fiscal_years || [];
+      const years = yearsRes.data?.fiscal_years || [];
       setFiscalYears(years);
       if (years.length > 0) {
         setFiscalYear(years[0]);
       }
     } catch (error) {
-      toast.error('Fehler beim Laden der Geschäftsjahre');
-      console.error(error);
+      console.error('Fehler beim Laden der Geschäftsjahre:', error);
+      // Nur Toast anzeigen wenn es kein Netzwerkfehler beim Seitenwechsel ist
+      if (error?.code !== 'ERR_CANCELED') {
+        toast.error('Fehler beim Laden der Geschäftsjahre');
+      }
     }
   };
 
   const loadData = async () => {
+    if (!fiscalYear) return;
     setLoading(true);
     try {
       const [statsRes, finesRes, membersRes, fineTypesRes] = await Promise.all([
@@ -82,8 +86,10 @@ const Statistics = () => {
       setMembers(membersRes.data);
       setFineTypes(fineTypesRes.data);
     } catch (error) {
-      toast.error('Fehler beim Laden der Daten');
-      console.error(error);
+      console.error('Fehler beim Laden der Daten:', error);
+      if (error?.code !== 'ERR_CANCELED') {
+        toast.error('Fehler beim Laden der Daten');
+      }
     } finally {
       setLoading(false);
     }
