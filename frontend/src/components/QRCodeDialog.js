@@ -17,6 +17,11 @@ const QRCodeDialog = ({ open, onOpenChange, member }) => {
   if (!member) return null;
 
   const qrValue = `RHEINZEL-${member.id}`;
+  
+  // Vollständiger Name
+  const fullName = member.firstName && member.lastName 
+    ? `${member.firstName} ${member.lastName}` 
+    : member.name || 'Unbekannt';
 
   const handleDownload = () => {
     const svg = qrRef.current?.querySelector('svg');
@@ -42,7 +47,7 @@ const QRCodeDialog = ({ open, onOpenChange, member }) => {
       ctx.fillStyle = '#1c1917';
       ctx.font = 'bold 24px system-ui, -apple-system, sans-serif';
       ctx.textAlign = 'center';
-      ctx.fillText(member.name, canvas.width / 2, 380);
+      ctx.fillText(fullName, canvas.width / 2, 380);
       
       // Add subtitle
       ctx.fillStyle = '#78716c';
@@ -51,7 +56,7 @@ const QRCodeDialog = ({ open, onOpenChange, member }) => {
       
       // Download
       const link = document.createElement('a');
-      link.download = `qr-code-${member.name.toLowerCase().replace(/\s+/g, '-')}.png`;
+      link.download = `qr-code-${fullName.toLowerCase().replace(/\s+/g, '-')}.png`;
       link.href = canvas.toDataURL('image/png');
       link.click();
     };
