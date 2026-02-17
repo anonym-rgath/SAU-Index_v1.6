@@ -296,7 +296,7 @@ const Members = () => {
                 >
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2">
-                      <p className="font-medium text-stone-600 truncate">{member.name}</p>
+                      <p className="font-medium text-stone-600 truncate">{getFullName(member)}</p>
                       <span className="text-xs px-2 py-0.5 rounded-full font-medium bg-stone-300 text-stone-600">
                         Archiviert
                       </span>
@@ -336,19 +336,31 @@ const Members = () => {
               {editingMember ? 'Mitglied bearbeiten' : 'Neues Mitglied'}
             </DialogTitle>
             <DialogDescription>
-              {editingMember ? 'Name des Mitglieds ändern' : 'Neues Mitglied hinzufügen'}
+              {editingMember ? 'Daten des Mitglieds ändern' : 'Neues Mitglied hinzufügen'}
             </DialogDescription>
           </DialogHeader>
           <form onSubmit={handleSubmit}>
             <div className="space-y-4 py-4">
               <div className="space-y-2">
-                <Label htmlFor="name">Name</Label>
+                <Label htmlFor="firstName">Vorname</Label>
                 <Input
-                  data-testid="member-name-input"
-                  id="name"
-                  value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  placeholder="Mitgliedsname"
+                  data-testid="member-firstName-input"
+                  id="firstName"
+                  value={formData.firstName}
+                  onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
+                  placeholder="Vorname"
+                  className="h-12 rounded-xl border-stone-200 bg-stone-50 focus:bg-white focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all text-base"
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="lastName">Nachname</Label>
+                <Input
+                  data-testid="member-lastName-input"
+                  id="lastName"
+                  value={formData.lastName}
+                  onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
+                  placeholder="Nachname"
                   className="h-12 rounded-xl border-stone-200 bg-stone-50 focus:bg-white focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all text-base"
                   required
                 />
