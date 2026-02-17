@@ -46,7 +46,10 @@ const FineTypes = () => {
       const response = await api.fineTypes.getAll();
       setFineTypes(response.data);
     } catch (error) {
-      toast.error('Fehler beim Laden der Strafenarten');
+      console.error('Fehler beim Laden der Strafenarten:', error);
+      if (error?.code !== 'ERR_CANCELED') {
+        toast.error('Fehler beim Laden der Strafenarten');
+      }
     } finally {
       setLoading(false);
     }
