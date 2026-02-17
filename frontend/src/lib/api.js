@@ -3,6 +3,12 @@ import axios from 'axios';
 const API_URL = process.env.REACT_APP_BACKEND_URL + '/api';
 
 export const api = {
+  // Generic methods
+  get: (url, config) => axios.get(`${API_URL}${url}`, config),
+  post: (url, data, config) => axios.post(`${API_URL}${url}`, data, config),
+  put: (url, data, config) => axios.put(`${API_URL}${url}`, data, config),
+  delete: (url, config) => axios.delete(`${API_URL}${url}`, config),
+  
   auth: {
     changePassword: (data) => axios.put(`${API_URL}/auth/change-password`, data),
   },
@@ -35,5 +41,8 @@ export const api = {
   },
   fiscalYears: {
     getAll: () => axios.get(`${API_URL}/fiscal-years`),
+  },
+  auditLogs: {
+    getAll: (limit = 500) => axios.get(`${API_URL}/audit-logs`, { params: { limit } }),
   },
 };
