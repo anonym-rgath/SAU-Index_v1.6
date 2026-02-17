@@ -244,15 +244,16 @@ const Statistics = () => {
             <ResponsiveContainer width="100%" height={300}>
               <BarChart data={(statistics?.ranking?.slice(0, 10) || []).map((item, index) => ({
                 ...item,
-                member_name: isVorstand ? `Platz ${index + 1}` : item.member_name
+                member_name: isVorstand ? `#${index + 1}` : formatShortName(item.member_name)
               }))}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#e7e5e4" />
                 <XAxis 
                   dataKey="member_name" 
-                  angle={-45} 
-                  textAnchor="end" 
-                  height={100}
-                  tick={{ fontSize: 12, fill: '#78716c' }}
+                  angle={0} 
+                  textAnchor="middle" 
+                  height={50}
+                  tick={{ fontSize: 11, fill: '#78716c' }}
+                  interval={0}
                 />
                 <YAxis tick={{ fontSize: 12, fill: '#78716c' }} />
                 <Tooltip 
