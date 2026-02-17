@@ -353,7 +353,8 @@ async def login(request: Request, login_data: LoginRequest):
     user_doc = await db.users.find_one({"username": login_data.username}, {"_id": 0})
     
     if not user_doc:
-        # Log failed login attempt
+        # Fehlversuch protokollieren
+        await record_login_attempt(login_data.username, ip_address, False)
         await log_audit(
             action=AuditAction.LOGIN_FAILED,
             resource_type="auth",
@@ -365,7 +366,8 @@ async def login(request: Request, login_data: LoginRequest):
     
     # Verify password
     if not pwd_context.verify(login_data.password, user_doc['password_hash']):
-        # Log failed login attempt
+        # Fehlversuch protokollieren
+        await record_login_attempt(login_data.username, ip_address, False)
         await log_audit(
             action=AuditAction.LOGIN_FAILED,
             resource_type="auth",
@@ -375,6 +377,10 @@ async def login(request: Request, login_data: LoginRequest):
             ip_address=ip_address
         )
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Benutzername oder Passwort falsch")
+    
+    # Erfolgreicher Login - Sperre aufheben und Versuch protokollieren
+    await clear_lockout(login_data.username)
+    await record_login_attempt(login_data.username, ip_address, True)
     
     token = jwt.encode(
         {
