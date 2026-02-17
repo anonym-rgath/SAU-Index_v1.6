@@ -10,7 +10,14 @@ const IDLE_TIMEOUT_MS = 15 * 60 * 1000; // 15 Minuten
 const ABSOLUTE_TIMEOUT_MS = 8 * 60 * 60 * 1000; // 8 Stunden
 
 export const AuthProvider = ({ children }) => {
-  const [token, setToken] = useState(localStorage.getItem('token'));
+  const [token, setToken] = useState(() => {
+    const savedToken = localStorage.getItem('token');
+    // Token sofort bei der Initialisierung setzen
+    if (savedToken) {
+      axios.defaults.headers.common['Authorization'] = `Bearer ${savedToken}`;
+    }
+    return savedToken;
+  });
   const [user, setUser] = useState(JSON.parse(localStorage.getItem('user') || 'null'));
   const [loading, setLoading] = useState(false);
   const [loginTime, setLoginTime] = useState(parseInt(localStorage.getItem('loginTime') || '0'));
