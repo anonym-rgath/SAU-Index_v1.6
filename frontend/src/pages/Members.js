@@ -82,7 +82,7 @@ const Members = () => {
       }
       setDialogOpen(false);
       setEditingMember(null);
-      setFormData({ name: '' });
+      setFormData({ firstName: '', lastName: '', status: 'aktiv' });
       loadMembers();
     } catch (error) {
       toast.error('Fehler beim Speichern');
