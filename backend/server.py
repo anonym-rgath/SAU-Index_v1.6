@@ -721,7 +721,7 @@ async def update_fine_type(fine_type_id: str, input: FineTypeCreate, auth=Depend
     return FineType(**updated)
 
 @api_router.delete("/fine-types/{fine_type_id}")
-async def delete_fine_type(fine_type_id: str, auth=Depends(require_any_role)):
+async def delete_fine_type(fine_type_id: str, auth=Depends(require_admin_or_spiess)):
     result = await db.fine_types.delete_one({"id": fine_type_id})
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Strafenart nicht gefunden")
