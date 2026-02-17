@@ -73,7 +73,7 @@ const QRCodeDialog = ({ open, onOpenChange, member }) => {
             QR-Code
           </DialogTitle>
           <DialogDescription>
-            QR-Code für {member.name}
+            QR-Code für {fullName}
           </DialogDescription>
         </DialogHeader>
         
