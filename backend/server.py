@@ -699,7 +699,7 @@ async def get_fine_types(auth=Depends(verify_token)):
     return fine_types
 
 @api_router.post("/fine-types", response_model=FineType)
-async def create_fine_type(input: FineTypeCreate, auth=Depends(require_any_role)):
+async def create_fine_type(input: FineTypeCreate, auth=Depends(require_admin_or_spiess)):
     fine_type = FineType(**input.model_dump())
     doc = fine_type.model_dump()
     doc['created_at'] = doc['created_at'].isoformat()
