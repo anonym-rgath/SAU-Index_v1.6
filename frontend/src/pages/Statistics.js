@@ -137,7 +137,8 @@ const Statistics = () => {
     if (!statistics?.ranking) return [];
     return statistics.ranking.filter(entry => {
       const member = members.find(m => m.id === entry.member_id);
-      return member?.status === 'aktiv';
+      // Leerer Status oder 'aktiv' = aktiv
+      return !member?.status || member?.status === 'aktiv' || member?.status === '';
     });
   };
 
