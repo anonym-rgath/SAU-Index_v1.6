@@ -137,6 +137,7 @@ export const AuthProvider = ({ children }) => {
   const canManageMembers = ['admin', 'spiess', 'vorstand'].includes(user?.role);
   const canManageFines = ['admin', 'spiess'].includes(user?.role);
   const canManageFineTypes = ['admin', 'spiess', 'vorstand'].includes(user?.role);
+  const canEditFineTypes = ['admin', 'spiess'].includes(user?.role); // Vorstand kann nur lesen
   const canManageRoles = user?.role === 'admin';
 
   return (
