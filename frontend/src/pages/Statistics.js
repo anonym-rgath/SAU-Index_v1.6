@@ -354,7 +354,7 @@ const Statistics = () => {
                       {idx + 1}
                     </div>
                     <span className="font-medium text-stone-900">
-                      {isVorstand ? `Platz ${idx + 1}` : entry.member_name}
+                      {isVorstand ? `#${idx + 1}` : formatShortName(entry.member_name)}
                     </span>
                   </div>
                   <span className="font-bold text-emerald-700">
@@ -383,7 +383,7 @@ const Statistics = () => {
                       {idx + 1}
                     </div>
                     <span className="font-medium text-stone-900">
-                      {isVorstand ? `Platz ${idx + 1}` : entry.member_name}
+                      {isVorstand ? `#${idx + 1}` : formatShortName(entry.member_name)}
                     </span>
                   </div>
                   <span className="font-bold text-stone-700">
