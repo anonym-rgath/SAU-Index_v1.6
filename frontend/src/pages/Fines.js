@@ -97,7 +97,12 @@ const Fines = () => {
   };
 
   const getMemberName = (memberId) => {
-    return members.find(m => m.id === memberId)?.name || 'Unbekannt';
+    const member = members.find(m => m.id === memberId);
+    if (!member) return 'Unbekannt';
+    if (member.firstName && member.lastName) {
+      return `${member.firstName} ${member.lastName}`;
+    }
+    return member.name || 'Unbekannt';
   };
 
   if (loading) {
