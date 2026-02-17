@@ -707,7 +707,7 @@ async def create_fine_type(input: FineTypeCreate, auth=Depends(require_admin_or_
     return fine_type
 
 @api_router.put("/fine-types/{fine_type_id}", response_model=FineType)
-async def update_fine_type(fine_type_id: str, input: FineTypeCreate, auth=Depends(require_any_role)):
+async def update_fine_type(fine_type_id: str, input: FineTypeCreate, auth=Depends(require_admin_or_spiess)):
     result = await db.fine_types.find_one({" id": fine_type_id}, {"_id": 0})
     if not result:
         raise HTTPException(status_code=404, detail="Strafenart nicht gefunden")
