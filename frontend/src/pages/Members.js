@@ -103,13 +103,17 @@ const Members = () => {
 
   const openAddDialog = () => {
     setEditingMember(null);
-    setFormData({ name: '', status: 'aktiv' });
+    setFormData({ firstName: '', lastName: '', status: 'aktiv' });
     setDialogOpen(true);
   };
 
   const openEditDialog = (member) => {
     setEditingMember(member);
-    setFormData({ name: member.name, status: member.status || 'aktiv' });
+    setFormData({ 
+      firstName: member.firstName || '', 
+      lastName: member.lastName || '', 
+      status: member.status || 'aktiv' 
+    });
     setDialogOpen(true);
   };
 
