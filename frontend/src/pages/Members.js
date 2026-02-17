@@ -44,8 +44,16 @@ const Members = () => {
   const [qrMember, setQrMember] = useState(null);
   const [editingMember, setEditingMember] = useState(null);
   const [deletingMember, setDeletingMember] = useState(null);
-  const [formData, setFormData] = useState({ name: '', status: 'aktiv' });
+  const [formData, setFormData] = useState({ firstName: '', lastName: '', status: 'aktiv' });
   const [sortBy, setSortBy] = useState('name-asc');
+
+  // Hilfsfunktion: Vollständiger Name
+  const getFullName = (member) => {
+    if (member.firstName && member.lastName) {
+      return `${member.firstName} ${member.lastName}`;
+    }
+    return member.name || 'Unbekannt';
+  };
 
   useEffect(() => {
     loadMembers();
