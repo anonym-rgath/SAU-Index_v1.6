@@ -64,7 +64,10 @@ const Members = () => {
       const response = await api.members.getAll();
       setMembers(response.data);
     } catch (error) {
-      toast.error('Fehler beim Laden der Mitglieder');
+      console.error('Fehler beim Laden der Mitglieder:', error);
+      if (error?.code !== 'ERR_CANCELED') {
+        toast.error('Fehler beim Laden der Mitglieder');
+      }
     } finally {
       setLoading(false);
     }
