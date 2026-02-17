@@ -811,7 +811,13 @@ async def get_statistics(fiscal_year: str, auth=Depends(verify_token)):
     # Nur aktive und passive Mitglieder (keine archivierten)
     members = await db.members.find({"status": {"$ne": "archiviert"}}, {"_id": 0}).to_list(1000)
     
-    member_map = {m['id']: m['name'] for m in members}
+    # Generiere vollständigen Namen aus firstName und lastName
+    def get_full_name(m):
+        if 'firstName' in m and 'lastName' in m:
+            return f"{m['firstName']} {m['lastName']}"
+        return m.get('name', 'Unbekannt')
+    
+    member_map = {m['id']: get_full_name(m) for m in members}
     member_status = {m['id']: m.get('status', 'aktiv') for m in members}
     totals = {}
     
