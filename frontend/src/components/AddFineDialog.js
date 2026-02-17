@@ -111,7 +111,9 @@ const AddFineDialog = ({ open, onOpenChange, onSuccess, preselectedMemberId = nu
                     .filter(member => member.status !== 'archiviert')
                     .map(member => (
                     <SelectItem key={member.id} value={member.id}>
-                      {member.name}
+                      {member.firstName && member.lastName 
+                        ? `${member.firstName} ${member.lastName}` 
+                        : member.name}
                     </SelectItem>
                   ))}
                 </SelectContent>
