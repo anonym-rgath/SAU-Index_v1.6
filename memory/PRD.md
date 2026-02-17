@@ -112,7 +112,6 @@ Entwicklung einer Full-Stack-Webanwendung für einen "Schützenzug" (später umb
 
 ### P1 - Future Tasks
 - [ ] **Automatisches Datenbank-Backup** - Wöchentliches Backup der MongoDB
-- [ ] **HTTPS Setup-Anleitung** - Anleitung für Self-Signed SSL auf Raspberry Pi (für QR-Scanner Kamera-Zugriff)
 - [ ] Daten-Export (CSV/PDF)
 
 ### P2 - Potential Improvements
