@@ -470,12 +470,14 @@ class UserResponse(BaseModel):
     id: str
     username: str
     role: str
+    member_id: Optional[str] = None
     created_at: Optional[str] = None
 
 class UserCreateRequest(BaseModel):
     username: str
     password: str
     role: UserRole
+    member_id: Optional[str] = None  # Pflicht wenn role=mitglied
 
 @api_router.get("/users", response_model=List[UserResponse])
 async def get_users(auth=Depends(require_admin)):
