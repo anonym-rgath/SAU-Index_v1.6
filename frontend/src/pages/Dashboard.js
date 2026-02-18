@@ -425,7 +425,7 @@ const Dashboard = () => {
                 </div>
                 
                 {/* Persönliche Statistik */}
-                <div className="bg-white/60 rounded-xl p-3 mb-4 border border-emerald-100">
+                <div className="bg-white/60 rounded-xl p-3 mb-4">
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-xs text-stone-400 uppercase tracking-wider font-bold">Gesamt</p>
@@ -443,7 +443,7 @@ const Dashboard = () => {
                     myFines.map((fine) => (
                       <div
                         key={fine.id}
-                        className="p-3 rounded-xl border border-emerald-100 bg-white/50"
+                        className="p-3 rounded-xl bg-white/50"
                       >
                         <div className="flex items-start justify-between mb-1">
                           <p className="font-semibold text-stone-900">
