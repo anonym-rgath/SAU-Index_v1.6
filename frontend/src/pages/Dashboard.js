@@ -411,7 +411,7 @@ const Dashboard = () => {
 
             {/* Meine Strafen - nur für Spieß mit verlinktem Mitglied */}
             {spiessHasLinkedMember && personalStats && (
-              <Card className="bg-gradient-to-br from-emerald-50 to-white border-emerald-200 rounded-2xl shadow-sm p-4 mt-6">
+              <Card className="bg-gradient-to-br from-emerald-50 to-white border-0 rounded-2xl shadow-sm p-4 mt-6">
                 <div className="flex items-center gap-3 mb-4">
                   <User className="w-5 h-5 text-emerald-700" />
                   <div>
