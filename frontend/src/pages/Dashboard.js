@@ -409,6 +409,69 @@ const Dashboard = () => {
               </div>
             </Card>
 
+            {/* Meine Strafen - nur für Spieß mit verlinktem Mitglied */}
+            {spiessHasLinkedMember && personalStats && (
+              <Card className="bg-gradient-to-br from-emerald-50 to-white border-emerald-200 rounded-2xl shadow-sm p-4 mt-6">
+                <div className="flex items-center gap-3 mb-4">
+                  <User className="w-5 h-5 text-emerald-700" />
+                  <div>
+                    <h2 className="text-xl font-bold text-stone-900 tracking-tight">
+                      Meine Strafen
+                    </h2>
+                    <p className="text-xs text-stone-500">
+                      {personalStats.member_name}
+                    </p>
+                  </div>
+                </div>
+                
+                {/* Persönliche Statistik */}
+                <div className="bg-white/60 rounded-xl p-3 mb-4 border border-emerald-100">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-xs text-stone-400 uppercase tracking-wider font-bold">Gesamt</p>
+                      <p className="text-xl font-bold text-stone-900">{formatCurrency(personalStats.total_amount || 0)}</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-xs text-stone-400 uppercase tracking-wider font-bold">Einträge</p>
+                      <p className="text-xl font-bold text-emerald-700">{personalStats.total_fines || 0}</p>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="space-y-2" data-testid="my-fines-list-spiess">
+                  {myFines.length > 0 ? (
+                    myFines.map((fine) => (
+                      <div
+                        key={fine.id}
+                        className="p-3 rounded-xl border border-emerald-100 bg-white/50"
+                      >
+                        <div className="flex items-start justify-between mb-1">
+                          <p className="font-semibold text-stone-900">
+                            {fine.fine_type_label}
+                          </p>
+                          <span className="text-emerald-700 font-bold">
+                            {formatCurrency(fine.amount)}
+                          </span>
+                        </div>
+                        <p className="text-xs text-stone-400">
+                          {formatDate(fine.date)}
+                        </p>
+                        {fine.notes && (
+                          <p className="text-xs text-stone-500 mt-1">
+                            {fine.notes}
+                          </p>
+                        )}
+                      </div>
+                    ))
+                  ) : (
+                    <p className="text-center text-stone-400 py-4 text-sm">
+                      Keine Strafen für {fiscalYear}
+                    </p>
+                  )}
+                </div>
+              </Card>
+            )}
+
           {/* Floating Action Button - nur für Admin */}
           {canManageFines && (
             <>
