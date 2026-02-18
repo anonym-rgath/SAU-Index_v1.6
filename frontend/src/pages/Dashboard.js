@@ -55,8 +55,8 @@ const Dashboard = () => {
     if (!fiscalYear) return;
     setLoading(true);
     try {
-      if (isMitglied) {
-        // Mitglied: Nur persönliche Daten laden
+      if (showPersonalDashboard) {
+        // Mitglied oder Vorstand mit Mitglied-Verknüpfung: Nur persönliche Daten laden
         const [personalRes, finesRes] = await Promise.all([
           api.statistics.getPersonal(fiscalYear),
           api.fines.getAll(fiscalYear),
