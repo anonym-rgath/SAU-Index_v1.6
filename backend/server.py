@@ -421,7 +421,8 @@ async def login(request: Request, login_data: LoginRequest):
         token=token, 
         message="Login erfolgreich",
         role=user_doc['role'],
-        username=user_doc['username']
+        username=user_doc['username'],
+        member_id=user_doc.get('member_id')
     )
 
 @api_router.put("/auth/change-password")
