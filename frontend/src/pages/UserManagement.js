@@ -337,10 +337,13 @@ const UserManagement = () => {
                 </Select>
               </div>
 
-              {/* Mitglied-Auswahl nur für Rolle "mitglied" */}
-              {formData.role === 'mitglied' && (
+              {/* Mitglied-Auswahl für Rolle "mitglied" (Pflicht) und "vorstand" (optional) */}
+              {(formData.role === 'mitglied' || formData.role === 'vorstand') && (
                 <div className="space-y-2">
-                  <Label htmlFor="member">Verknüpftes Mitglied</Label>
+                  <Label htmlFor="member">
+                    Verknüpftes Mitglied
+                    {formData.role === 'vorstand' && <span className="text-stone-400 font-normal"> (optional)</span>}
+                  </Label>
                   <Select
                     value={formData.member_id}
                     onValueChange={(value) => setFormData({ ...formData, member_id: value })}
@@ -349,6 +352,9 @@ const UserManagement = () => {
                       <SelectValue placeholder="Mitglied wählen" />
                     </SelectTrigger>
                     <SelectContent>
+                      {formData.role === 'vorstand' && (
+                        <SelectItem value="">Kein Mitglied</SelectItem>
+                      )}
                       {availableMembers.length > 0 ? (
                         availableMembers.map(member => (
                           <SelectItem key={member.id} value={member.id}>
@@ -363,7 +369,9 @@ const UserManagement = () => {
                     </SelectContent>
                   </Select>
                   <p className="text-xs text-stone-500">
-                    Nur Mitglieder ohne Benutzeraccount werden angezeigt
+                    {formData.role === 'mitglied' 
+                      ? 'Nur Mitglieder ohne Benutzeraccount werden angezeigt'
+                      : 'Optional: Vorstand kann eigene Strafen im Dashboard sehen'}
                   </p>
                 </div>
               )}
