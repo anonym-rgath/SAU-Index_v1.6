@@ -15,25 +15,16 @@ import AuditLogs from './pages/AuditLogs';
 
 // Redirect based on role
 const RoleBasedRedirect = () => {
-  const { isVorstand, isMitglied, user } = useAuth();
-  // Vorstand ohne Mitglied-Verknüpfung -> Mitglieder-Seite
-  if (isVorstand && !user?.member_id) {
-    return <Navigate to="/members" replace />;
-  }
-  // Vorstand mit Mitglied-Verknüpfung oder Mitglied -> Dashboard
-  if (isMitglied || (isVorstand && user?.member_id)) {
+  const { isMitglied, isVorstand } = useAuth();
+  // Mitglied oder Vorstand -> Dashboard (eigene Übersicht)
+  if (isMitglied || isVorstand) {
     return <Navigate to="/dashboard" replace />;
   }
   return <Navigate to="/dashboard" replace />;
 };
 
-// Protect routes that vorstand without member_id shouldn't access
+// Vorstand und Mitglied sehen persönliches Dashboard
 const DashboardRoute = ({ children }) => {
-  const { isVorstand, user } = useAuth();
-  // Vorstand ohne Mitglied-Verknüpfung darf nicht aufs Dashboard
-  if (isVorstand && !user?.member_id) {
-    return <Navigate to="/members" replace />;
-  }
   return children;
 };
 
