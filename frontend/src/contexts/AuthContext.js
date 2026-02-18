@@ -60,15 +60,15 @@ export const AuthProvider = ({ children }) => {
     setLoading(true);
     try {
       const response = await axios.post(`${API_URL}/auth/login`, { username, password });
-      const { token: newToken, role, username: userName } = response.data;
+      const { token: newToken, role, username: userName, member_id } = response.data;
       const now = Date.now();
       
       localStorage.setItem('token', newToken);
-      localStorage.setItem('user', JSON.stringify({ username: userName, role }));
+      localStorage.setItem('user', JSON.stringify({ username: userName, role, member_id }));
       localStorage.setItem('loginTime', now.toString());
       
       setToken(newToken);
-      setUser({ username: userName, role });
+      setUser({ username: userName, role, member_id });
       setLoginTime(now);
       axios.defaults.headers.common['Authorization'] = `Bearer ${newToken}`;
       
@@ -139,6 +139,7 @@ export const AuthProvider = ({ children }) => {
   const isAdmin = user?.role === 'admin';
   const isSpiess = user?.role === 'spiess';
   const isVorstand = user?.role === 'vorstand';
+  const isMitglied = user?.role === 'mitglied';
   
   // Berechtigungen
   const canManageMembers = ['admin', 'spiess', 'vorstand'].includes(user?.role);
@@ -146,6 +147,9 @@ export const AuthProvider = ({ children }) => {
   const canManageFineTypes = ['admin', 'spiess', 'vorstand'].includes(user?.role);
   const canEditFineTypes = ['admin', 'spiess', 'vorstand'].includes(user?.role);
   const canManageRoles = user?.role === 'admin';
+  const canViewDashboard = ['admin', 'spiess', 'mitglied'].includes(user?.role);
+  const canViewStatistics = ['admin', 'spiess', 'vorstand'].includes(user?.role);
+  const canViewFines = ['admin', 'spiess', 'mitglied'].includes(user?.role);
 
   return (
     <AuthContext.Provider value={{ 
@@ -158,11 +162,15 @@ export const AuthProvider = ({ children }) => {
       isAdmin,
       isSpiess,
       isVorstand,
+      isMitglied,
       canManageMembers,
       canManageFines,
       canManageFineTypes,
       canEditFineTypes,
-      canManageRoles
+      canManageRoles,
+      canViewDashboard,
+      canViewStatistics,
+      canViewFines
     }}>
       {children}
     </AuthContext.Provider>
