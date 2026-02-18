@@ -128,7 +128,8 @@ const AuditLogs = () => {
   const uniqueActions = [...new Set(logs.map(log => log.action))];
 
   return (
-    <div className="space-y-6">
+    <div className="min-h-screen bg-stone-50">
+      <div className="max-w-2xl mx-auto px-4 py-6 space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
