@@ -510,27 +510,32 @@ async def create_user(request: Request, data: UserCreateRequest, auth=Depends(re
     if len(data.password) < 6:
         raise HTTPException(status_code=400, detail="Passwort muss mindestens 6 Zeichen lang sein")
     
-    # Bei Mitglied-Rolle muss member_id angegeben werden
+    # Bei Mitglied-Rolle muss member_id angegeben werden, bei Vorstand optional
     if data.role == UserRole.mitglied:
         if not data.member_id:
             raise HTTPException(status_code=400, detail="Bei Rolle 'Mitglied' muss ein Mitglied ausgewählt werden")
-        # Prüfen ob Mitglied existiert
+    
+    # Wenn member_id angegeben ist, validieren (für Mitglied und Vorstand)
+    if data.member_id:
+        # Prüfen ob Mitglied existiert und nicht archiviert ist
         member = await db.members.find_one({"id": data.member_id})
         if not member:
             raise HTTPException(status_code=400, detail="Mitglied nicht gefunden")
+        if member.get('status') == 'archiviert':
+            raise HTTPException(status_code=400, detail="Archivierte Mitglieder können keinen Benutzeraccount haben")
         # Prüfen ob Mitglied bereits einen Account hat
         existing_member_user = await db.users.find_one({"member_id": data.member_id})
         if existing_member_user:
             raise HTTPException(status_code=400, detail="Dieses Mitglied hat bereits einen Benutzeraccount")
     
-    # Benutzer erstellen
+    # Benutzer erstellen - member_id für Mitglied und Vorstand speichern
     user_id = str(uuid.uuid4())
     user_doc = {
         "id": user_id,
         "username": data.username,
         "password_hash": pwd_context.hash(data.password),
         "role": data.role.value,
-        "member_id": data.member_id if data.role == UserRole.mitglied else None,
+        "member_id": data.member_id if data.role in [UserRole.mitglied, UserRole.vorstand] else None,
         "created_at": datetime.now(timezone.utc).isoformat()
     }
     
