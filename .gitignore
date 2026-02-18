@@ -59,3 +59,7 @@ venv/
 frontend/node_modules/.cache/
 frontend/node_modules/.cache/default-development/13.pack
 frontend/node_modules/.cache/default-development/0.pack
+-e 
+# Environment files
+*.env
+*.env.*
