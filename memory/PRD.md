@@ -10,14 +10,15 @@ Entwicklung einer Full-Stack-Webanwendung für einen "Schützenzug" (später umb
 - **Mitglied**: Nur eigene Daten (Dashboard mit eigenen Strafen, Strafenübersicht nur eigene)
 
 ## Core Requirements
-- Benutzerverwaltung mit Rollen (admin/spiess/vorstand)
-- Mitgliederverwaltung (Name, Status aktiv/passiv/archiviert)
+- Benutzerverwaltung mit Rollen (admin/spiess/vorstand/mitglied)
+- Mitgliederverwaltung (Vorname, Nachname, Status aktiv/passiv/archiviert)
 - Strafenverwaltung mit konfigurierbaren Strafarten
 - Rückwirkende Strafenerfassung (nur auf Strafenübersicht-Seite)
 - Ranking basierend auf Geschäftsjahr (01.08. - 31.07.)
 - Mobile-First Design mit Drawer-Navigation
 - Statistik-Seite mit Diagrammen und KPIs
 - QR-Code System zur Mitglieder-Identifikation
+- Persönliches Dashboard für Mitglieder (nur eigene Strafen/Rang)
 
 ## Tech Stack
 - **Frontend**: React, Tailwind CSS, Shadcn/UI, lucide-react, recharts, html5-qrcode, qrcode.react
