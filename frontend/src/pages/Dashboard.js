@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { api } from '../lib/api';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
-import { PiggyBank, Wallet, Plus, Trophy, Calendar, QrCode } from 'lucide-react';
+import { PiggyBank, Wallet, Plus, Trophy, Calendar, QrCode, User, TrendingUp } from 'lucide-react';
 import { toast } from 'sonner';
 import AddFineDialog from '../components/AddFineDialog';
 import QRScanDialog from '../components/QRScanDialog';
@@ -10,10 +10,11 @@ import { formatCurrency, formatDate } from '../lib/utils';
 import { useAuth } from '../contexts/AuthContext';
 
 const Dashboard = () => {
-  const { canManageFines } = useAuth();
+  const { canManageFines, isMitglied, user } = useAuth();
   const [fiscalYear, setFiscalYear] = useState('');
   const [fiscalYears, setFiscalYears] = useState([]);
   const [statistics, setStatistics] = useState(null);
+  const [personalStats, setPersonalStats] = useState(null);
   const [recentFines, setRecentFines] = useState([]);
   const [members, setMembers] = useState([]);
   const [addDialogOpen, setAddDialogOpen] = useState(false);
@@ -51,15 +52,26 @@ const Dashboard = () => {
     if (!fiscalYear) return;
     setLoading(true);
     try {
-      const [statsRes, finesRes, membersRes] = await Promise.all([
-        api.statistics.getByFiscalYear(fiscalYear),
-        api.fines.getAll(fiscalYear),
-        api.members.getAll(),
-      ]);
-      
-      setStatistics(statsRes.data);
-      setRecentFines(finesRes.data.slice(0, 6));
-      setMembers(membersRes.data);
+      if (isMitglied) {
+        // Mitglied: Nur persönliche Daten laden
+        const [personalRes, finesRes] = await Promise.all([
+          api.statistics.getPersonal(fiscalYear),
+          api.fines.getAll(fiscalYear),
+        ]);
+        setPersonalStats(personalRes.data);
+        setRecentFines(finesRes.data.slice(0, 10));
+      } else {
+        // Admin/Spiess: Vollständige Statistiken laden
+        const [statsRes, finesRes, membersRes] = await Promise.all([
+          api.statistics.getByFiscalYear(fiscalYear),
+          api.fines.getAll(fiscalYear),
+          api.members.getAll(),
+        ]);
+        
+        setStatistics(statsRes.data);
+        setRecentFines(finesRes.data.slice(0, 6));
+        setMembers(membersRes.data);
+      }
     } catch (error) {
       console.error('Fehler beim Laden der Daten:', error);
       if (error?.code !== 'ERR_CANCELED') {
@@ -99,6 +111,132 @@ const Dashboard = () => {
     );
   }
 
+  // Mitglieder-Dashboard
+  if (isMitglied) {
+    return (
+      <div className="min-h-screen bg-stone-50">
+        <div className="max-w-2xl mx-auto px-4 py-6">
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h1 className="text-3xl md:text-4xl font-bold text-stone-900 tracking-tight">
+                Meine Übersicht
+              </h1>
+              <p className="text-sm text-stone-500 mt-1">
+                {personalStats?.member_name || user?.username}
+              </p>
+            </div>
+            
+            <div className="flex items-center gap-2 bg-white border border-stone-200 rounded-full px-3 h-10 shadow-sm">
+              <Calendar className="w-4 h-4 text-stone-400" />
+              <select
+                data-testid="fiscal-year-selector"
+                value={fiscalYear}
+                onChange={(e) => setFiscalYear(e.target.value)}
+                className="bg-transparent border-none outline-none text-stone-700 font-medium cursor-pointer text-base"
+              >
+                {fiscalYears.map(fy => (
+                  <option key={fy} value={fy}>{fy}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          {/* Persönliche Statistiken */}
+          <div className="grid grid-cols-2 gap-4 mb-6">
+            <Card className="bg-gradient-to-br from-emerald-50 to-white border-emerald-100 rounded-2xl shadow-sm p-4">
+              <div className="flex items-start justify-between mb-3">
+                <div>
+                  <p className="text-xs text-stone-400 uppercase tracking-wider font-bold mb-0.5">
+                    Meine Strafen
+                  </p>
+                  <p className="text-xs text-stone-500">Gesamt</p>
+                </div>
+                <div className="bg-emerald-100 p-2 rounded-lg">
+                  <Wallet className="w-5 h-5 text-emerald-600" />
+                </div>
+              </div>
+              <div data-testid="my-total">
+                <p className="text-2xl font-bold text-stone-900 mb-0.5">
+                  {formatCurrency(personalStats?.total_amount || 0)}
+                </p>
+                <p className="text-sm text-stone-600">{personalStats?.total_fines || 0} Einträge</p>
+              </div>
+            </Card>
+
+            <Card className="bg-gradient-to-br from-stone-50 to-white border-stone-200 rounded-2xl shadow-sm p-4">
+              <div className="flex items-start justify-between mb-3">
+                <div>
+                  <p className="text-xs text-stone-400 uppercase tracking-wider font-bold mb-0.5">
+                    Mein Rang
+                  </p>
+                  <p className="text-xs text-stone-500">im Ranking</p>
+                </div>
+                <div className="bg-stone-100 p-2 rounded-lg">
+                  <TrendingUp className="w-5 h-5 text-stone-500" />
+                </div>
+              </div>
+              <div data-testid="my-rank">
+                {personalStats?.rank ? (
+                  <>
+                    <p className="text-2xl font-bold text-stone-900 mb-0.5">
+                      #{personalStats.rank}
+                    </p>
+                    <p className="text-sm text-stone-600">von {personalStats.total_members}</p>
+                  </>
+                ) : (
+                  <p className="text-stone-400 text-sm">Keine Strafen</p>
+                )}
+              </div>
+            </Card>
+          </div>
+
+          {/* Meine Strafen */}
+          <Card className="bg-white rounded-2xl border border-stone-200 shadow-sm p-4">
+            <div className="flex items-center gap-3 mb-4">
+              <User className="w-5 h-5 text-emerald-700" />
+              <h2 className="text-xl font-bold text-stone-900 tracking-tight">
+                Meine Strafen
+              </h2>
+            </div>
+            
+            <div className="space-y-2" data-testid="my-fines-list">
+              {recentFines.length > 0 ? (
+                recentFines.map((fine) => (
+                  <div
+                    key={fine.id}
+                    className="p-3 rounded-xl border border-stone-100 bg-stone-50"
+                  >
+                    <div className="flex items-start justify-between mb-1">
+                      <p className="font-semibold text-stone-900">
+                        {fine.fine_type_label}
+                      </p>
+                      <span className="text-emerald-700 font-bold">
+                        {formatCurrency(fine.amount)}
+                      </span>
+                    </div>
+                    <p className="text-xs text-stone-400">
+                      {formatDate(fine.date)}
+                    </p>
+                    {fine.notes && (
+                      <p className="text-xs text-stone-500 mt-1">
+                        {fine.notes}
+                      </p>
+                    )}
+                  </div>
+                ))
+              ) : (
+                <p className="text-center text-stone-400 py-8">
+                  Keine Strafen für {fiscalYear}
+                </p>
+              )}
+            </div>
+          </Card>
+        </div>
+      </div>
+    );
+  }
+
+  // Admin/Spiess Dashboard (Original)
   return (
     <div className="min-h-screen bg-stone-50">
       <div className="max-w-2xl mx-auto px-4 py-6">
