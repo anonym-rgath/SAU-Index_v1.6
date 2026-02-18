@@ -122,6 +122,7 @@ class LoginResponse(BaseModel):
     message: str
     role: str
     username: str
+    member_id: Optional[str] = None
 
 class ChangePasswordRequest(BaseModel):
     current_password: str
