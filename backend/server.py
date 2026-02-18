@@ -105,6 +105,7 @@ class User(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     username: str
     role: UserRole
+    member_id: Optional[str] = None  # Verknüpfung zu Mitglied (nur für Rolle "mitglied")
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 class UserCreate(BaseModel):
