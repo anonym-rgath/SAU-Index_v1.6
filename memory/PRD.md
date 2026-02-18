@@ -38,6 +38,12 @@ Entwicklung einer Full-Stack-Webanwendung für einen "Schützenzug" (später umb
 ## Completed Features
 
 ### 2025-02-18 (Current Session)
+- [x] **Spieß mit Mitglied-Verknüpfung**: 
+  - Spieß-Benutzer können jetzt optional einem Mitglied zugeordnet werden
+  - Benutzerverwaltung zeigt "Verknüpftes Mitglied (optional)" Dropdown für Spieß-Rolle
+  - Dashboard für Spieß mit verlinktem Mitglied zeigt zusätzlich "Meine Strafen"-Bereich
+  - Spieß behält vollen Admin-Dashboard-Zugriff (Sau, Lämmchen, Ranking, Letzte Strafen)
+  - 10/10 Backend-Tests bestanden (`/app/backend/tests/test_spiess_member_link.py`)
 - [x] **Rolle "Mitglied" implementiert**:
   - Neue Rolle "mitglied" im Backend und Frontend
   - Mitglieder-Benutzer werden mit einem Mitglied verknüpft (member_id)
