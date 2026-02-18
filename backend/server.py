@@ -599,6 +599,97 @@ async def delete_user(request: Request, user_id: str, auth=Depends(require_admin
     
     return {"message": "Benutzer gelöscht"}
 
+class UserUpdateRequest(BaseModel):
+    username: Optional[str] = None
+    role: Optional[UserRole] = None
+    member_id: Optional[str] = None
+
+@api_router.put("/users/{user_id}")
+async def update_user(request: Request, user_id: str, data: UserUpdateRequest, auth=Depends(require_admin)):
+    """Benutzer bearbeiten (nur Admin)"""
+    ip_address = get_remote_address(request)
+    
+    # Benutzer finden
+    user = await db.users.find_one({"id": user_id}, {"_id": 0})
+    if not user:
+        raise HTTPException(status_code=404, detail="Benutzer nicht gefunden")
+    
+    update_data = {}
+    
+    # Benutzername ändern
+    if data.username and data.username != user.get('username'):
+        existing = await db.users.find_one({"username": data.username, "id": {"$ne": user_id}})
+        if existing:
+            raise HTTPException(status_code=400, detail="Benutzername existiert bereits")
+        update_data["username"] = data.username
+    
+    # Rolle ändern
+    if data.role:
+        # Letzten Admin nicht ändern
+        if user.get('role') == 'admin' and data.role != UserRole.admin:
+            admin_count = await db.users.count_documents({"role": "admin"})
+            if admin_count <= 1:
+                raise HTTPException(status_code=400, detail="Der letzte Admin kann nicht geändert werden")
+        update_data["role"] = data.role.value
+    
+    # Member_id ändern (nur für Mitglied und Vorstand)
+    new_role = data.role.value if data.role else user.get('role')
+    if new_role in ['mitglied', 'vorstand']:
+        if data.member_id is not None:
+            if data.member_id:  # Nicht leer
+                # Prüfen ob Mitglied existiert
+                member = await db.members.find_one({"id": data.member_id})
+                if not member:
+                    raise HTTPException(status_code=400, detail="Mitglied nicht gefunden")
+                if member.get('status') == 'archiviert':
+                    raise HTTPException(status_code=400, detail="Archivierte Mitglieder können nicht verknüpft werden")
+                # Prüfen ob Mitglied bereits einem anderen Benutzer zugeordnet ist
+                existing_user = await db.users.find_one({"member_id": data.member_id, "id": {"$ne": user_id}})
+                if existing_user:
+                    raise HTTPException(status_code=400, detail="Dieses Mitglied ist bereits einem anderen Benutzer zugeordnet")
+                update_data["member_id"] = data.member_id
+            else:
+                # Leerer String = Mitglied entfernen (nur für Vorstand erlaubt)
+                if new_role == 'mitglied':
+                    raise HTTPException(status_code=400, detail="Mitglied-Benutzer müssen mit einem Mitglied verknüpft sein")
+                update_data["member_id"] = None
+    else:
+        # Andere Rollen haben keine member_id
+        update_data["member_id"] = None
+    
+    if not update_data:
+        return UserResponse(
+            id=user_id,
+            username=user.get('username'),
+            role=user.get('role'),
+            member_id=user.get('member_id'),
+            created_at=user.get('created_at')
+        )
+    
+    await db.users.update_one({"id": user_id}, {"$set": update_data})
+    
+    # Aktualisierte Daten holen
+    updated_user = await db.users.find_one({"id": user_id}, {"_id": 0})
+    
+    # Audit Log
+    await log_audit(
+        action=AuditAction.UPDATE,
+        resource_type="user",
+        resource_id=user_id,
+        user_id=auth.get('sub'),
+        username=auth.get('username'),
+        details=f"Benutzer bearbeitet: {updated_user.get('username')}",
+        ip_address=ip_address
+    )
+    
+    return UserResponse(
+        id=user_id,
+        username=updated_user.get('username'),
+        role=updated_user.get('role'),
+        member_id=updated_user.get('member_id'),
+        created_at=updated_user.get('created_at')
+    )
+
 class ResetPasswordRequest(BaseModel):
     new_password: str
 
