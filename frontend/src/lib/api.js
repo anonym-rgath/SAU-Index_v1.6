@@ -38,6 +38,7 @@ export const api = {
   },
   statistics: {
     getByFiscalYear: (fiscalYear) => axios.get(`${API_URL}/statistics`, { params: { fiscal_year: fiscalYear } }),
+    getPersonal: (fiscalYear) => axios.get(`${API_URL}/statistics/personal`, { params: { fiscal_year: fiscalYear } }),
   },
   fiscalYears: {
     getAll: () => axios.get(`${API_URL}/fiscal-years`),
