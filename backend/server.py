@@ -1020,16 +1020,33 @@ class PersonalStatistics(BaseModel):
 
 @api_router.get("/statistics/personal", response_model=PersonalStatistics)
 async def get_personal_statistics(fiscal_year: str, auth=Depends(require_authenticated)):
-    """Persönliche Statistik für ein Mitglied"""
+    """Persönliche Statistik für ein Mitglied oder Vorstand"""
     member_id = auth.get('member_id')
+    role = auth.get('role')
+    username = auth.get('username', 'Unbekannt')
     
+    # Wenn kein Mitglied verknüpft ist (z.B. Vorstand ohne member_id)
     if not member_id:
-        raise HTTPException(status_code=400, detail="Kein Mitglied verknüpft")
+        return PersonalStatistics(
+            fiscal_year=fiscal_year,
+            member_name=username,
+            total_fines=0,
+            total_amount=0.0,
+            rank=None,
+            total_members=None
+        )
     
     # Mitglied-Daten holen
     member = await db.members.find_one({"id": member_id}, {"_id": 0})
     if not member:
-        raise HTTPException(status_code=404, detail="Mitglied nicht gefunden")
+        return PersonalStatistics(
+            fiscal_year=fiscal_year,
+            member_name=username,
+            total_fines=0,
+            total_amount=0.0,
+            rank=None,
+            total_members=None
+        )
     
     member_name = f"{member.get('firstName', '')} {member.get('lastName', '')}".strip() or member.get('name', 'Unbekannt')
     
