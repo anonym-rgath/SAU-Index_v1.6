@@ -142,53 +142,25 @@ const Dashboard = () => {
           </div>
 
           {/* Persönliche Statistiken */}
-          <div className="grid grid-cols-2 gap-4 mb-6">
-            <Card className="bg-gradient-to-br from-emerald-50 to-white border-emerald-100 rounded-2xl shadow-sm p-4">
-              <div className="flex items-start justify-between mb-3">
-                <div>
-                  <p className="text-xs text-stone-400 uppercase tracking-wider font-bold mb-0.5">
-                    Meine Strafen
-                  </p>
-                  <p className="text-xs text-stone-500">Gesamt</p>
-                </div>
-                <div className="bg-emerald-100 p-2 rounded-lg">
-                  <Wallet className="w-5 h-5 text-emerald-600" />
-                </div>
-              </div>
-              <div data-testid="my-total">
-                <p className="text-2xl font-bold text-stone-900 mb-0.5">
-                  {formatCurrency(personalStats?.total_amount || 0)}
+          <Card className="bg-gradient-to-br from-emerald-50 to-white border-emerald-100 rounded-2xl shadow-sm p-4 mb-6">
+            <div className="flex items-start justify-between mb-3">
+              <div>
+                <p className="text-xs text-stone-400 uppercase tracking-wider font-bold mb-0.5">
+                  Meine Strafen
                 </p>
-                <p className="text-sm text-stone-600">{personalStats?.total_fines || 0} Einträge</p>
+                <p className="text-xs text-stone-500">Gesamt</p>
               </div>
-            </Card>
-
-            <Card className="bg-gradient-to-br from-stone-50 to-white border-stone-200 rounded-2xl shadow-sm p-4">
-              <div className="flex items-start justify-between mb-3">
-                <div>
-                  <p className="text-xs text-stone-400 uppercase tracking-wider font-bold mb-0.5">
-                    Mein Rang
-                  </p>
-                  <p className="text-xs text-stone-500">im Ranking</p>
-                </div>
-                <div className="bg-stone-100 p-2 rounded-lg">
-                  <TrendingUp className="w-5 h-5 text-stone-500" />
-                </div>
+              <div className="bg-emerald-100 p-2 rounded-lg">
+                <Wallet className="w-5 h-5 text-emerald-600" />
               </div>
-              <div data-testid="my-rank">
-                {personalStats?.rank ? (
-                  <>
-                    <p className="text-2xl font-bold text-stone-900 mb-0.5">
-                      #{personalStats.rank}
-                    </p>
-                    <p className="text-sm text-stone-600">von {personalStats.total_members}</p>
-                  </>
-                ) : (
-                  <p className="text-stone-400 text-sm">Keine Strafen</p>
-                )}
-              </div>
-            </Card>
-          </div>
+            </div>
+            <div data-testid="my-total">
+              <p className="text-2xl font-bold text-stone-900 mb-0.5">
+                {formatCurrency(personalStats?.total_amount || 0)}
+              </p>
+              <p className="text-sm text-stone-600">{personalStats?.total_fines || 0} Einträge</p>
+            </div>
+          </Card>
 
           {/* Meine Strafen */}
           <Card className="bg-white rounded-2xl border border-stone-200 shadow-sm p-4">
