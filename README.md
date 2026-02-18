@@ -141,6 +141,7 @@ Die Rheinzelmänner Verwaltung ist eine Full-Stack-Webanwendung zur Verwaltung v
 **Legende:** CRUD = Erstellen, Lesen, Aktualisieren, Löschen
 
 ### Besonderheiten
+- **Mitglied** sieht nur eigene Strafen im Dashboard und in der Strafenübersicht
 - **Vorstand** sieht Statistiken ohne Mitgliedernamen (anonymisiert)
 - **Vorstand** hat keinen Zugriff auf Dashboard und Strafenübersicht
 - Nur **Admin** kann neue Benutzer anlegen und Passwörter zurücksetzen
