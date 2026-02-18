@@ -37,7 +37,18 @@ Entwicklung einer Full-Stack-Webanwendung für einen "Schützenzug" (später umb
 
 ## Completed Features
 
-### 2025-02-17 (Current Session)
+### 2025-02-18 (Current Session)
+- [x] **Rolle "Mitglied" implementiert**:
+  - Neue Rolle "mitglied" im Backend und Frontend
+  - Mitglieder-Benutzer werden mit einem Mitglied verknüpft (member_id)
+  - Persönliches Dashboard zeigt nur eigene Strafen und Rang
+  - Mitglieder sehen nur eigene Daten (Fines API gefiltert)
+  - Neuer API-Endpoint `/api/statistics/personal` für persönliche Statistiken
+  - Benutzerverwaltung zeigt verknüpftes Mitglied an
+  - Navigation für Mitglieder eingeschränkt (nur Dashboard und Strafenübersicht)
+- [x] **README.md überarbeitet**: Neue Struktur mit 10 Abschnitten, inkl. Berechtigungsmatrix mit 4 Rollen
+
+### 2025-02-17 (Previous Session)
 - [x] **Mobile-First UI Review abgeschlossen**: Alle Seiten auf mobile Responsiveness geprüft
   - Login-Seite: Responsive
   - Dashboard: Responsive, KPI-Cards in Grid-Layout
