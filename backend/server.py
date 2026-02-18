@@ -291,7 +291,11 @@ async def is_account_locked(username: str, ip_address: str) -> tuple[bool, int]:
     })
     
     if lockout:
-        remaining = (lockout["locked_until"] - datetime.now(timezone.utc)).total_seconds()
+        locked_until = lockout["locked_until"]
+        # Konvertiere zu aware datetime falls nötig
+        if locked_until.tzinfo is None:
+            locked_until = locked_until.replace(tzinfo=timezone.utc)
+        remaining = (locked_until - datetime.now(timezone.utc)).total_seconds()
         return True, int(remaining / 60) + 1
     return False, 0
 
