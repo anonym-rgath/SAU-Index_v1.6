@@ -92,6 +92,7 @@ class UserRole(str, Enum):
     admin = "admin"
     spiess = "spiess"
     vorstand = "vorstand"
+    mitglied = "mitglied"
 
 class MemberStatus(str, Enum):
     aktiv = "aktiv"
