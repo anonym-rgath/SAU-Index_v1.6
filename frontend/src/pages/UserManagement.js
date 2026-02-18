@@ -4,7 +4,7 @@ import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
-import { Users, Plus, Trash2, Shield, UserCog, Eye, KeyRound } from 'lucide-react';
+import { Users, Plus, Trash2, Shield, UserCog, Eye, KeyRound, User } from 'lucide-react';
 import { toast } from 'sonner';
 import {
   Dialog,
@@ -34,6 +34,7 @@ import {
 
 const UserManagement = () => {
   const [users, setUsers] = useState([]);
+  const [members, setMembers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [addDialogOpen, setAddDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -45,26 +46,46 @@ const UserManagement = () => {
     username: '',
     password: '',
     role: 'vorstand',
+    member_id: '',
   });
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
-    loadUsers();
+    loadData();
   }, []);
 
-  const loadUsers = async () => {
+  const loadData = async () => {
     setLoading(true);
     try {
-      const response = await api.users.getAll();
-      setUsers(response.data);
+      const [usersRes, membersRes] = await Promise.all([
+        api.users.getAll(),
+        api.members.getAll(),
+      ]);
+      setUsers(usersRes.data);
+      setMembers(membersRes.data);
     } catch (error) {
-      console.error('Fehler beim Laden der Benutzer:', error);
+      console.error('Fehler beim Laden:', error);
       if (error?.code !== 'ERR_CANCELED') {
-        toast.error('Fehler beim Laden der Benutzer');
+        toast.error('Fehler beim Laden der Daten');
       }
     } finally {
       setLoading(false);
     }
+  };
+
+  // Mitglieder ohne Benutzeraccount
+  const availableMembers = members.filter(m => {
+    // Nur nicht-archivierte Mitglieder
+    if (m.status === 'archiviert') return false;
+    // Prüfen ob bereits ein Benutzer für dieses Mitglied existiert
+    const hasUser = users.some(u => u.member_id === m.id);
+    return !hasUser;
+  });
+
+  const getMemberName = (memberId) => {
+    const member = members.find(m => m.id === memberId);
+    if (!member) return 'Unbekannt';
+    return `${member.firstName || ''} ${member.lastName || ''}`.trim() || member.name || 'Unbekannt';
   };
 
   const handleCreate = async (e) => {
@@ -80,13 +101,26 @@ const UserManagement = () => {
       return;
     }
 
+    if (formData.role === 'mitglied' && !formData.member_id) {
+      toast.error('Bitte ein Mitglied auswählen');
+      return;
+    }
+
     setSubmitting(true);
     try {
-      await api.users.create(formData);
+      const payload = {
+        username: formData.username,
+        password: formData.password,
+        role: formData.role,
+      };
+      if (formData.role === 'mitglied') {
+        payload.member_id = formData.member_id;
+      }
+      await api.users.create(payload);
       toast.success('Benutzer erstellt');
       setAddDialogOpen(false);
-      setFormData({ username: '', password: '', role: 'vorstand' });
-      loadUsers();
+      setFormData({ username: '', password: '', role: 'vorstand', member_id: '' });
+      loadData();
     } catch (error) {
       const message = error.response?.data?.detail || 'Fehler beim Erstellen';
       toast.error(message);
@@ -101,7 +135,7 @@ const UserManagement = () => {
       toast.success('Benutzer gelöscht');
       setDeleteDialogOpen(false);
       setDeletingUser(null);
-      loadUsers();
+      loadData();
     } catch (error) {
       const message = error.response?.data?.detail || 'Fehler beim Löschen';
       toast.error(message);
@@ -138,6 +172,7 @@ const UserManagement = () => {
       case 'admin': return 'Admin';
       case 'spiess': return 'Spieß';
       case 'vorstand': return 'Vorstand';
+      case 'mitglied': return 'Mitglied';
       default: return role;
     }
   };
@@ -147,6 +182,7 @@ const UserManagement = () => {
       case 'admin': return <Shield className="w-4 h-4 text-red-500" />;
       case 'spiess': return <UserCog className="w-4 h-4 text-emerald-600" />;
       case 'vorstand': return <Eye className="w-4 h-4 text-blue-500" />;
+      case 'mitglied': return <User className="w-4 h-4 text-stone-500" />;
       default: return null;
     }
   };
@@ -203,7 +239,14 @@ const UserManagement = () => {
                   </div>
                   <div>
                     <p className="font-semibold text-stone-900">{user.username}</p>
-                    <p className="text-sm text-stone-500">{getRoleLabel(user.role)}</p>
+                    <p className="text-sm text-stone-500">
+                      {getRoleLabel(user.role)}
+                      {user.member_id && (
+                        <span className="text-stone-400 ml-1">
+                          ({getMemberName(user.member_id)})
+                        </span>
+                      )}
+                    </p>
                   </div>
                 </div>
                 
@@ -280,7 +323,7 @@ const UserManagement = () => {
                 <Label htmlFor="role">Rolle</Label>
                 <Select
                   value={formData.role}
-                  onValueChange={(value) => setFormData({ ...formData, role: value })}
+                  onValueChange={(value) => setFormData({ ...formData, role: value, member_id: '' })}
                 >
                   <SelectTrigger data-testid="new-user-role" className="h-12 rounded-xl">
                     <SelectValue placeholder="Rolle wählen" />
@@ -289,9 +332,41 @@ const UserManagement = () => {
                     <SelectItem value="admin">Admin (Vollzugriff)</SelectItem>
                     <SelectItem value="spiess">Spieß (Vollzugriff außer Benutzerverwaltung)</SelectItem>
                     <SelectItem value="vorstand">Vorstand (eingeschränkt)</SelectItem>
+                    <SelectItem value="mitglied">Mitglied (nur eigene Daten)</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
+
+              {/* Mitglied-Auswahl nur für Rolle "mitglied" */}
+              {formData.role === 'mitglied' && (
+                <div className="space-y-2">
+                  <Label htmlFor="member">Verknüpftes Mitglied</Label>
+                  <Select
+                    value={formData.member_id}
+                    onValueChange={(value) => setFormData({ ...formData, member_id: value })}
+                  >
+                    <SelectTrigger data-testid="new-user-member" className="h-12 rounded-xl">
+                      <SelectValue placeholder="Mitglied wählen" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {availableMembers.length > 0 ? (
+                        availableMembers.map(member => (
+                          <SelectItem key={member.id} value={member.id}>
+                            {`${member.firstName || ''} ${member.lastName || ''}`.trim() || member.name}
+                          </SelectItem>
+                        ))
+                      ) : (
+                        <SelectItem value="" disabled>
+                          Keine verfügbaren Mitglieder
+                        </SelectItem>
+                      )}
+                    </SelectContent>
+                  </Select>
+                  <p className="text-xs text-stone-500">
+                    Nur Mitglieder ohne Benutzeraccount werden angezeigt
+                  </p>
+                </div>
+              )}
             </div>
             <DialogFooter>
               <Button
@@ -304,7 +379,7 @@ const UserManagement = () => {
               <Button
                 data-testid="submit-new-user"
                 type="submit"
-                disabled={submitting}
+                disabled={submitting || (formData.role === 'mitglied' && !formData.member_id)}
                 className="h-11 px-8 rounded-full bg-emerald-700 text-white font-medium hover:bg-emerald-800"
               >
                 {submitting ? 'Erstellen...' : 'Erstellen'}
