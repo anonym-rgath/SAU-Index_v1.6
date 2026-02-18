@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { api } from '../lib/api';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
-import { PiggyBank, Wallet, Plus, Trophy, Calendar, QrCode, User, TrendingUp } from 'lucide-react';
+import { PiggyBank, Wallet, Plus, Trophy, Calendar, QrCode, User } from 'lucide-react';
 import { toast } from 'sonner';
 import AddFineDialog from '../components/AddFineDialog';
 import QRScanDialog from '../components/QRScanDialog';
