@@ -115,7 +115,7 @@ const UserManagement = () => {
         password: formData.password,
         role: formData.role,
       };
-      if ((formData.role === 'mitglied' || formData.role === 'vorstand') && formData.member_id && formData.member_id !== 'none') {
+      if ((formData.role === 'mitglied' || formData.role === 'vorstand' || formData.role === 'spiess') && formData.member_id && formData.member_id !== 'none') {
         payload.member_id = formData.member_id;
       }
       await api.users.create(payload);
@@ -149,7 +149,7 @@ const UserManagement = () => {
       const payload = {
         username: formData.username,
         role: formData.role,
-        member_id: (formData.role === 'mitglied' || formData.role === 'vorstand') 
+        member_id: (formData.role === 'mitglied' || formData.role === 'vorstand' || formData.role === 'spiess') 
           ? (formData.member_id === 'none' ? '' : formData.member_id) 
           : null,
       };
@@ -292,7 +292,7 @@ const UserManagement = () => {
                     <p className="font-semibold text-stone-900">{user.username}</p>
                     <p className="text-sm text-stone-500">
                       {getRoleLabel(user.role)}
-                      {(user.role === 'mitglied' || user.role === 'vorstand') && user.member_id && (
+                      {(user.role === 'mitglied' || user.role === 'vorstand' || user.role === 'spiess') && user.member_id && (
                         <span className="text-stone-400 ml-1">
                           ({getMemberName(user.member_id)})
                         </span>
@@ -396,11 +396,11 @@ const UserManagement = () => {
                 </Select>
               </div>
 
-              {(formData.role === 'mitglied' || formData.role === 'vorstand') && (
+              {(formData.role === 'mitglied' || formData.role === 'vorstand' || formData.role === 'spiess') && (
                 <div className="space-y-2">
                   <Label htmlFor="member">
                     Verknüpftes Mitglied
-                    {formData.role === 'vorstand' && <span className="text-stone-400 font-normal"> (optional)</span>}
+                    {(formData.role === 'vorstand' || formData.role === 'spiess') && <span className="text-stone-400 font-normal"> (optional)</span>}
                   </Label>
                   <Select
                     value={formData.member_id || 'none'}
@@ -410,7 +410,7 @@ const UserManagement = () => {
                       <SelectValue placeholder="Mitglied wählen" />
                     </SelectTrigger>
                     <SelectContent>
-                      {formData.role === 'vorstand' && (
+                      {(formData.role === 'vorstand' || formData.role === 'spiess') && (
                         <SelectItem value="none">Kein Mitglied</SelectItem>
                       )}
                       {getAvailableMembers().map(member => (
@@ -423,7 +423,7 @@ const UserManagement = () => {
                   <p className="text-xs text-stone-500">
                     {formData.role === 'mitglied' 
                       ? 'Pflichtfeld: Mitglied muss verknüpft werden'
-                      : 'Optional: Vorstand kann eigene Strafen im Dashboard sehen'}
+                      : 'Optional: Eigene Strafen im Dashboard sehen'}
                   </p>
                 </div>
               )}
@@ -493,11 +493,11 @@ const UserManagement = () => {
                 </Select>
               </div>
 
-              {(formData.role === 'mitglied' || formData.role === 'vorstand') && (
+              {(formData.role === 'mitglied' || formData.role === 'vorstand' || formData.role === 'spiess') && (
                 <div className="space-y-2">
                   <Label htmlFor="edit-member">
                     Verknüpftes Mitglied
-                    {formData.role === 'vorstand' && <span className="text-stone-400 font-normal"> (optional)</span>}
+                    {(formData.role === 'vorstand' || formData.role === 'spiess') && <span className="text-stone-400 font-normal"> (optional)</span>}
                   </Label>
                   <Select
                     value={formData.member_id || 'none'}
@@ -507,7 +507,7 @@ const UserManagement = () => {
                       <SelectValue placeholder="Mitglied wählen" />
                     </SelectTrigger>
                     <SelectContent>
-                      {formData.role === 'vorstand' && (
+                      {(formData.role === 'vorstand' || formData.role === 'spiess') && (
                         <SelectItem value="none">Kein Mitglied</SelectItem>
                       )}
                       {getAvailableMembers(selectedUser?.id).map(member => (
