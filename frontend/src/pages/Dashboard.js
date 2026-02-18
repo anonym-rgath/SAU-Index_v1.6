@@ -68,15 +68,30 @@ const Dashboard = () => {
         setRecentFines(finesRes.data.slice(0, 10));
       } else {
         // Admin/Spiess: Vollständige Statistiken laden
-        const [statsRes, finesRes, membersRes] = await Promise.all([
+        const apiCalls = [
           api.statistics.getByFiscalYear(fiscalYear),
           api.fines.getAll(fiscalYear),
           api.members.getAll(),
-        ]);
+        ];
         
-        setStatistics(statsRes.data);
-        setRecentFines(finesRes.data.slice(0, 6));
-        setMembers(membersRes.data);
+        // Spieß mit verlinktem Mitglied: zusätzlich persönliche Stats laden
+        if (spiessHasLinkedMember) {
+          apiCalls.push(api.statistics.getPersonal(fiscalYear));
+        }
+        
+        const results = await Promise.all(apiCalls);
+        
+        setStatistics(results[0].data);
+        setRecentFines(results[1].data.slice(0, 6));
+        setMembers(results[2].data);
+        
+        if (spiessHasLinkedMember && results[3]) {
+          setPersonalStats(results[3].data);
+          // Eigene Strafen für Spieß laden
+          const allFines = results[1].data;
+          const ownFines = allFines.filter(f => f.member_id === user.member_id);
+          setMyFines(ownFines.slice(0, 5));
+        }
       }
     } catch (error) {
       console.error('Fehler beim Laden der Daten:', error);
