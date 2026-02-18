@@ -320,7 +320,7 @@ async def lock_account(username: str, ip_address: str):
         {"$set": {
             "username": username,
             "locked_until": locked_until,
-            "reason": f"Zu viele fehlgeschlagene Login-Versuche"
+            "reason": "Zu viele fehlgeschlagene Login-Versuche"
         }},
         upsert=True
     )
@@ -331,7 +331,7 @@ async def lock_account(username: str, ip_address: str):
         {"$set": {
             "ip_address": ip_address,
             "locked_until": locked_until,
-            "reason": f"Zu viele fehlgeschlagene Login-Versuche"
+            "reason": "Zu viele fehlgeschlagene Login-Versuche"
         }},
         upsert=True
     )
@@ -1026,7 +1026,7 @@ async def startup_db_client():
                 "created_at": datetime.now(timezone.utc).isoformat()
             }
             await db.users.insert_one(admin_user)
-            logger.info(f"Admin-Benutzer erstellt mit Passwort aus Umgebungsvariable")
+            logger.info("Admin-Benutzer erstellt mit Passwort aus Umgebungsvariable")
         else:
             logger.info("Admin-Benutzer existiert bereits")
         
