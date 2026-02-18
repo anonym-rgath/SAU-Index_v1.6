@@ -388,10 +388,10 @@ const UserManagement = () => {
                     <SelectValue placeholder="Rolle wählen" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="admin">Admin (Vollzugriff)</SelectItem>
-                    <SelectItem value="spiess">Spieß (Vollzugriff außer Benutzerverwaltung)</SelectItem>
-                    <SelectItem value="vorstand">Vorstand (eingeschränkt)</SelectItem>
-                    <SelectItem value="mitglied">Mitglied (nur eigene Daten)</SelectItem>
+                    <SelectItem value="admin">Admin</SelectItem>
+                    <SelectItem value="spiess">Spieß</SelectItem>
+                    <SelectItem value="vorstand">Vorstand</SelectItem>
+                    <SelectItem value="mitglied">Mitglied</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -485,10 +485,10 @@ const UserManagement = () => {
                     <SelectValue placeholder="Rolle wählen" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="admin">Admin (Vollzugriff)</SelectItem>
-                    <SelectItem value="spiess">Spieß (Vollzugriff außer Benutzerverwaltung)</SelectItem>
-                    <SelectItem value="vorstand">Vorstand (eingeschränkt)</SelectItem>
-                    <SelectItem value="mitglied">Mitglied (nur eigene Daten)</SelectItem>
+                    <SelectItem value="admin">Admin</SelectItem>
+                    <SelectItem value="spiess">Spieß</SelectItem>
+                    <SelectItem value="vorstand">Vorstand</SelectItem>
+                    <SelectItem value="mitglied">Mitglied</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
