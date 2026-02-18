@@ -10,20 +10,23 @@ import { formatCurrency, formatDate } from '../lib/utils';
 import { useAuth } from '../contexts/AuthContext';
 
 const Dashboard = () => {
-  const { canManageFines, isMitglied, isVorstand, user } = useAuth();
+  const { canManageFines, isMitglied, isVorstand, isSpiess, user } = useAuth();
   const [fiscalYear, setFiscalYear] = useState('');
   const [fiscalYears, setFiscalYears] = useState([]);
   const [statistics, setStatistics] = useState(null);
   const [personalStats, setPersonalStats] = useState(null);
   const [recentFines, setRecentFines] = useState([]);
+  const [myFines, setMyFines] = useState([]);
   const [members, setMembers] = useState([]);
   const [addDialogOpen, setAddDialogOpen] = useState(false);
   const [scanDialogOpen, setScanDialogOpen] = useState(false);
   const [selectedMemberId, setSelectedMemberId] = useState(null);
   const [loading, setLoading] = useState(true);
   
-  // Mitglied oder Vorstand mit member_id zeigt persönliches Dashboard
+  // Mitglied oder Vorstand zeigt nur persönliches Dashboard
   const showPersonalDashboard = isMitglied || isVorstand;
+  // Spieß mit member_id zeigt zusätzlich seine eigenen Strafen
+  const showMyFines = isSpiess && user?.member_id;
 
   useEffect(() => {
     loadInitialData();
