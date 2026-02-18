@@ -129,11 +129,12 @@ Entwicklung einer Full-Stack-Webanwendung für einen "Schützenzug" (später umb
 
 ## Backlog
 
-### P1 - Future Tasks
+### P2 - Future Tasks
 - [ ] **Automatisches Datenbank-Backup** - Wöchentliches Backup der MongoDB
 - [ ] Daten-Export (CSV/PDF)
 
-### P2 - Potential Improvements
+### P3 - Potential Improvements
+- [ ] Backend-Refactoring: `server.py` in Module aufteilen (APIRouter für users, fines, members)
 - [ ] Komponentenrefactoring (Dashboard.js, Members.js aufteilen)
 - [ ] Offline-Unterstützung / PWA
 
