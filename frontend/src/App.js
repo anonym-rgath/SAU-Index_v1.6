@@ -15,15 +15,30 @@ import AuditLogs from './pages/AuditLogs';
 
 // Redirect based on role
 const RoleBasedRedirect = () => {
-  const { isVorstand } = useAuth();
-  return <Navigate to={isVorstand ? "/members" : "/dashboard"} replace />;
+  const { isVorstand, isMitglied } = useAuth();
+  if (isVorstand) {
+    return <Navigate to="/members" replace />;
+  }
+  if (isMitglied) {
+    return <Navigate to="/dashboard" replace />;
+  }
+  return <Navigate to="/dashboard" replace />;
 };
 
-// Protect routes that vorstand shouldn't access
-const AdminOnlyRoute = ({ children }) => {
+// Protect routes that vorstand shouldn't access (but mitglied can)
+const DashboardRoute = ({ children }) => {
   const { isVorstand } = useAuth();
   if (isVorstand) {
     return <Navigate to="/members" replace />;
+  }
+  return children;
+};
+
+// Routes that mitglied cannot access
+const NoMitgliedRoute = ({ children }) => {
+  const { isMitglied } = useAuth();
+  if (isMitglied) {
+    return <Navigate to="/dashboard" replace />;
   }
   return children;
 };
@@ -53,11 +68,11 @@ function App() {
             }
           >
             <Route index element={<RoleBasedRedirect />} />
-            <Route path="dashboard" element={<AdminOnlyRoute><Dashboard /></AdminOnlyRoute>} />
-            <Route path="members" element={<Members />} />
-            <Route path="fine-types" element={<FineTypes />} />
-            <Route path="fines" element={<AdminOnlyRoute><Fines /></AdminOnlyRoute>} />
-            <Route path="statistics" element={<Statistics />} />
+            <Route path="dashboard" element={<DashboardRoute><Dashboard /></DashboardRoute>} />
+            <Route path="members" element={<NoMitgliedRoute><Members /></NoMitgliedRoute>} />
+            <Route path="fine-types" element={<NoMitgliedRoute><FineTypes /></NoMitgliedRoute>} />
+            <Route path="fines" element={<DashboardRoute><Fines /></DashboardRoute>} />
+            <Route path="statistics" element={<NoMitgliedRoute><Statistics /></NoMitgliedRoute>} />
             <Route path="users" element={<AdminRoute><UserManagement /></AdminRoute>} />
             <Route path="audit" element={<AdminRoute><AuditLogs /></AdminRoute>} />
           </Route>
