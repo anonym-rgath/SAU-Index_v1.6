@@ -289,6 +289,7 @@ const AuditLogs = () => {
       <p className="text-xs text-stone-400 text-center">
         Zeigt die letzten 500 Einträge. Ältere Einträge werden automatisch archiviert.
       </p>
+      </div>
     </div>
   );
 };
