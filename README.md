@@ -185,6 +185,9 @@ Die Rheinzelmänner Verwaltung ist eine Full-Stack-Webanwendung zur Verwaltung v
 
 ### Benutzerverwaltung (nur Admin)
 - Neue Benutzer anlegen (Benutzername, Passwort, Rolle)
+- Spieß und Vorstand können optional einem Mitglied zugeordnet werden
+- Mitglied muss immer einem Mitglied zugeordnet werden
+- Benutzer bearbeiten (Rolle, Mitglied-Verknüpfung ändern)
 - Benutzer löschen
 - Passwörter zurücksetzen
 
