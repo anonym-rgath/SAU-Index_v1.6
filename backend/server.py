@@ -774,10 +774,17 @@ async def delete_fine_type(fine_type_id: str, auth=Depends(require_any_role)):
     return {"message": "Strafenart gelöscht"}
 
 @api_router.get("/fines", response_model=List[Fine])
-async def get_fines(fiscal_year: Optional[str] = None, auth=Depends(verify_token)):
+async def get_fines(fiscal_year: Optional[str] = None, auth=Depends(require_authenticated)):
     query = {}
     if fiscal_year:
         query["fiscal_year"] = fiscal_year
+    
+    # Mitglieder sehen nur eigene Strafen
+    if auth.get('role') == 'mitglied':
+        member_id = auth.get('member_id')
+        if not member_id:
+            return []  # Kein verknüpftes Mitglied
+        query["member_id"] = member_id
     
     fines = await db.fines.find(query, {"_id": 0}).sort("date", -1).to_list(1000)
     for fine in fines:
