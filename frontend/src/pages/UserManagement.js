@@ -4,7 +4,7 @@ import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
-import { Users, Plus, Trash2, Shield, UserCog, Eye, KeyRound, User } from 'lucide-react';
+import { Users, Plus, Trash2, Shield, UserCog, Eye, KeyRound, User, Pencil } from 'lucide-react';
 import { toast } from 'sonner';
 import {
   Dialog,
@@ -37,10 +37,10 @@ const UserManagement = () => {
   const [members, setMembers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [addDialogOpen, setAddDialogOpen] = useState(false);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [resetPasswordDialogOpen, setResetPasswordDialogOpen] = useState(false);
-  const [deletingUser, setDeletingUser] = useState(null);
-  const [resetPasswordUser, setResetPasswordUser] = useState(null);
+  const [selectedUser, setSelectedUser] = useState(null);
   const [newPassword, setNewPassword] = useState('');
   const [formData, setFormData] = useState({
     username: '',
@@ -73,14 +73,16 @@ const UserManagement = () => {
     }
   };
 
-  // Mitglieder ohne Benutzeraccount
-  const availableMembers = members.filter(m => {
-    // Nur nicht-archivierte Mitglieder
-    if (m.status === 'archiviert') return false;
-    // Prüfen ob bereits ein Benutzer für dieses Mitglied existiert
-    const hasUser = users.some(u => u.member_id === m.id);
-    return !hasUser;
-  });
+  // Mitglieder ohne Benutzeraccount (oder mit aktuellem Benutzer)
+  const getAvailableMembers = (currentUserId = null) => {
+    return members.filter(m => {
+      if (m.status === 'archiviert') return false;
+      const existingUser = users.find(u => u.member_id === m.id);
+      if (!existingUser) return true;
+      if (currentUserId && existingUser.id === currentUserId) return true;
+      return false;
+    });
+  };
 
   const getMemberName = (memberId) => {
     const member = members.find(m => m.id === memberId);
@@ -113,7 +115,7 @@ const UserManagement = () => {
         password: formData.password,
         role: formData.role,
       };
-      if (formData.role === 'mitglied') {
+      if ((formData.role === 'mitglied' || formData.role === 'vorstand') && formData.member_id && formData.member_id !== 'none') {
         payload.member_id = formData.member_id;
       }
       await api.users.create(payload);
@@ -129,12 +131,47 @@ const UserManagement = () => {
     }
   };
 
+  const handleEdit = async (e) => {
+    e.preventDefault();
+    
+    if (!formData.username) {
+      toast.error('Benutzername darf nicht leer sein');
+      return;
+    }
+
+    if (formData.role === 'mitglied' && (!formData.member_id || formData.member_id === 'none')) {
+      toast.error('Mitglied-Benutzer müssen mit einem Mitglied verknüpft sein');
+      return;
+    }
+
+    setSubmitting(true);
+    try {
+      const payload = {
+        username: formData.username,
+        role: formData.role,
+        member_id: (formData.role === 'mitglied' || formData.role === 'vorstand') 
+          ? (formData.member_id === 'none' ? '' : formData.member_id) 
+          : null,
+      };
+      await api.users.update(selectedUser.id, payload);
+      toast.success('Benutzer aktualisiert');
+      setEditDialogOpen(false);
+      setSelectedUser(null);
+      loadData();
+    } catch (error) {
+      const message = error.response?.data?.detail || 'Fehler beim Bearbeiten';
+      toast.error(message);
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   const handleDelete = async () => {
     try {
-      await api.users.delete(deletingUser.id);
+      await api.users.delete(selectedUser.id);
       toast.success('Benutzer gelöscht');
       setDeleteDialogOpen(false);
-      setDeletingUser(null);
+      setSelectedUser(null);
       loadData();
     } catch (error) {
       const message = error.response?.data?.detail || 'Fehler beim Löschen';
@@ -154,10 +191,10 @@ const UserManagement = () => {
 
     setSubmitting(true);
     try {
-      await api.users.resetPassword(resetPasswordUser.id, { new_password: newPassword });
-      toast.success(`Passwort für ${resetPasswordUser.username} zurückgesetzt`);
+      await api.users.resetPassword(selectedUser.id, { new_password: newPassword });
+      toast.success(`Passwort für ${selectedUser.username} zurückgesetzt`);
       setResetPasswordDialogOpen(false);
-      setResetPasswordUser(null);
+      setSelectedUser(null);
       setNewPassword('');
     } catch (error) {
       const message = error.response?.data?.detail || 'Fehler beim Zurücksetzen';
@@ -165,6 +202,17 @@ const UserManagement = () => {
     } finally {
       setSubmitting(false);
     }
+  };
+
+  const openEditDialog = (user) => {
+    setSelectedUser(user);
+    setFormData({
+      username: user.username,
+      password: '',
+      role: user.role,
+      member_id: user.member_id || '',
+    });
+    setEditDialogOpen(true);
   };
 
   const getRoleLabel = (role) => {
@@ -210,7 +258,10 @@ const UserManagement = () => {
           
           <Button
             data-testid="add-user-button"
-            onClick={() => setAddDialogOpen(true)}
+            onClick={() => {
+              setFormData({ username: '', password: '', role: 'vorstand', member_id: '' });
+              setAddDialogOpen(true);
+            }}
             className="h-10 px-4 rounded-full bg-emerald-700 text-white font-medium hover:bg-emerald-800 shadow-sm"
           >
             <Plus className="w-4 h-4 mr-2" />
@@ -241,7 +292,7 @@ const UserManagement = () => {
                     <p className="font-semibold text-stone-900">{user.username}</p>
                     <p className="text-sm text-stone-500">
                       {getRoleLabel(user.role)}
-                      {user.member_id && (
+                      {(user.role === 'mitglied' || user.role === 'vorstand') && user.member_id && (
                         <span className="text-stone-400 ml-1">
                           ({getMemberName(user.member_id)})
                         </span>
@@ -252,9 +303,17 @@ const UserManagement = () => {
                 
                 <div className="flex gap-2">
                   <Button
+                    data-testid={`edit-user-${user.id}`}
+                    onClick={() => openEditDialog(user)}
+                    className="h-10 w-10 p-0 rounded-full bg-blue-50 border border-blue-200 text-blue-600 hover:bg-blue-100 transition-colors"
+                    title="Benutzer bearbeiten"
+                  >
+                    <Pencil className="w-4 h-4" />
+                  </Button>
+                  <Button
                     data-testid={`reset-password-${user.id}`}
                     onClick={() => {
-                      setResetPasswordUser(user);
+                      setSelectedUser(user);
                       setNewPassword('');
                       setResetPasswordDialogOpen(true);
                     }}
@@ -266,7 +325,7 @@ const UserManagement = () => {
                   <Button
                     data-testid={`delete-user-${user.id}`}
                     onClick={() => {
-                      setDeletingUser(user);
+                      setSelectedUser(user);
                       setDeleteDialogOpen(true);
                     }}
                     className="h-10 w-10 p-0 rounded-full bg-red-50 border border-red-200 text-red-600 hover:bg-red-100 transition-colors"
@@ -299,7 +358,7 @@ const UserManagement = () => {
                   id="username"
                   value={formData.username}
                   onChange={(e) => setFormData({ ...formData, username: e.target.value })}
-                  placeholder="z.B. Max Mustermann"
+                  placeholder="z.B. max.mustermann"
                   className="h-12 rounded-xl"
                   required
                 />
@@ -337,7 +396,6 @@ const UserManagement = () => {
                 </Select>
               </div>
 
-              {/* Mitglied-Auswahl für Rolle "mitglied" (Pflicht) und "vorstand" (optional) */}
               {(formData.role === 'mitglied' || formData.role === 'vorstand') && (
                 <div className="space-y-2">
                   <Label htmlFor="member">
@@ -355,22 +413,16 @@ const UserManagement = () => {
                       {formData.role === 'vorstand' && (
                         <SelectItem value="none">Kein Mitglied</SelectItem>
                       )}
-                      {availableMembers.length > 0 ? (
-                        availableMembers.map(member => (
-                          <SelectItem key={member.id} value={member.id}>
-                            {`${member.firstName || ''} ${member.lastName || ''}`.trim() || member.name}
-                          </SelectItem>
-                        ))
-                      ) : (
-                        <SelectItem value="no-members" disabled>
-                          Keine verfügbaren Mitglieder
+                      {getAvailableMembers().map(member => (
+                        <SelectItem key={member.id} value={member.id}>
+                          {`${member.firstName || ''} ${member.lastName || ''}`.trim() || member.name}
                         </SelectItem>
-                      )}
+                      ))}
                     </SelectContent>
                   </Select>
                   <p className="text-xs text-stone-500">
                     {formData.role === 'mitglied' 
-                      ? 'Nur Mitglieder ohne Benutzeraccount werden angezeigt'
+                      ? 'Pflichtfeld: Mitglied muss verknüpft werden'
                       : 'Optional: Vorstand kann eigene Strafen im Dashboard sehen'}
                   </p>
                 </div>
@@ -397,13 +449,105 @@ const UserManagement = () => {
         </DialogContent>
       </Dialog>
 
+      {/* Benutzer bearbeiten Dialog */}
+      <Dialog open={editDialogOpen} onOpenChange={(open) => {
+        setEditDialogOpen(open);
+        if (!open) setSelectedUser(null);
+      }}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Benutzer bearbeiten</DialogTitle>
+            <DialogDescription>
+              Bearbeiten Sie das Benutzerkonto
+            </DialogDescription>
+          </DialogHeader>
+          <form onSubmit={handleEdit}>
+            <div className="space-y-4 py-4">
+              <div className="space-y-2">
+                <Label htmlFor="edit-username">Benutzername</Label>
+                <Input
+                  data-testid="edit-user-username"
+                  id="edit-username"
+                  value={formData.username}
+                  onChange={(e) => setFormData({ ...formData, username: e.target.value })}
+                  className="h-12 rounded-xl"
+                  required
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="edit-role">Rolle</Label>
+                <Select
+                  value={formData.role}
+                  onValueChange={(value) => setFormData({ ...formData, role: value })}
+                >
+                  <SelectTrigger data-testid="edit-user-role" className="h-12 rounded-xl">
+                    <SelectValue placeholder="Rolle wählen" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="admin">Admin (Vollzugriff)</SelectItem>
+                    <SelectItem value="spiess">Spieß (Vollzugriff außer Benutzerverwaltung)</SelectItem>
+                    <SelectItem value="vorstand">Vorstand (eingeschränkt)</SelectItem>
+                    <SelectItem value="mitglied">Mitglied (nur eigene Daten)</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {(formData.role === 'mitglied' || formData.role === 'vorstand') && (
+                <div className="space-y-2">
+                  <Label htmlFor="edit-member">
+                    Verknüpftes Mitglied
+                    {formData.role === 'vorstand' && <span className="text-stone-400 font-normal"> (optional)</span>}
+                  </Label>
+                  <Select
+                    value={formData.member_id || 'none'}
+                    onValueChange={(value) => setFormData({ ...formData, member_id: value === 'none' ? '' : value })}
+                  >
+                    <SelectTrigger data-testid="edit-user-member" className="h-12 rounded-xl">
+                      <SelectValue placeholder="Mitglied wählen" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {formData.role === 'vorstand' && (
+                        <SelectItem value="none">Kein Mitglied</SelectItem>
+                      )}
+                      {getAvailableMembers(selectedUser?.id).map(member => (
+                        <SelectItem key={member.id} value={member.id}>
+                          {`${member.firstName || ''} ${member.lastName || ''}`.trim() || member.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
+            </div>
+            <DialogFooter>
+              <Button
+                type="button"
+                onClick={() => setEditDialogOpen(false)}
+                className="h-11 px-6 rounded-full bg-white border border-stone-200 text-stone-700 hover:bg-stone-50"
+              >
+                Abbrechen
+              </Button>
+              <Button
+                data-testid="submit-edit-user"
+                type="submit"
+                disabled={submitting || (formData.role === 'mitglied' && (!formData.member_id || formData.member_id === 'none'))}
+                className="h-11 px-8 rounded-full bg-emerald-700 text-white font-medium hover:bg-emerald-800"
+              >
+                {submitting ? 'Speichern...' : 'Speichern'}
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+
       {/* Löschen Bestätigung */}
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Benutzer löschen?</AlertDialogTitle>
             <AlertDialogDescription>
-              Möchten Sie den Benutzer "{deletingUser?.username}" wirklich löschen? 
+              Möchten Sie den Benutzer "{selectedUser?.username}" wirklich löschen? 
               Diese Aktion kann nicht rückgängig gemacht werden.
             </AlertDialogDescription>
           </AlertDialogHeader>
@@ -425,7 +569,7 @@ const UserManagement = () => {
         setResetPasswordDialogOpen(open);
         if (!open) {
           setNewPassword('');
-          setResetPasswordUser(null);
+          setSelectedUser(null);
         }
       }}>
         <DialogContent className="sm:max-w-md">
@@ -435,7 +579,7 @@ const UserManagement = () => {
               Passwort zurücksetzen
             </DialogTitle>
             <DialogDescription>
-              Setzen Sie ein neues Passwort für <strong>{resetPasswordUser?.username}</strong>
+              Setzen Sie ein neues Passwort für <strong>{selectedUser?.username}</strong>
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
