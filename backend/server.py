@@ -632,9 +632,9 @@ async def update_user(request: Request, user_id: str, data: UserUpdateRequest, a
                 raise HTTPException(status_code=400, detail="Der letzte Admin kann nicht geändert werden")
         update_data["role"] = data.role.value
     
-    # Member_id ändern (nur für Mitglied und Vorstand)
+    # Member_id ändern (für Mitglied, Vorstand und Spieß)
     new_role = data.role.value if data.role else user.get('role')
-    if new_role in ['mitglied', 'vorstand']:
+    if new_role in ['mitglied', 'vorstand', 'spiess']:
         if data.member_id is not None:
             if data.member_id:  # Nicht leer
                 # Prüfen ob Mitglied existiert
