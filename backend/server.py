@@ -260,6 +260,10 @@ def require_any_role(payload: dict = Depends(verify_token)):
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Keine Berechtigung")
     return payload
 
+def require_authenticated(payload: dict = Depends(verify_token)):
+    """Erlaubt Zugriff für alle authentifizierten Benutzer (inkl. Mitglied)"""
+    return payload
+
 # Brute-Force-Schutz Hilfsfunktionen
 async def get_failed_login_attempts(username: str, ip_address: str) -> int:
     """Zählt fehlgeschlagene Login-Versuche im Zeitfenster"""
