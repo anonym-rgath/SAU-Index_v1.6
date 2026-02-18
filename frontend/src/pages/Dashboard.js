@@ -10,7 +10,7 @@ import { formatCurrency, formatDate } from '../lib/utils';
 import { useAuth } from '../contexts/AuthContext';
 
 const Dashboard = () => {
-  const { canManageFines, isMitglied, user } = useAuth();
+  const { canManageFines, isMitglied, isVorstand, user } = useAuth();
   const [fiscalYear, setFiscalYear] = useState('');
   const [fiscalYears, setFiscalYears] = useState([]);
   const [statistics, setStatistics] = useState(null);
@@ -21,6 +21,9 @@ const Dashboard = () => {
   const [scanDialogOpen, setScanDialogOpen] = useState(false);
   const [selectedMemberId, setSelectedMemberId] = useState(null);
   const [loading, setLoading] = useState(true);
+  
+  // Vorstand mit member_id zeigt persönliches Dashboard
+  const showPersonalDashboard = isMitglied || (isVorstand && user?.member_id);
 
   useEffect(() => {
     loadInitialData();
