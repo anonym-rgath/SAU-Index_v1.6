@@ -18,12 +18,15 @@ const TopBar = () => {
     navigate('/login');
   };
 
+  // Vorstand mit Mitglied-Verknüpfung verhält sich wie Mitglied für Dashboard/Strafenübersicht
+  const vorstandWithMember = isVorstand && user?.member_id;
+
   // Navigation basierend auf Rolle
   const allNavItems = [
-    { path: '/dashboard', icon: LayoutDashboard, label: 'Dashboard', hideForVorstand: true, showForMitglied: true },
+    { path: '/dashboard', icon: LayoutDashboard, label: 'Dashboard', hideForVorstandWithoutMember: true, showForMitglied: true },
     { path: '/members', icon: Users, label: 'Mitglieder', hideForMitglied: true },
-    { path: '/statistics', icon: BarChart3, label: 'Statistiken', hideForMitglied: true },
-    { path: '/fines', icon: Receipt, label: 'Strafenübersicht', hideForVorstand: true, showForMitglied: true },
+    { path: '/statistics', icon: BarChart3, label: 'Statistiken', hideForMitglied: true, hideForVorstandWithMember: true },
+    { path: '/fines', icon: Receipt, label: 'Strafenübersicht', hideForVorstandWithoutMember: true, showForMitglied: true },
     { path: '/fine-types', icon: Tag, label: 'Strafenarten', hideForMitglied: true },
     { path: '/users', icon: UserCog, label: 'Benutzerverwaltung', adminOnly: true },
     { path: '/audit', icon: Shield, label: 'Audit-Log', adminOnly: true },
@@ -31,7 +34,10 @@ const TopBar = () => {
   
   const navItems = allNavItems.filter(item => {
     if (item.adminOnly && !isAdmin) return false;
-    if (item.hideForVorstand && isVorstand) return false;
+    // Vorstand ohne Mitglied: kein Dashboard/Strafenübersicht
+    if (item.hideForVorstandWithoutMember && isVorstand && !user?.member_id) return false;
+    // Vorstand mit Mitglied: keine Statistiken (sieht eigenes Dashboard stattdessen)
+    if (item.hideForVorstandWithMember && vorstandWithMember) return false;
     if (item.hideForMitglied && isMitglied) return false;
     if (isMitglied && !item.showForMitglied) return false;
     return true;
