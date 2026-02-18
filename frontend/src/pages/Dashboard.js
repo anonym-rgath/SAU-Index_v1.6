@@ -25,8 +25,8 @@ const Dashboard = () => {
   
   // Mitglied oder Vorstand zeigt nur persönliches Dashboard
   const showPersonalDashboard = isMitglied || isVorstand;
-  // Spieß mit member_id zeigt zusätzlich seine eigenen Strafen
-  const showMyFines = isSpiess && user?.member_id;
+  // Spieß mit member_id zeigt zusätzlich seine eigenen Strafen im Admin-Dashboard
+  const spiessHasLinkedMember = isSpiess && user?.member_id;
 
   useEffect(() => {
     loadInitialData();
