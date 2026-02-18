@@ -131,14 +131,12 @@ Die Rheinzelmänner Verwaltung ist eine Full-Stack-Webanwendung zur Verwaltung v
 | Funktion | Admin | Spieß | Vorstand |
 |----------|:-----:|:-----:|:--------:|
 | **Dashboard** | Vollzugriff | Vollzugriff | - |
-| **Mitglieder** | CRUD | CRUD | CRUD |
+| **Mitglieder** | Vollzugriff | Vollzugriff | Vollzugriff |
 | **Statistiken** | Vollzugriff | Vollzugriff | Nur Lesen (anonymisiert) |
-| **Strafen** | CRUD | CRUD | - |
-| **Strafenarten** | CRUD | CRUD | CRUD |
+| **Strafen** | Vollzugriff | Vollzugriff | - |
+| **Strafenarten** | Vollzugriff | Vollzugriff | Vollzugriff |
 | **Benutzerverwaltung** | Vollzugriff | - | - |
-| **Audit-Log** | Nur Lesen | - | - |
-
-**Legende:** CRUD = Erstellen, Lesen, Aktualisieren, Löschen
+| **Audit-Log** | Vollzugriff | - | - |
 
 ### Besonderheiten
 - **Vorstand** sieht Statistiken ohne Mitgliedernamen (anonymisiert)
