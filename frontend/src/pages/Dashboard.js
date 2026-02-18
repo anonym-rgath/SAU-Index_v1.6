@@ -22,8 +22,8 @@ const Dashboard = () => {
   const [selectedMemberId, setSelectedMemberId] = useState(null);
   const [loading, setLoading] = useState(true);
   
-  // Vorstand mit member_id zeigt persönliches Dashboard
-  const showPersonalDashboard = isMitglied || (isVorstand && user?.member_id);
+  // Mitglied oder Vorstand mit member_id zeigt persönliches Dashboard
+  const showPersonalDashboard = isMitglied || isVorstand;
 
   useEffect(() => {
     loadInitialData();
