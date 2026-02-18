@@ -345,15 +345,15 @@ const UserManagement = () => {
                     {formData.role === 'vorstand' && <span className="text-stone-400 font-normal"> (optional)</span>}
                   </Label>
                   <Select
-                    value={formData.member_id}
-                    onValueChange={(value) => setFormData({ ...formData, member_id: value })}
+                    value={formData.member_id || 'none'}
+                    onValueChange={(value) => setFormData({ ...formData, member_id: value === 'none' ? '' : value })}
                   >
                     <SelectTrigger data-testid="new-user-member" className="h-12 rounded-xl">
                       <SelectValue placeholder="Mitglied wählen" />
                     </SelectTrigger>
                     <SelectContent>
                       {formData.role === 'vorstand' && (
-                        <SelectItem value="">Kein Mitglied</SelectItem>
+                        <SelectItem value="none">Kein Mitglied</SelectItem>
                       )}
                       {availableMembers.length > 0 ? (
                         availableMembers.map(member => (
@@ -362,7 +362,7 @@ const UserManagement = () => {
                           </SelectItem>
                         ))
                       ) : (
-                        <SelectItem value="" disabled>
+                        <SelectItem value="no-members" disabled>
                           Keine verfügbaren Mitglieder
                         </SelectItem>
                       )}
