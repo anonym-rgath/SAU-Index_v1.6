@@ -2,253 +2,337 @@
 
 Ein modernes Verwaltungssystem für die Rheinzelmänner zur Erfassung und Verwaltung von Strafen und Mitglieder-Rankings.
 
-## Quick Start (Raspberry Pi 4)
+---
 
-```bash
-# 1. Repository klonen
-git clone https://github.com/DEIN_USERNAME/rheinzelmaenner.git
-cd rheinzelmaenner
+## 1. Überblick
 
-# 2. Scripts ausführbar machen und starten
-chmod +x start.sh stop.sh logs.sh
-./start.sh
-```
+Die Rheinzelmänner Verwaltung ist eine Full-Stack-Webanwendung zur Verwaltung von Vereinsmitgliedern und deren Strafen. Das System ermöglicht:
 
-Die App ist dann erreichbar unter:
-- **URL:** http://RASPBERRY_PI_IP
-- **Login:** admin / admin123
-
-> **Wichtig:** Beim ersten Start wird automatisch ein Admin-Benutzer erstellt. Das Passwort kann über die `.env` Datei angepasst werden.
-
-Detaillierte Anleitung: [DOCKER_DEPLOYMENT.md](DOCKER_DEPLOYMENT.md)
+- Erfassung und Verwaltung von Mitgliedern mit Status (Aktiv/Passiv/Archiviert)
+- Definition eigener Strafenarten mit festen oder variablen Beträgen
+- Zuweisung von Strafen an Mitglieder (auch rückwirkend)
+- Automatische Ranking-Berechnung nach Geschäftsjahr
+- QR-Code-basierte Mitglieder-Identifikation
+- Rollenbasierte Zugriffskontrolle für Admin, Spieß und Vorstand
 
 ---
 
-## Features
-
-### Authentifizierung & Sicherheit
-- JWT-Token basierte Session-Verwaltung
-- Passwörter mit bcrypt gehasht
-- Passwort-Änderung für angemeldete Benutzer
-- Rate Limiting (max. 5 Login-Versuche/Minute)
-- Audit-Logging aller Aktionen
-- Rollenbasierte Zugriffskontrolle
-
-### Rollen & Berechtigungen
-
-| Rolle | Dashboard | Mitglieder | Statistiken | Strafen | Strafenarten | Benutzerverwaltung |
-|-------|-----------|------------|-------------|---------|--------------|-------------------|
-| **admin** | Vollzugriff | Vollzugriff | Vollzugriff | Vollzugriff | Vollzugriff | Vollzugriff |
-| **spiess** | Vollzugriff | Vollzugriff | Vollzugriff | Vollzugriff | Vollzugriff | - |
-| **vorstand** | - | Vollzugriff | Nur Lesen (anonym) | - | Vollzugriff | - |
-
-### Benutzerverwaltung (nur Admin)
-- Neue Benutzer anlegen mit Benutzername, Passwort und Rolle
-- Benutzer löschen (außer sich selbst und letzter Admin)
-- Passwörter zurücksetzen für alle Benutzer
-
-### Dashboard
-- Übersichtliches Ranking aller Mitglieder nach Strafensumme
-- KPI-Anzeige: "Sau" (höchster Betrag) und "Lämmchen" (niedrigster Betrag)
-- Geschäftsjahr-Auswahl (01.08. - 31.07.)
-- QR-Code Scanner zur schnellen Mitglieder-Identifikation
-
-### QR-Code System
-- Jedes Mitglied hat einen eindeutigen QR-Code
-- QR-Codes können als PNG heruntergeladen werden
-- Kamera-basierter Scanner mit manuellem Fallback
-
-### Mitgliederverwaltung
-- Mitglieder erstellen, bearbeiten und löschen
-- Status: Aktiv / Passiv / Archiviert
-- Archivierte Mitglieder werden aus Rankings ausgeschlossen
-- Sortierbare Liste (Name, Status, Erstellungsdatum)
-
-### Strafenarten-Verwaltung
-- Eigene Strafenarten definieren (z.B. "Zu spät", "Fehltermin")
-- Feste oder variable Beträge pro Strafenart
-
-### Strafen-Management
-- Strafen für Mitglieder erfassen
-- Rückwirkende Erfassung mit optionalem Datum (nur auf Strafenübersicht-Seite)
-- Automatische Zuordnung zum korrekten Geschäftsjahr
-- Bearbeiten und Löschen von Strafen
-
-### Statistiken
-- Detaillierte Auswertungen nach Geschäftsjahr
-- Balkendiagramm: Top 10 Mitglieder
-- Tortendiagramm: Strafen nach Art
-- Verlaufsdiagramm: Monatliche Entwicklung
-
----
-
-## Technologie-Stack
-
-### Backend
-- **FastAPI** - Python Web Framework
-- **MongoDB 4.4** - NoSQL Datenbank (kompatibel mit Raspberry Pi 4)
-- **Motor** - Async MongoDB Driver
-- **JWT** - Token-basierte Authentifizierung
-- **bcrypt** - Passwort-Hashing
-- **slowapi** - Rate Limiting
-
-### Frontend
-- **React 19** - UI Framework
-- **Tailwind CSS** - Utility-First CSS
-- **Shadcn/UI** - UI Component Library
-- **Recharts** - Diagramme
-- **html5-qrcode** - QR-Code Scanner
-- **qrcode.react** - QR-Code Generator
-- **Lucide React** - Icons
-
-### Deployment
-- **Docker & Docker Compose** - Containerisierung
-- **Nginx** - Reverse Proxy (integriert im Frontend-Container)
-
----
-
-## Systemanforderungen
+## 2. Systemanforderungen
 
 | Komponente | Minimum | Empfohlen |
 |------------|---------|-----------|
-| Raspberry Pi | Pi 4 (2GB) | Pi 4 (4GB) oder Pi 5 |
-| OS | Raspberry Pi OS 64-bit | Raspberry Pi OS Bookworm 64-bit |
+| Hardware | Raspberry Pi 4 (2GB) | Raspberry Pi 4 (4GB) oder Pi 5 |
+| Betriebssystem | Raspberry Pi OS 64-bit | Raspberry Pi OS Bookworm 64-bit |
 | Speicher | 16GB SD-Karte | 32GB SD-Karte |
 | Docker | 20.10+ | Aktuellste Version |
+| Netzwerk | LAN oder WLAN | LAN (stabiler) |
 
-> **Hinweis:** Raspberry Pi 3 und ältere 32-bit Modelle werden nicht unterstützt (MongoDB-Einschränkung).
+> **Hinweis:** Raspberry Pi 3 und ältere 32-bit Modelle werden **nicht unterstützt** (MongoDB benötigt 64-bit ARMv8).
 
 ---
 
-## Projektstruktur
+## 3. Architektur & Technologie-Stack
+
+### Architektur
+
+```
+                    +------------------+
+                    |     Browser      |
+                    +--------+---------+
+                             |
+                    Port 443 (HTTPS)
+                    Port 80 -> Redirect
+                             |
+              +--------------v--------------+
+              |   Frontend Container        |
+              |   (React + Nginx + SSL)     |
+              |   - Statische Dateien       |
+              |   - /api/* -> Backend       |
+              +--------------+--------------+
+                             |
+                      intern Port 8001
+                             |
+              +--------------v--------------+
+              |   Backend Container         |
+              |   (FastAPI + Python 3.11)   |
+              +--------------+--------------+
+                             |
+                      intern Port 27017
+                             |
+              +--------------v--------------+
+              |   MongoDB 4.4.18            |
+              |   (Datenbank)               |
+              +-----------------------------+
+```
+
+### Backend
+| Technologie | Verwendung |
+|-------------|------------|
+| FastAPI | Python Web Framework |
+| MongoDB 4.4.18 | NoSQL Datenbank (ARM-kompatibel) |
+| Motor | Async MongoDB Driver |
+| PyJWT | Token-basierte Authentifizierung |
+| bcrypt | Passwort-Hashing (12 Runden) |
+| slowapi | Rate Limiting |
+
+### Frontend
+| Technologie | Verwendung |
+|-------------|------------|
+| React 19 | UI Framework |
+| Tailwind CSS | Utility-First CSS |
+| Shadcn/UI | UI Component Library |
+| Recharts | Diagramme & Charts |
+| html5-qrcode | QR-Code Scanner |
+| qrcode.react | QR-Code Generator |
+| Lucide React | Icon Library |
+
+### Deployment
+| Technologie | Verwendung |
+|-------------|------------|
+| Docker | Containerisierung |
+| Docker Compose | Multi-Container Orchestrierung |
+| Nginx | Reverse Proxy & SSL Termination |
+
+---
+
+## 4. Sicherheitskonzept
+
+### Authentifizierung
+- **JWT-Token** basierte Session-Verwaltung
+- Token-Gültigkeit: 24 Stunden
+- Idle-Timeout: 15 Minuten Inaktivität
+- Absolutes Timeout: 8 Stunden
+
+### Passwort-Sicherheit
+- **bcrypt** Hashing mit 12 Runden
+- Mindestlänge: 6 Zeichen
+- Passwort-Änderung für alle Benutzer möglich
+- Admin kann Passwörter zurücksetzen
+
+### Brute-Force-Schutz
+- Max. 5 Login-Versuche pro Benutzer/IP
+- Sperrzeit: 15 Minuten nach Überschreitung
+- Rate Limiting auf Login-Endpoint
+
+### HTTPS
+- Selbstsignierte SSL-Zertifikate (Standard)
+- HTTP wird automatisch auf HTTPS umgeleitet
+- TLS 1.2/1.3 mit sicheren Cipher Suites
+
+### Audit-Logging
+- Alle relevanten Aktionen werden protokolliert
+- Gespeicherte Daten: Benutzer, Aktion, IP-Adresse, Zeitstempel, Details
+- Nur Admin kann Audit-Logs einsehen
+
+---
+
+## 5. Rollen & Berechtigungen
+
+| Funktion | Admin | Spieß | Vorstand |
+|----------|:-----:|:-----:|:--------:|
+| **Dashboard** | Vollzugriff | Vollzugriff | - |
+| **Mitglieder** | CRUD | CRUD | CRUD |
+| **Statistiken** | Vollzugriff | Vollzugriff | Nur Lesen (anonymisiert) |
+| **Strafen** | CRUD | CRUD | - |
+| **Strafenarten** | CRUD | CRUD | CRUD |
+| **Benutzerverwaltung** | Vollzugriff | - | - |
+| **Audit-Log** | Nur Lesen | - | - |
+
+**Legende:** CRUD = Erstellen, Lesen, Aktualisieren, Löschen
+
+### Besonderheiten
+- **Vorstand** sieht Statistiken ohne Mitgliedernamen (anonymisiert)
+- **Vorstand** hat keinen Zugriff auf Dashboard und Strafenübersicht
+- Nur **Admin** kann neue Benutzer anlegen und Passwörter zurücksetzen
+- Der letzte Admin-Benutzer kann nicht gelöscht werden
+
+---
+
+## 6. Funktionsübersicht
+
+### Dashboard
+- Ranking aller Mitglieder nach Strafensumme
+- KPI-Anzeige: "Sau" (höchster Betrag) und "Lämmchen" (niedrigster Betrag)
+- Geschäftsjahr-Auswahl
+- QR-Code Scanner zur schnellen Strafen-Erfassung
+- Letzte Strafen-Einträge
+
+### Mitgliederverwaltung
+- Mitglieder erstellen mit Vor- und Nachname (Pflichtfelder)
+- Status: Aktiv / Passiv / Archiviert
+- Archivierte Mitglieder erscheinen nicht in Rankings
+- QR-Code für jedes Mitglied (Download als PNG)
+- Sortierung nach Name, Status oder Erstellungsdatum
+
+### Strafenarten
+- Eigene Strafenarten definieren (z.B. "Zu spät", "Fehltermin")
+- Feste Beträge oder variable Eingabe ("Sonstiges")
+
+### Strafen-Management
+- Strafen für Mitglieder erfassen
+- Rückwirkende Erfassung mit Datumsauswahl (nur auf Strafenübersicht-Seite)
+- Automatische Zuordnung zum korrekten Geschäftsjahr
+- Optionales Notizfeld
+- Bearbeiten und Löschen von Strafen
+
+### Statistiken
+- Gesamtsumme, Anzahl Strafen, Durchschnitt pro Strafe
+- Balkendiagramm: Top 10 Mitglieder
+- Filterung nach Geschäftsjahr
+
+### Benutzerverwaltung (nur Admin)
+- Neue Benutzer anlegen (Benutzername, Passwort, Rolle)
+- Benutzer löschen
+- Passwörter zurücksetzen
+
+### Audit-Log (nur Admin)
+- Übersicht aller System-Aktivitäten
+- Filterung nach Aktionstyp
+- Suche nach Benutzer, IP oder Details
+
+---
+
+## 7. API-Übersicht
+
+### Authentifizierung
+| Methode | Endpoint | Beschreibung |
+|---------|----------|--------------|
+| POST | `/api/auth/login` | Login (Rate Limited) |
+| GET | `/api/auth/me` | Aktueller Benutzer |
+| PUT | `/api/auth/change-password` | Passwort ändern |
+
+### Benutzerverwaltung (Admin)
+| Methode | Endpoint | Beschreibung |
+|---------|----------|--------------|
+| GET | `/api/users` | Alle Benutzer |
+| POST | `/api/users` | Benutzer erstellen |
+| DELETE | `/api/users/{id}` | Benutzer löschen |
+| PUT | `/api/users/{id}/reset-password` | Passwort zurücksetzen |
+
+### Mitglieder
+| Methode | Endpoint | Beschreibung |
+|---------|----------|--------------|
+| GET | `/api/members` | Alle Mitglieder |
+| POST | `/api/members` | Neues Mitglied |
+| PUT | `/api/members/{id}` | Mitglied aktualisieren |
+| DELETE | `/api/members/{id}` | Mitglied löschen |
+
+### Strafenarten
+| Methode | Endpoint | Beschreibung |
+|---------|----------|--------------|
+| GET | `/api/fine-types` | Alle Strafenarten |
+| POST | `/api/fine-types` | Neue Strafenart |
+| PUT | `/api/fine-types/{id}` | Strafenart aktualisieren |
+| DELETE | `/api/fine-types/{id}` | Strafenart löschen |
+
+### Strafen
+| Methode | Endpoint | Beschreibung |
+|---------|----------|--------------|
+| GET | `/api/fines` | Strafen abrufen |
+| POST | `/api/fines` | Neue Strafe (optionales `date` für rückwirkend) |
+| PUT | `/api/fines/{id}` | Strafe aktualisieren |
+| DELETE | `/api/fines/{id}` | Strafe löschen |
+
+### Statistiken & System
+| Methode | Endpoint | Beschreibung |
+|---------|----------|--------------|
+| GET | `/api/statistics?fiscal_year={year}` | Statistiken |
+| GET | `/api/fiscal-years` | Verfügbare Geschäftsjahre |
+| GET | `/api/audit-logs` | Audit-Logs (nur Admin) |
+| GET | `/health` | Health Check |
+
+---
+
+## 8. Geschäftsjahr-Logik
+
+Die Anwendung arbeitet mit Geschäftsjahren, die am **1. August** beginnen und am **31. Juli** enden:
+
+| Geschäftsjahr | Zeitraum |
+|---------------|----------|
+| 2024/2025 | 01.08.2024 - 31.07.2025 |
+| 2025/2026 | 01.08.2025 - 31.07.2026 |
+| 2026/2027 | 01.08.2026 - 31.07.2027 |
+
+### Automatische Zuordnung
+- Neue Strafen werden automatisch dem aktuellen Geschäftsjahr zugeordnet
+- Bei rückwirkender Erfassung wird das Geschäftsjahr anhand des Datums berechnet
+- Rankings und Statistiken können nach Geschäftsjahr gefiltert werden
+
+---
+
+## 9. Projektstruktur
 
 ```
 rheinzelmaenner/
 ├── backend/
-│   ├── Dockerfile
-│   ├── requirements.prod.txt
-│   └── server.py
+│   ├── Dockerfile              # Backend Docker Image
+│   ├── requirements.txt        # Python Dependencies (Entwicklung)
+│   ├── requirements.prod.txt   # Python Dependencies (Produktion)
+│   └── server.py               # FastAPI Application
 ├── frontend/
-│   ├── Dockerfile
-│   ├── nginx.conf
-│   ├── package.json
+│   ├── Dockerfile              # Frontend Docker Image
+│   ├── nginx.conf              # Nginx Konfiguration (HTTP)
+│   ├── nginx.ssl.conf          # Nginx Konfiguration (HTTPS)
+│   ├── package.json            # Node.js Dependencies
 │   ├── public/
-│   │   └── logo.png
+│   │   └── logo.png            # App Logo
 │   └── src/
-│       ├── components/
+│       ├── components/         # React Komponenten
+│       │   ├── ui/             # Shadcn/UI Komponenten
+│       │   ├── AddFineDialog.js
+│       │   ├── EditFineDialog.js
+│       │   ├── ChangePasswordDialog.js
+│       │   ├── QRCodeDialog.js
+│       │   ├── QRScanDialog.js
+│       │   ├── TopBar.js
+│       │   └── Layout.js
 │       ├── contexts/
+│       │   └── AuthContext.js  # Authentifizierung Context
 │       ├── hooks/
+│       │   └── useAuth.js      # Auth Hook mit Timeout-Logik
+│       ├── lib/
+│       │   └── api.js          # API Client
 │       └── pages/
-├── docker-compose.yml
-├── start.sh
-├── stop.sh
-├── logs.sh
-├── .env.example
-├── README.md
-└── DOCKER_DEPLOYMENT.md
+│           ├── Login.js
+│           ├── Dashboard.js
+│           ├── Members.js
+│           ├── Statistics.js
+│           ├── Fines.js
+│           ├── FineTypes.js
+│           ├── UserManagement.js
+│           └── AuditLogs.js
+├── certs/                      # SSL Zertifikate (gitignored)
+├── docker-compose.yml          # Docker Compose Konfiguration
+├── start.sh                    # Start-Script
+├── stop.sh                     # Stop-Script
+├── logs.sh                     # Log-Viewer Script
+├── setup-https.sh              # SSL-Zertifikat erneuern
+├── .env.example                # Beispiel-Konfiguration
+├── README.md                   # Diese Datei
+├── DOCKER_DEPLOYMENT.md        # Deployment Anleitung
+└── HTTPS_SETUP.md              # HTTPS Setup Anleitung
 ```
 
 ---
 
-## Konfiguration
+## 10. Design
 
-Erstellen Sie eine `.env` Datei im Hauptverzeichnis (wird automatisch beim ersten Start erstellt):
+### Farbschema
+| Verwendung | Farbe | Hex |
+|------------|-------|-----|
+| Primärfarbe | Grün | `#3E875F` / `emerald-700` |
+| Hintergrund | Hellgrau | `#FAFAF9` / `stone-50` |
+| Text | Dunkelgrau | `#1C1917` / `stone-900` |
+| Akzent (Fehler) | Rot | `#DC2626` / `red-600` |
 
-```env
-# Port auf dem die App läuft (Standard: 80)
-APP_PORT=80
+### UI-Prinzipien
+- **Mobile-First**: Optimiert für Smartphone-Nutzung
+- **Drawer-Navigation**: Slide-out Menü für mobile Geräte
+- **Touch-freundlich**: Große Buttons (min. 44px Touch-Target)
+- **Responsive**: Anpassung für Tablet und Desktop
 
-# JWT Secret für Token-Verschlüsselung (ÄNDERN!)
-JWT_SECRET=ihr-geheimer-schluessel
-
-# Admin Passwort beim ersten Start (ÄNDERN!)
-ADMIN_PASSWORD=admin123
-```
-
----
-
-## Nützliche Befehle
-
-```bash
-# App starten
-./start.sh
-
-# App stoppen
-./stop.sh
-
-# Logs anzeigen
-./logs.sh
-
-# Status prüfen
-docker compose ps
-
-# Einzelnen Service neustarten
-docker compose restart backend
-
-# Alles löschen und neu starten
-docker compose down -v
-./start.sh
-```
-
----
-
-## API Endpoints
-
-### Authentifizierung
-- `POST /api/auth/login` - Login (Rate Limited)
-- `GET /api/auth/me` - Aktueller Benutzer
-- `PUT /api/auth/change-password` - Passwort ändern
-
-### Benutzerverwaltung (nur Admin)
-- `GET /api/users` - Alle Benutzer
-- `POST /api/users` - Benutzer erstellen
-- `DELETE /api/users/{id}` - Benutzer löschen
-- `PUT /api/users/{id}/reset-password` - Passwort zurücksetzen
-
-### Mitglieder
-- `GET /api/members` - Alle Mitglieder
-- `POST /api/members` - Neues Mitglied
-- `PUT /api/members/{id}` - Mitglied aktualisieren
-- `DELETE /api/members/{id}` - Mitglied löschen
-
-### Strafenarten
-- `GET /api/fine-types` - Alle Strafenarten
-- `POST /api/fine-types` - Neue Strafenart
-- `PUT /api/fine-types/{id}` - Strafenart aktualisieren
-- `DELETE /api/fine-types/{id}` - Strafenart löschen
-
-### Strafen
-- `GET /api/fines` - Strafen abrufen
-- `POST /api/fines` - Neue Strafe
-- `PUT /api/fines/{id}` - Strafe aktualisieren
-- `DELETE /api/fines/{id}` - Strafe löschen
-
-### Statistiken
-- `GET /api/statistics?fiscal_year={year}` - Statistiken
-- `GET /api/fiscal-years` - Verfügbare Geschäftsjahre
-
-### System
-- `GET /health` - Health Check
-
----
-
-## Geschäftsjahr-Logik
-
-Die Anwendung arbeitet mit Geschäftsjahren (01.08. - 31.07.):
-- Beispiel: GJ 2025/2026 = 01.08.2025 bis 31.07.2026
-- Alle Strafen und Statistiken werden nach Geschäftsjahr gruppiert
-
----
-
-## Design
-
-- **Primärfarbe:** #3E875F (Grün)
-- **Akzentfarbe:** #F97316 (Orange)
-- **Mobile-First** Design
-- **Drawer-Navigation** für mobile Geräte
-
----
-
-## Lizenz
-
-Erstellt für die Rheinzelmänner.
+### Komponenten
+- Buttons: Abgerundet (`rounded-full`), mit Hover- und Active-States
+- Cards: Weiß mit subtilen Schatten (`shadow-sm`)
+- Inputs: Große Eingabefelder (`h-12`) mit fokussierten Ring-Effekten
+- Status-Badges: Farbcodiert (Grün=Aktiv, Grau=Passiv/Archiviert)
