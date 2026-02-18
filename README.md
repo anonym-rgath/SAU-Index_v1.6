@@ -128,15 +128,17 @@ Die Rheinzelmänner Verwaltung ist eine Full-Stack-Webanwendung zur Verwaltung v
 
 ## 5. Rollen & Berechtigungen
 
-| Funktion | Admin | Spieß | Vorstand |
-|----------|:-----:|:-----:|:--------:|
-| **Dashboard** | Vollzugriff | Vollzugriff | - |
-| **Mitglieder** | Vollzugriff | Vollzugriff | Vollzugriff |
-| **Statistiken** | Vollzugriff | Vollzugriff | Nur Lesen (anonymisiert) |
-| **Strafen** | Vollzugriff | Vollzugriff | - |
-| **Strafenarten** | Vollzugriff | Vollzugriff | Vollzugriff |
-| **Benutzerverwaltung** | Vollzugriff | - | - |
-| **Audit-Log** | Vollzugriff | - | - |
+| Funktion | Admin | Spieß | Vorstand | Mitglied |
+|----------|:-----:|:-----:|:--------:|:--------:|
+| **Dashboard** | Vollzugriff | CRUD | - | Nur eigene Strafen |
+| **Mitglieder** | Vollzugriff | CRUD | CRUD | - |
+| **Statistiken** | Vollzugriff | CRUD | Nur Lesen (anonymisiert) | - |
+| **Strafen** | Vollzugriff | CRUD | - | Nur eigene (Lesen) |
+| **Strafenarten** | Vollzugriff | CRUD | CRUD | - |
+| **Benutzerverwaltung** | Vollzugriff | - | - | - |
+| **Audit-Log** | Vollzugriff | - | - | - |
+
+**Legende:** CRUD = Erstellen, Lesen, Aktualisieren, Löschen
 
 ### Besonderheiten
 - **Vorstand** sieht Statistiken ohne Mitgliedernamen (anonymisiert)
