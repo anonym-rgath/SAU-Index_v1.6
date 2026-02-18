@@ -551,6 +551,7 @@ async def create_user(request: Request, data: UserCreateRequest, auth=Depends(re
         id=user_id,
         username=data.username,
         role=data.role.value,
+        member_id=user_doc.get("member_id"),
         created_at=user_doc["created_at"]
     )
 
