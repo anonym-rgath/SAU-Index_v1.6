@@ -784,11 +784,16 @@ async def get_fines(fiscal_year: Optional[str] = None, auth=Depends(require_auth
     if fiscal_year:
         query["fiscal_year"] = fiscal_year
     
-    # Mitglieder sehen nur eigene Strafen
-    if auth.get('role') == 'mitglied':
-        member_id = auth.get('member_id')
+    # Mitglieder und Vorstand mit member_id sehen nur eigene Strafen
+    role = auth.get('role')
+    member_id = auth.get('member_id')
+    
+    if role == 'mitglied':
         if not member_id:
             return []  # Kein verknüpftes Mitglied
+        query["member_id"] = member_id
+    elif role == 'vorstand' and member_id:
+        # Vorstand mit Mitglied-Verknüpfung sieht nur eigene Strafen
         query["member_id"] = member_id
     
     fines = await db.fines.find(query, {"_id": 0}).sort("date", -1).to_list(1000)
