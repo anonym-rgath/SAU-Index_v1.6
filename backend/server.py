@@ -400,7 +400,8 @@ async def login(request: Request, login_data: LoginRequest):
             'iat': datetime.now(timezone.utc),
             'sub': user_doc['id'],
             'username': user_doc['username'],
-            'role': user_doc['role']
+            'role': user_doc['role'],
+            'member_id': user_doc.get('member_id')  # Für Mitglied-Rolle
         },
         JWT_SECRET,
         algorithm=JWT_ALGORITHM
