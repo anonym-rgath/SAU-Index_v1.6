@@ -851,7 +851,11 @@ async def delete_fine(fine_id: str, auth=Depends(require_admin_or_spiess)):
     return {"message": "Strafe gelöscht"}
 
 @api_router.get("/statistics", response_model=Statistics)
-async def get_statistics(fiscal_year: str, auth=Depends(verify_token)):
+async def get_statistics(fiscal_year: str, auth=Depends(require_authenticated)):
+    # Mitglieder haben keinen Zugriff auf die allgemeine Statistik
+    if auth.get('role') == 'mitglied':
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Keine Berechtigung")
+    
     fines = await db.fines.find({"fiscal_year": fiscal_year}, {"_id": 0}).to_list(10000)
     # Nur aktive und passive Mitglieder (keine archivierten)
     members = await db.members.find({"status": {"$ne": "archiviert"}}, {"_id": 0}).to_list(1000)
@@ -898,6 +902,61 @@ async def get_statistics(fiscal_year: str, auth=Depends(verify_token)):
         sau=sau,
         laemmchen=laemmchen,
         ranking=ranking
+    )
+
+# Persönliche Statistik für Mitglieder
+class PersonalStatistics(BaseModel):
+    fiscal_year: str
+    member_name: str
+    total_fines: int
+    total_amount: float
+    rank: Optional[int] = None
+    total_members: Optional[int] = None
+
+@api_router.get("/statistics/personal", response_model=PersonalStatistics)
+async def get_personal_statistics(fiscal_year: str, auth=Depends(require_authenticated)):
+    """Persönliche Statistik für ein Mitglied"""
+    member_id = auth.get('member_id')
+    
+    if not member_id:
+        raise HTTPException(status_code=400, detail="Kein Mitglied verknüpft")
+    
+    # Mitglied-Daten holen
+    member = await db.members.find_one({"id": member_id}, {"_id": 0})
+    if not member:
+        raise HTTPException(status_code=404, detail="Mitglied nicht gefunden")
+    
+    member_name = f"{member.get('firstName', '')} {member.get('lastName', '')}".strip() or member.get('name', 'Unbekannt')
+    
+    # Eigene Strafen
+    own_fines = await db.fines.find({"fiscal_year": fiscal_year, "member_id": member_id}, {"_id": 0}).to_list(10000)
+    
+    # Ranking berechnen (alle nicht-archivierten Mitglieder)
+    all_fines = await db.fines.find({"fiscal_year": fiscal_year}, {"_id": 0}).to_list(10000)
+    all_members = await db.members.find({"status": {"$ne": "archiviert"}}, {"_id": 0}).to_list(1000)
+    member_ids = {m['id'] for m in all_members}
+    
+    totals = {}
+    for fine in all_fines:
+        mid = fine['member_id']
+        if mid in member_ids:
+            totals[mid] = totals.get(mid, 0) + fine['amount']
+    
+    # Sortiere nach Summe
+    sorted_members = sorted(totals.items(), key=lambda x: x[1], reverse=True)
+    rank = None
+    for idx, (mid, total) in enumerate(sorted_members):
+        if mid == member_id:
+            rank = idx + 1
+            break
+    
+    return PersonalStatistics(
+        fiscal_year=fiscal_year,
+        member_name=member_name,
+        total_fines=len(own_fines),
+        total_amount=sum(f['amount'] for f in own_fines),
+        rank=rank,
+        total_members=len(totals)
     )
 
 @api_router.get("/fiscal-years")
