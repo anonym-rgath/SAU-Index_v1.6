@@ -389,9 +389,9 @@ const UserManagement = () => {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="admin">Admin</SelectItem>
+                    <SelectItem value="mitglied">Mitglied</SelectItem>
                     <SelectItem value="spiess">Spieß</SelectItem>
                     <SelectItem value="vorstand">Vorstand</SelectItem>
-                    <SelectItem value="mitglied">Mitglied</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -486,9 +486,9 @@ const UserManagement = () => {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="admin">Admin</SelectItem>
+                    <SelectItem value="mitglied">Mitglied</SelectItem>
                     <SelectItem value="spiess">Spieß</SelectItem>
                     <SelectItem value="vorstand">Vorstand</SelectItem>
-                    <SelectItem value="mitglied">Mitglied</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
