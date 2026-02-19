@@ -115,9 +115,10 @@ Die Rheinzelmänner Verwaltung ist eine Full-Stack-Webanwendung zur Verwaltung v
 - Rate Limiting auf Login-Endpoint
 
 ### HTTPS
-- Selbstsignierte SSL-Zertifikate (Standard)
+- Cloudflare Origin Certificate für sau-index.de
 - HTTP wird automatisch auf HTTPS umgeleitet
 - TLS 1.2/1.3 mit sicheren Cipher Suites
+- Zertifikat gültig bis 2041
 
 ### Audit-Logging
 - Alle relevanten Aktionen werden protokolliert
