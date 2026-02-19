@@ -1,233 +1,130 @@
-# HTTPS Setup mit selbstsigniertem Zertifikat
+# HTTPS Setup mit Cloudflare Origin Certificate
 
-Anleitung zur Einrichtung von HTTPS für die Rheinzelmänner-App auf dem Raspberry Pi.
-
-> **Hinweis:** Bei selbstsignierten Zertifikaten zeigt der Browser eine Sicherheitswarnung. Diese muss einmalig bestätigt werden.
+Die Rheinzelmänner-App verwendet ein Cloudflare Origin Certificate für die Domain **sau-index.de**.
 
 ---
 
-## Schnell-Setup (empfohlen)
+## Zertifikat-Info
 
-### 1. Zertifikat erstellen
+| Eigenschaft | Wert |
+|-------------|------|
+| Domain | sau-index.de, *.sau-index.de |
+| Aussteller | Cloudflare Origin CA |
+| Gültig bis | 15. Februar 2041 |
+| Typ | Origin Certificate |
 
-Auf dem Raspberry Pi ausführen:
+---
 
-```bash
-cd ~/SAU-Index_v1.4_docker
+## Setup (bereits konfiguriert)
 
-# Ordner für Zertifikate erstellen
-mkdir -p certs
+### Zertifikat-Dateien
 
-# Selbstsigniertes Zertifikat erstellen (gültig für 1 Jahr)
-openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
-  -keyout certs/server.key \
-  -out certs/server.crt \
-  -subj "/CN=rheinzelmaenner/O=Rheinzelmaenner/C=DE" \
-  -addext "subjectAltName=DNS:localhost,IP:127.0.0.1,IP:$(hostname -I | awk '{print $1}')"
+Die Zertifikate befinden sich im `certs/` Ordner:
+
+```
+certs/
+├── sau-index.de.crt   # SSL-Zertifikat
+└── sau-index.de.key   # Privater Schlüssel
 ```
 
-### 2. Nginx-Konfiguration für HTTPS
+### Nginx-Konfiguration
 
-Erstelle eine neue Nginx-Konfiguration:
-
-```bash
-nano frontend/nginx.ssl.conf
-```
-
-Inhalt:
+Die Nginx-Konfiguration (`frontend/nginx.ssl.conf`) ist bereits für sau-index.de konfiguriert:
 
 ```nginx
 server {
-    listen 80;
-    server_name _;
-    return 301 https://$host$request_uri;
-}
-
-server {
     listen 443 ssl;
-    server_name _;
+    server_name sau-index.de *.sau-index.de;
     
-    ssl_certificate /etc/nginx/certs/server.crt;
-    ssl_certificate_key /etc/nginx/certs/server.key;
+    ssl_certificate /etc/nginx/certs/sau-index.de.crt;
+    ssl_certificate_key /etc/nginx/certs/sau-index.de.key;
     
-    ssl_protocols TLSv1.2 TLSv1.3;
-    ssl_ciphers HIGH:!aNULL:!MD5;
-    
-    # Gzip Komprimierung
-    gzip on;
-    gzip_vary on;
-    gzip_min_length 1024;
-    gzip_types text/plain text/css text/xml text/javascript application/javascript application/json;
-    
-    # Frontend (React SPA)
-    location / {
-        root /usr/share/nginx/html;
-        index index.html;
-        try_files $uri $uri/ /index.html;
-    }
-    
-    # API Proxy zum Backend
-    location /api/ {
-        proxy_pass http://backend:8001/api/;
-        proxy_http_version 1.1;
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection "upgrade";
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-    }
+    # ...
 }
 ```
 
-### 3. Docker Compose anpassen
+---
 
-Bearbeite `docker-compose.yml`:
+## Deployment
 
-```bash
-nano docker-compose.yml
-```
+### 1. Zertifikate kopieren
 
-Ersetze den `frontend` Service mit:
-
-```yaml
-  # React Frontend mit Nginx (HTTPS)
-  frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-    container_name: rheinzel-frontend
-    restart: unless-stopped
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./certs:/etc/nginx/certs:ro
-      - ./frontend/nginx.ssl.conf:/etc/nginx/conf.d/default.conf:ro
-    depends_on:
-      - backend
-    networks:
-      - rheinzel-network
-```
-
-### 4. Neu starten
+Stelle sicher, dass die Zertifikat-Dateien im `certs/` Ordner vorhanden sind:
 
 ```bash
-docker compose down
-docker compose up -d
+ls -la certs/
+# Erwartet:
+# sau-index.de.crt
+# sau-index.de.key
 ```
 
-### 5. Im Browser öffnen
+### 2. Starten
+
+```bash
+./start.sh
+```
+
+### 3. Zugriff
+
+Die App ist erreichbar unter:
 
 ```
-https://192.168.x.x
+https://sau-index.de
 ```
-
-Bei der Sicherheitswarnung:
-- **Chrome:** "Erweitert" → "Weiter zu ... (unsicher)"
-- **Firefox:** "Erweitert" → "Risiko akzeptieren und fortfahren"
-- **Safari:** "Details anzeigen" → "Diese Website besuchen"
 
 ---
 
-## Zertifikat auf Geräten vertrauen (optional)
+## Cloudflare DNS-Einstellungen
 
-Um die Browserwarnung dauerhaft zu vermeiden:
+Damit die Domain korrekt funktioniert, müssen in Cloudflare folgende Einstellungen vorgenommen werden:
 
-### iPhone/iPad
+### DNS-Eintrag
 
-1. Zertifikat herunterladen: `http://192.168.x.x:8080/server.crt` (separaten Server starten, siehe unten)
-2. Einstellungen → "Profil geladen" → Installieren
-3. Einstellungen → Allgemein → Info → Zertifikatsvertrauenseinstellungen → Aktivieren
+| Typ | Name | Inhalt | Proxy |
+|-----|------|--------|-------|
+| A | sau-index.de | [IP des Raspberry Pi] | Proxied (orange Wolke) |
 
-### Android
+### SSL/TLS-Modus
 
-1. Zertifikat auf Gerät kopieren
-2. Einstellungen → Sicherheit → Zertifikate installieren
+In Cloudflare Dashboard → SSL/TLS:
 
-### Windows
+- **SSL/TLS encryption mode:** Full (strict)
 
-1. Doppelklick auf `server.crt`
-2. "Zertifikat installieren" → "Lokaler Computer" → "Vertrauenswürdige Stammzertifizierungsstellen"
-
-### macOS
-
-1. Doppelklick auf `server.crt`
-2. Schlüsselbund öffnet sich → "Hinzufügen"
-3. Zertifikat suchen → Doppelklick → "Vertrauen" → "Immer vertrauen"
-
----
-
-## Zertifikat zum Download bereitstellen
-
-Temporären Server starten um das Zertifikat herunterzuladen:
-
-```bash
-cd ~/SAU-Index_v1.4_docker/certs
-python3 -m http.server 8080
-```
-
-Dann im Browser: `http://192.168.x.x:8080/server.crt`
-
-Nach dem Download Server mit `STRG+C` beenden.
+Dies ist wichtig, da wir ein Origin Certificate verwenden.
 
 ---
 
 ## Zertifikat erneuern
 
-Nach einem Jahr läuft das Zertifikat ab. Erneuern mit:
+Das aktuelle Zertifikat ist bis **2041** gültig. Falls ein neues Zertifikat benötigt wird:
 
-```bash
-cd ~/SAU-Index_v1.4_docker
+1. Neues Origin Certificate in Cloudflare erstellen:
+   - Cloudflare Dashboard → SSL/TLS → Origin Server → Create Certificate
+   
+2. Dateien ersetzen:
+   ```bash
+   # Alte Dateien sichern
+   mv certs/sau-index.de.crt certs/sau-index.de.crt.backup
+   mv certs/sau-index.de.key certs/sau-index.de.key.backup
+   
+   # Neue Dateien speichern (Inhalt aus Cloudflare)
+   nano certs/sau-index.de.crt
+   nano certs/sau-index.de.key
+   ```
 
-# Altes Zertifikat löschen
-rm certs/server.key certs/server.crt
-
-# Neues erstellen
-openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
-  -keyout certs/server.key \
-  -out certs/server.crt \
-  -subj "/CN=rheinzelmaenner/O=Rheinzelmaenner/C=DE" \
-  -addext "subjectAltName=DNS:localhost,IP:127.0.0.1,IP:$(hostname -I | awk '{print $1}')"
-
-# Nginx neu starten
-docker compose restart frontend
-```
-
----
-
-## Zurück zu HTTP
-
-Falls HTTPS nicht benötigt wird:
-
-```bash
-# docker-compose.yml zurücksetzen (Port 443 und volumes entfernen)
-nano docker-compose.yml
-
-# Nur Port 80 und ohne volumes:
-#   frontend:
-#     ...
-#     ports:
-#       - "80:80"
-#     # volumes: entfernen
-
-docker compose down
-docker compose up -d
-```
+3. Nginx neu starten:
+   ```bash
+   docker compose restart frontend
+   ```
 
 ---
 
 ## Troubleshooting
 
-### "NET::ERR_CERT_INVALID"
+### "SSL certificate problem"
 
-Normal bei selbstsignierten Zertifikaten. Warnung bestätigen.
-
-### Kamera funktioniert immer noch nicht
-
-1. Prüfen ob HTTPS aktiv: URL muss mit `https://` beginnen
-2. Browser-Berechtigung prüfen: Kamera-Symbol in der Adressleiste
-3. Seite neu laden nach Zertifikatsbestätigung
+- Prüfen ob der SSL/TLS-Modus in Cloudflare auf "Full (strict)" steht
+- Prüfen ob die Zertifikat-Dateien korrekt sind
 
 ### Zertifikat nicht gefunden
 
@@ -236,6 +133,16 @@ Normal bei selbstsignierten Zertifikaten. Warnung bestätigen.
 ls -la certs/
 
 # Berechtigungen setzen
-chmod 644 certs/server.crt
-chmod 600 certs/server.key
+chmod 644 certs/sau-index.de.crt
+chmod 600 certs/sau-index.de.key
+```
+
+### Nginx startet nicht
+
+```bash
+# Logs prüfen
+docker compose logs frontend
+
+# Zertifikat validieren
+openssl x509 -in certs/sau-index.de.crt -text -noout
 ```
