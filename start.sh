@@ -59,20 +59,18 @@ EOF
 fi
 
 # Prüfe ob SSL-Zertifikate existieren
-if [ ! -f certs/server.crt ] || [ ! -f certs/server.key ]; then
-    echo -e "${YELLOW}SSL-Zertifikate nicht gefunden. Erstelle selbstsignierte Zertifikate...${NC}"
-    mkdir -p certs
-    IP_ADDR=$(hostname -I | awk '{print $1}')
-    openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
-        -keyout certs/server.key \
-        -out certs/server.crt \
-        -subj "/CN=rheinzelmaenner/O=Rheinzelmaenner/C=DE" \
-        -addext "subjectAltName=DNS:localhost,IP:127.0.0.1,IP:${IP_ADDR:-192.168.1.1}" 2>/dev/null
-    chmod 644 certs/server.crt
-    chmod 600 certs/server.key
-    echo -e "${GREEN}[OK] SSL-Zertifikate erstellt${NC}"
+if [ ! -f certs/sau-index.de.crt ] || [ ! -f certs/sau-index.de.key ]; then
+    echo -e "${RED}SSL-Zertifikate nicht gefunden!${NC}"
     echo ""
+    echo "Benötigte Dateien:"
+    echo "  - certs/sau-index.de.crt"
+    echo "  - certs/sau-index.de.key"
+    echo ""
+    echo "Bitte das Cloudflare Origin Certificate in den certs/ Ordner kopieren."
+    exit 1
 fi
+echo -e "${GREEN}[OK] SSL-Zertifikat gefunden (sau-index.de)${NC}"
+echo ""
 
 # Stoppe eventuell laufende Container
 echo "Stoppe eventuell laufende Container..."
